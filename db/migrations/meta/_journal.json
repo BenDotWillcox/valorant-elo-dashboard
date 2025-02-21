@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1736728289493,
+      "tag": "0000_mighty_nehzno",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736731594861,
+      "tag": "0001_reflective_selene",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736731920085,
+      "tag": "0002_lethal_king_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736984694482,
+      "tag": "0003_white_frightful_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1739918594974,
+      "tag": "0004_stiff_bloodscream",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1740020244357,
+      "tag": "0005_soft_george_stacy",
+      "breakpoints": true
+    }
+  ]
+}

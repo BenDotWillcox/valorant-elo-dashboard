@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import { InfoCircledIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 
@@ -26,5 +27,24 @@ const TooltipContent = React.forwardRef<
   />
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
+
+interface InfoTooltipProps {
+  content: string;
+}
+
+export function InfoTooltip({ content }: InfoTooltipProps) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <InfoCircledIcon className="h-4 w-4 ml-2 text-muted-foreground" />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs text-sm">{content}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }

@@ -1,9 +1,14 @@
 import { Providers } from "@/components/utilities/providers";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
+import { NavHeader } from "@/components/nav-header";
 
 const inter = Inter({ subsets: ["latin"] });
+const displayFont = Montserrat({ 
+  subsets: ['latin'],
+  variable: '--font-display',
+});
 
 export const metadata: Metadata = {
   title: "Valorant ELO Dashboard",
@@ -16,14 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={displayFont.variable}>
+      <body className="min-h-screen bg-[#1a1a1a]">
         <Providers
           attribute="class"
           defaultTheme="dark"
           disableTransitionOnChange
         >
-          {children}
+          <NavHeader />
+          <main>
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

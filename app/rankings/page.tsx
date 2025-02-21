@@ -85,7 +85,7 @@ export default function RankingsPage() {
                     ))
                   ) : (
                     <div className="text-center text-muted-foreground py-8">
-                      Map hasn't been played this season
+                      Map hasn&apos;t been played this season
                     </div>
                   )}
                 </div>

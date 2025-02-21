@@ -3,7 +3,7 @@ export type EloHistoryData = {
   teamName: string;
   teamSlug: string;
   mapName: string;
-  rating: string;
+  rating: number;
   ratingDate: string;
   opponentName: string;
   winnerScore: number;
@@ -11,17 +11,24 @@ export type EloHistoryData = {
   isWinner: boolean;
 };
 
+export interface EloDataPoint {
+  rating: number;
+  ratingDate: number;
+  opponent: string;
+  score: number;
+  mapName: string;
+  isInterpolated?: boolean;
+  prevRating: number;
+  isDataPoint?: boolean;
+  teamName: string;
+  opponentName: string;
+}
+
 export interface TeamData {
   teamId: number;
   teamName: string;
   teamSlug: string;
-  data: {
-    rating: number;
-    ratingDate: number;
-    opponent: string;
-    score: number;
-    mapName: string;
-  }[];
+  data: EloDataPoint[];
 }
 
 export interface TeamMapData {

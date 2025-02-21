@@ -1,17 +1,24 @@
 import { cn } from "@/lib/utils";
+import { EloDataPoint } from "@/types/elo";
+
+interface TooltipPayload {
+  value: number;
+  name: string;
+  payload: EloDataPoint;
+}
 
 interface EloTooltipProps {
   active?: boolean;
-  payload?: any[];
-  teamColors: Record<string, string>;
+  payload?: { payload: EloDataPoint }[];
   coordinate?: { x: number; y: number };
+  teamColors: Record<string, string>;
 }
 
 export function EloTooltip({ active, payload, coordinate }: EloTooltipProps) {
   if (!active || !payload?.[0]?.payload || !coordinate) return null;
 
   const data = payload[0].payload;
-  const eloDelta = data.rating - data.prevRating;
+  const eloDelta = data.rating - (data.prevRating ?? data.rating);
   const isWin = eloDelta > 0;  // Simplified win condition
 
   return (

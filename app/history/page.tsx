@@ -89,7 +89,7 @@ export default function HistoryPage() {
   // Add selectedTeams to dependency array
   useEffect(() => {
     // ... existing code ...
-  }, [selectedTeams, viewType]); // Add selectedTeams to dependency array
+  }, [selectedTeams, viewType, selectedSeason]); // Add all dependencies
 
   if (loading) {
     return (
@@ -188,7 +188,7 @@ function processData(data: EloHistoryData[]): TeamData[] {
 
   console.log('Processing data points:', sortedData.length);
 
-  const groupedData = sortedData.reduce((acc: any, item: EloHistoryData) => {
+  const groupedData = sortedData.reduce((acc: Record<string, TeamData>, item: EloHistoryData) => {
     if (!acc[item.teamId]) {
       console.log(`Creating new team entry for ${item.teamName} (${item.teamId})`);
       acc[item.teamId] = {
@@ -213,23 +213,25 @@ function processData(data: EloHistoryData[]): TeamData[] {
 
     // Add actual point
     acc[item.teamId].data.push({
-      rating: parseFloat(item.rating),
+      rating: item.rating,
       ratingDate: currentDate,
-      opponentName: item.opponentName,
+      opponent: item.opponentName,
       score: item.isWinner 
-        ? `${item.winnerScore}-${item.loserScore}`
-        : `${item.loserScore}-${item.winnerScore}`,
+        ? Number(`${item.winnerScore}`)
+        : Number(`${item.loserScore}`),
       mapName: item.mapName,
-      isInterpolated: false
+      prevRating: 1000,
+      teamName: item.teamName,
+      opponentName: item.opponentName
     });
 
     return acc;
   }, {});
 
-  // Add debug logging
-  Object.entries(groupedData).forEach(([teamId, team]: [string, any]) => {
+  // Fix debug logging types
+  Object.entries(groupedData).forEach(([teamId, team]: [string, TeamData]) => {
     console.log(`Team ${team.teamName}: ${team.data.length} points`);
-    team.data.sort((a: any, b: any) => a.ratingDate - b.ratingDate);
+    team.data.sort((a, b) => a.ratingDate - b.ratingDate);
   });
 
   return Object.values(groupedData);

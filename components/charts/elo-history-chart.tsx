@@ -1,9 +1,9 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TeamLogoDot } from "@/components/charts/team-logo-dot";
 import { TEAM_COLORS, MAP_COLORS } from "@/lib/constants/colors";
-import { TeamData } from "@/types/elo";
+import { TeamData, EloHistoryData, EloDataPoint } from "@/types/elo";
 import { useState } from 'react';
 import { EloTooltip } from "./elo-tooltip";
 
@@ -14,13 +14,27 @@ interface EloHistoryChartProps {
   viewType: 'byTeam' | 'byMap';
 }
 
+interface TooltipPayload {
+  value: number;
+  name: string;
+  payload: {
+    rating: number;
+    ratingDate: number;
+    opponent: string;
+    score: number;
+    mapName: string;
+    prevRating?: number;
+    isDataPoint?: boolean;
+  };
+}
+
 export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }: EloHistoryChartProps) {
   const [hoveredPoint, setHoveredPoint] = useState<{
     payload: any;
     coords: { x: number; y: number };
   } | null>(null);
 
-  const handlePointMouseEnter = (event: React.MouseEvent, payload: any) => {
+  const handlePointMouseEnter = (event: React.MouseEvent, payload: TooltipPayload) => {
     const rect = (event.target as Element).getBoundingClientRect();
     setHoveredPoint({
       payload,
@@ -128,32 +142,38 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
               .find(t => t.teamName === teamName)
               ?.data.filter(d => d.mapName === mapName)
               // Filter out games that are within 45 minutes of each other or have no Elo change
-              .reduce((acc: any[], d, i, arr) => {
-                if (i === 0) {
-                  // Add starting point at 1000 for first game
+              .reduce((acc: EloDataPoint[], d: EloDataPoint) => {
+                if (acc.length === 0) {
                   acc.push({
-                    ...d,
-                    prevRating: 1000,
                     rating: d.rating,
+                    ratingDate: d.ratingDate,
+                    opponent: d.opponent,
+                    score: d.score,
+                    mapName: d.mapName,
+                    prevRating: 1000,
                     isDataPoint: true,
-                    teamName: teamName
+                    teamName: d.teamName,
+                    opponentName: d.opponentName
                   });
                   return acc;
                 }
                 
                 const prevGame = acc[acc.length - 1];
-                const timeDiff = d.ratingDate - prevGame.ratingDate;
-                const minDiff = 45 * 60 * 1000; // 45 minutes in milliseconds
+                const timeDiff = new Date(d.ratingDate).getTime() - new Date(prevGame.ratingDate).getTime();
+                const minDiff = 45 * 60 * 1000;
                 const eloDiff = Math.abs(d.rating - prevGame.rating);
                 
-                // Only add game if it's more than 45 minutes after the previous one
-                // AND there was some Elo change
                 if (timeDiff > minDiff && eloDiff > 0) {
                   acc.push({
-                    ...d,
+                    rating: d.rating,
+                    ratingDate: d.ratingDate,
+                    opponent: d.opponent,
+                    score: d.score,
+                    mapName: d.mapName,
                     prevRating: prevGame.rating,
-                    isDataPoint: true,
-                    teamName: teamName
+                    teamName: d.teamName,
+                    opponentName: d.opponentName,
+                    isDataPoint: true
                   });
                 }
                 return acc;
@@ -192,7 +212,7 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
                       r={Math.max(4, 6 - (selectedTeams.length * 0.4))}
                       fill={MAP_COLORS[mapName as keyof typeof MAP_COLORS]}
                       style={{ cursor: 'pointer' }}
-                      onMouseEnter={(e) => handlePointMouseEnter(e, props.payload)}
+                      onMouseEnter={(e) => handlePointMouseEnter(e, props.payload as TooltipPayload)}
                       onMouseLeave={handlePointMouseLeave}
                     />
                   )

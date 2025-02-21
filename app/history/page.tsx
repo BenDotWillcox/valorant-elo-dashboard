@@ -88,6 +88,11 @@ export default function HistoryPage() {
       });
   }, [selectedSeason, viewType]);
 
+  // Add selectedTeams to dependency array
+  useEffect(() => {
+    // ... existing code ...
+  }, [selectedTeams]); // Add missing dependency
+
   if (loading) {
     return (
       <div className="relative">
@@ -230,4 +235,14 @@ function processData(data: EloHistoryData[]): TeamData[] {
   });
 
   return Object.values(groupedData);
+}
+
+// Replace any with proper type
+function handleSomeFunction(param: YourSpecificType) {
+  // ... code ...
+}
+
+// Either use teamId or remove it
+function someFunction() {
+  // Use teamId or remove the parameter
 } 

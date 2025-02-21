@@ -85,13 +85,11 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/win-streaks').then(res => res.json()),
       fetch('/api/hall-of-fame/lose-streaks').then(res => res.json()),
       fetch('/api/hall-of-fame/perfect-games').then(res => res.json()),
-      fetch('/api/hall-of-fame/map-specialists').then(res => res.json()),
-      fetch('/api/hall-of-fame/map-strugglers').then(res => res.json()),
       fetch('/api/hall-of-fame/greatest-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([top, worst, variance, ups, streaks, loseStreaks, perfect, specialists, strugglers, greatest, worstTeams, topMaps, worstMaps]) => {
+    ]).then(([top, worst, variance, ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
       setTopRatings(top);
       setWorstRatings(worst);
       setVariances(variance);
@@ -99,8 +97,6 @@ export default function HallOfFamePage() {
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);
       setPerfectGames(perfect);
-      setMapSpecialists(specialists);
-      setMapStrugglers(strugglers);
       setGreatestTeams(greatest);
       setWorstTeams(worstTeams);
       setTopMaps(topMaps);

@@ -3,8 +3,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TeamLogoDot } from "@/components/charts/team-logo-dot";
 import { TEAM_COLORS, MAP_COLORS } from "@/lib/constants/colors";
-import { TeamData, EloHistoryData } from "@/types/elo";
-import { useEffect, useState } from 'react';
+import { TeamData } from "@/types/elo";
+import { useState } from 'react';
 import { EloTooltip } from "./elo-tooltip";
 
 interface EloHistoryChartProps {

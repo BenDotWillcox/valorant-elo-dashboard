@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface EloTooltipProps {
@@ -8,7 +7,7 @@ interface EloTooltipProps {
   coordinate?: { x: number; y: number };
 }
 
-export function EloTooltip({ active, payload, teamColors, coordinate }: EloTooltipProps) {
+export function EloTooltip({ active, payload, coordinate }: EloTooltipProps) {
   if (!active || !payload?.[0]?.payload || !coordinate) return null;
 
   const data = payload[0].payload;

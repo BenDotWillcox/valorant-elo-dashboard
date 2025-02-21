@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapSelection } from "@/components/predictions/map-selection";
 import { MatchResults } from "@/components/predictions/match-results";
-import { calculateWinProbability, calculateBo3MatchProbability, calculateBo5MatchProbability } from '@/lib/predictions/calculations';
+import { calculateWinProbability, calculateBo5MatchProbability } from '@/lib/predictions/calculations';
 import { MAP_POOL } from '@/lib/constants/maps';
 import { getOptimalMapSelection } from '@/lib/predictions/map-selection';
 import { MapSelectionProcess } from "@/components/predictions/map-selection-process";

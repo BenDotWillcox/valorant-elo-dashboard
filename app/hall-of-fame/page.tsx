@@ -19,14 +19,6 @@ interface Team {
   lowestDate?: string;
 }
 
-interface MapSpecialist {
-  seasonYear: number;
-  teamName: string;
-  teamSlug: string;
-  logoUrl: string;
-  mapName: string;
-  mapOffset: number;
-}
 
 interface Streak {
   start_date: string;

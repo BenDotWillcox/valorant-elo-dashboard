@@ -7,7 +7,6 @@ import { MAP_IMAGES } from "@/lib/constants/images";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TEAM_LOGOS } from "@/lib/constants/images";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export default function RankingsPage() {

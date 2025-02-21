@@ -1,10 +1,9 @@
 import { Providers } from "@/components/utilities/providers";
 import type { Metadata } from "next";
-import { Inter, Montserrat } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { NavHeader } from "@/components/nav-header";
 
-const inter = Inter({ subsets: ["latin"] });
 const displayFont = Montserrat({ 
   subsets: ['latin'],
   variable: '--font-display',

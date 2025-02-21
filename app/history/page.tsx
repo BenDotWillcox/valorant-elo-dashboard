@@ -235,12 +235,3 @@ function processData(data: EloHistoryData[]): TeamData[] {
   return Object.values(groupedData);
 }
 
-// Replace any with proper type
-function handleSomeFunction(param: YourSpecificType) {
-  // ... code ...
-}
-
-// Either use teamId or remove it
-function someFunction() {
-  // Use teamId or remove the parameter
-} 

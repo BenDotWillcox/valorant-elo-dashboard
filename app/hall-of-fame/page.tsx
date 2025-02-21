@@ -1,16 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { StatCard } from '@/components/stats/stat-card';
 import Image from 'next/image';
-import { MAP_IMAGES } from '@/lib/constants/images';
 import { TEAM_LOGOS } from '@/lib/constants/images';
 import { format, subDays } from 'date-fns';
 import { StatCarousel } from '@/components/stats/stat-carousel';
 import { PerfectGamesScroll } from '@/components/stats/perfect-games-scroll';
 import { UpsetCarousel } from '@/components/stats/upset-carousel';
 import { MapPopularityChart } from '@/components/stats/map-popularity-chart';
-import type { JSX } from 'react';
 
 interface Team {
   seasonYear: number;
@@ -51,22 +48,11 @@ interface MapRating {
   seasonYear: number;
 }
 
-interface MapStats {
-  mapName: string;
-  averageRating: number;
-  matchCount: number;
-}
-
 export default function HallOfFamePage() {
-  const [topRatings, setTopRatings] = useState([]);
-  const [worstRatings, setWorstRatings] = useState([]);
-  const [variances, setVariances] = useState([]);
   const [upsets, setUpsets] = useState([]);
   const [winStreaks, setWinStreaks] = useState<Streak[]>([]);
   const [loseStreaks, setLoseStreaks] = useState<Streak[]>([]);
   const [perfectGames, setPerfectGames] = useState([]);
-  const [mapSpecialists, setMapSpecialists] = useState<MapSpecialist[]>([]);
-  const [mapStrugglers, setMapStrugglers] = useState<MapSpecialist[]>([]);
   const [greatestTeams, setGreatestTeams] = useState<Team[]>([]);
   const [worstTeams, setWorstTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,9 +64,6 @@ export default function HallOfFamePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/hall-of-fame/top-ratings').then(res => res.json()),
-      fetch('/api/hall-of-fame/worst-ratings').then(res => res.json()),
-      fetch('/api/hall-of-fame/variances').then(res => res.json()),
       fetch('/api/hall-of-fame/upsets').then(res => res.json()),
       fetch('/api/hall-of-fame/win-streaks').then(res => res.json()),
       fetch('/api/hall-of-fame/lose-streaks').then(res => res.json()),
@@ -89,10 +72,7 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/worst-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([top, worst, variance, ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
-      setTopRatings(top);
-      setWorstRatings(worst);
-      setVariances(variance);
+    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
       setUpsets(ups);
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);

@@ -4,8 +4,6 @@ import { HistoryFilters } from "@/components/filters/history-filters";
 import { EloHistoryChart } from "@/components/charts/elo-history-chart";
 import { useState, useEffect } from 'react';
 import { TeamData, EloHistoryData } from "@/types/elo";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { SeasonSelector } from "@/components/season-selector";
 import { Season } from "@/db/schema";
 
@@ -91,7 +89,7 @@ export default function HistoryPage() {
   // Add selectedTeams to dependency array
   useEffect(() => {
     // ... existing code ...
-  }, [selectedTeams]); // Add missing dependency
+  }, [selectedTeams, viewType]); // Add selectedTeams to dependency array
 
   if (loading) {
     return (

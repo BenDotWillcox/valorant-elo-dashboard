@@ -1,6 +1,5 @@
 import { db } from "@/db/db";
-import { mapsTable } from "@/db/schema";
-import { desc, isNotNull, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "date-fns";
 

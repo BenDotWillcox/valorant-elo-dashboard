@@ -25,7 +25,7 @@ export function PerfectGamesScroll({ data }: PerfectGamesProps) {
       </div>
       <ScrollArea className="w-full whitespace-nowrap">
         <div className="flex p-4">
-          {data.map((game, i) => (
+          {data.map((game) => (
             <div 
               key={`${game.winnerSlug}-${game.loserSlug}-${game.matchDate}`}
               className="flex-none w-64 p-2 mr-2 bg-muted rounded-lg"

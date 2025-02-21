@@ -2,10 +2,6 @@
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import { TEAM_LOGOS } from '@/lib/constants/images';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { InfoTooltip } from '@/components/ui/tooltip';
 
 interface StatCarouselProps<T> {

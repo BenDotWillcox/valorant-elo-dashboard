@@ -9,7 +9,20 @@ import { InfoTooltip } from '@/components/ui/tooltip';
 
 interface UpsetCarouselProps {
   title: string;
-  data: any[];
+  data: {
+    matchDate: string;
+    winnerName: string;
+    winnerSlug: string;
+    winnerLogo: string;
+    loserName: string;
+    loserSlug: string;
+    loserLogo: string;
+    mapName: string;
+    winnerScore: number;
+    loserScore: number;
+    winnerElo: number;
+    loserElo: number;
+  }[];
 }
 
 export function UpsetCarousel({ title, data }: UpsetCarouselProps) {

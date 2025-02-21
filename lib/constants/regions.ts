@@ -7,7 +7,7 @@ export const TEAM_REGIONS: Record<string, string[]> = {
 
 // Helper function to get a team's region
 export function getTeamRegion(teamSlug: string): string {
-  return Object.entries(TEAM_REGIONS).find(([_, teams]) => 
+  return Object.entries(TEAM_REGIONS).find(([region, teams]) => 
     teams.includes(teamSlug)
   )?.[0] || 'Unknown';
 } 

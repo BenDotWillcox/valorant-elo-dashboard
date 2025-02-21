@@ -1,13 +1,3 @@
-import { type } from "os";
-
-type EloRating = {
-  rating: number;
-  teamId: number;
-  mapName: string;
-  timestamp: Date;
-  matchId?: number;
-};
-
 export function calculateEloUpdate(
   winElo: number,
   loseElo: number,

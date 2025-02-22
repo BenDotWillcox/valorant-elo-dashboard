@@ -22,6 +22,20 @@ interface MapPopularityProps {
   }[];
 }
 
+// Create an interface for the transformed data
+interface TransformedData {
+  date: string;
+  [key: string]: string | number;  // For dynamic map names
+}
+
+// Create an interface for the tooltip props
+interface TooltipProps {
+  payload?: {
+    value: number | null;
+    name: string;
+    dataKey: string;
+  }[] | null;  // Make it nullable
+}
 
 export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -43,14 +57,15 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
     }
   };
 
-  const transformedData = data.reduce((acc, curr) => {
+  // Update the reduce function
+  const transformedData = data.reduce((acc: Record<string, TransformedData>, curr) => {
     const date = curr.date.split('T')[0];
     if (!acc[date]) {
       acc[date] = { date };
     }
     acc[date][curr.mapName] = curr.percentage;
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as Record<string, TransformedData>);
 
   const chartData = Object.values(transformedData)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -142,11 +157,9 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                formatter={(value: ValueType, name: NameType, props: any): JSX.Element => {
+                formatter={(value: ValueType, name: NameType, props: TooltipProps): JSX.Element => {
                   if (props?.payload && Array.isArray(props.payload)) {
-                    props.payload.sort((a: { value: number | null }, b: { value: number | null }) => 
-                      ((b.value ?? 0) - (a.value ?? 0))
-                    );
+                    props.payload.sort((a, b) => ((b.value ?? 0) - (a.value ?? 0)));
                   }
                   const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
                   return (

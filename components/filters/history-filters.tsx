@@ -34,7 +34,6 @@ export function HistoryFilters({
 }: HistoryFiltersProps) {
   const [expandedMaps, setExpandedMaps] = useState<string[]>([]);
   const [expandedRegions, setExpandedRegions] = useState<string[]>([]);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   const toggleMap = (mapName: string) => {
@@ -65,18 +64,6 @@ export function HistoryFilters({
     });
     return acc;
   }, {});
-
-  // Get all unique teams from the data
-  const allTeams = data?.reduce((acc: Array<{name: string, slug: string, region: string}>, team) => {
-    if (!acc.some(t => t.slug === team.teamSlug)) {
-      acc.push({
-        name: team.teamName,
-        slug: team.teamSlug,
-        region: getTeamRegion(team.teamSlug)
-      });
-    }
-    return acc;
-  }, []) || [];
 
   const handleTeamSelect = (teamName: string) => {
     // Clear previous selections

@@ -16,6 +16,13 @@ export const seasonsTable = pgTable('seasons', {
   isActive: boolean('is_active').notNull().default(false),
 });
 
+export const teamsTable = pgTable('teams', {
+  id: integer('id').primaryKey(),
+  name: varchar('name').notNull(),
+  slug: varchar('slug').notNull(),
+  logoUrl: varchar('logo_url'),
+});
+
 export const mapsTable = pgTable('maps', {
   id: integer('id').primaryKey(),
   mapName: varchar('map_name').notNull(),
@@ -25,11 +32,19 @@ export const mapsTable = pgTable('maps', {
   seasonId: integer('season_id').notNull(),
 });
 
+export const eloRatingsTable = pgTable('elo_ratings', {
+  id: integer('id').primaryKey(),
+  teamId: integer('team_id').notNull(),
+  rating: decimal('rating').notNull(),
+  ratingDate: timestamp('rating_date').notNull(),
+  mapId: integer('map_id').notNull(),
+  seasonId: integer('season_id').notNull(),
+});
+
 export const elo_ratings_current = pgTable('elo_ratings_current', {
   teamId: integer('team_id').notNull(),
   mapName: varchar('map_name').notNull(),
   rating: decimal('rating').notNull(),
   seasonId: integer('season_id').notNull(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  // ... any other fields
 }); 

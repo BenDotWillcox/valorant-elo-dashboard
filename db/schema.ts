@@ -1,6 +1,14 @@
 import { pgTable, varchar, decimal, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 
 // Types
+export type Season = {
+  id: number;
+  year: number;
+  isActive: boolean;
+  startDate: Date;
+  endDate?: Date;
+};
+
 export type NewMap = {
   mapName: string;
   completedAt: Date;

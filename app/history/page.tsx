@@ -229,7 +229,7 @@ function processData(data: EloHistoryData[]): TeamData[] {
   }, {});
 
   // Fix debug logging types
-  Object.entries(groupedData).forEach(([teamId, team]: [string, TeamData]) => {
+  Object.entries(groupedData).forEach(([, team]: [string, TeamData]) => {
     console.log(`Team ${team.teamName}: ${team.data.length} points`);
     team.data.sort((a, b) => a.ratingDate - b.ratingDate);
   });

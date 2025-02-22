@@ -18,7 +18,7 @@ export interface EloDataPoint {
   score: number;
   mapName: string;
   isInterpolated?: boolean;
-  prevRating: number;
+  prevRating?: number;
   isDataPoint?: boolean;
   teamName: string;
   opponentName: string;
@@ -38,4 +38,10 @@ export interface TeamMapData {
   mapName: string;
   rating: string;
   logoUrl: string;
+}
+
+export interface TooltipPayload {
+  value: number;
+  name: string;
+  payload: EloDataPoint;
 } 

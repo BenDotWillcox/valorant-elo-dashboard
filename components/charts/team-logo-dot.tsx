@@ -1,12 +1,11 @@
 import Image from "next/image";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import { MAP_IMAGES } from "@/lib/constants/images";
+import { TooltipPayload } from "@/types/elo";
 
-interface LogoDotPayload {
+interface LogoDotPayload extends TooltipPayload {
   cx: number;
   cy: number;
-  value: number;
-  // Add other properties you need
 }
 
 interface TeamLogoDotProps {
@@ -17,7 +16,7 @@ interface TeamLogoDotProps {
   viewType: 'byTeam' | 'byMap';
   mapName: string;
   payload?: LogoDotPayload;
-  onMouseEnter?: (event: React.MouseEvent, payload: any) => void;
+  onMouseEnter?: (event: React.MouseEvent, payload: TooltipPayload) => void;
   onMouseLeave?: () => void;
 }
 
@@ -53,7 +52,7 @@ export function TeamLogoDot({
       width={size}
       height={size}
       style={{ cursor: 'pointer' }}
-      onMouseEnter={(e) => onMouseEnter?.(e, payload)}
+      onMouseEnter={(e) => onMouseEnter?.(e, payload as TooltipPayload)}
       onMouseLeave={onMouseLeave}
     >
       <Image

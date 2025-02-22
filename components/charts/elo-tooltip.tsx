@@ -9,7 +9,7 @@ interface TooltipPayload {
 
 interface EloTooltipProps {
   active?: boolean;
-  payload?: { payload: EloDataPoint }[];
+  payload?: { payload: { value: number; name: string; payload: EloDataPoint } }[];
   coordinate?: { x: number; y: number };
   teamColors: Record<string, string>;
 }
@@ -17,7 +17,7 @@ interface EloTooltipProps {
 export function EloTooltip({ active, payload, coordinate }: EloTooltipProps) {
   if (!active || !payload?.[0]?.payload || !coordinate) return null;
 
-  const data = payload[0].payload;
+  const data = payload[0].payload.payload;
   const eloDelta = data.rating - (data.prevRating ?? data.rating);
   const isWin = eloDelta > 0;  // Simplified win condition
 
@@ -58,7 +58,7 @@ export function EloTooltip({ active, payload, coordinate }: EloTooltipProps) {
         <div className="flex items-center justify-between border-t pt-2 mt-2">
           <div className="space-y-1">
             <div className="text-sm text-muted-foreground">
-              Previous Elo: {Math.round(data.prevRating)}
+              Previous Elo: {Math.round(data.prevRating ?? data.rating)}
             </div>
             <div className={cn(
               "font-bold text-lg",

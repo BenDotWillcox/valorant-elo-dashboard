@@ -25,19 +25,25 @@ interface TooltipPayload {
     mapName: string;
     prevRating?: number;
     isDataPoint?: boolean;
+    teamName: string;
+    opponentName: string;
   };
 }
 
 export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }: EloHistoryChartProps) {
   const [hoveredPoint, setHoveredPoint] = useState<{
-    payload: any;
+    payload: TooltipPayload;
     coords: { x: number; y: number };
   } | null>(null);
 
-  const handlePointMouseEnter = (event: React.MouseEvent, payload: TooltipPayload) => {
+  const handlePointMouseEnter = (event: React.MouseEvent, payload: any) => {
     const rect = (event.target as Element).getBoundingClientRect();
     setHoveredPoint({
-      payload,
+      payload: {
+        value: payload.value,
+        name: payload.name,
+        payload: payload  // The actual data point is the payload itself
+      },
       coords: {
         x: rect.left + rect.width / 2,
         y: rect.top

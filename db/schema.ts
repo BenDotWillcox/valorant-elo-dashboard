@@ -1,6 +1,14 @@
 import { pgTable, varchar, decimal, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 
 // Types
+export type NewEloRating = {
+  teamId: number;
+  rating: number;
+  ratingDate: Date;
+  mapId: number;
+  seasonId: number;
+};
+
 export type NewEloRatingCurrent = {
   teamId: number;
   mapName: string;
@@ -41,7 +49,7 @@ export const eloRatingsTable = pgTable('elo_ratings', {
   seasonId: integer('season_id').notNull(),
 });
 
-export const elo_ratings_current = pgTable('elo_ratings_current', {
+export const eloRatingsCurrentTable = pgTable('elo_ratings_current', {
   teamId: integer('team_id').notNull(),
   mapName: varchar('map_name').notNull(),
   rating: decimal('rating').notNull(),

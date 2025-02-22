@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { useState, useCallback, useEffect } from "react"
 
 interface Season {
   id: number;
@@ -15,21 +16,26 @@ interface SeasonSelectorProps {
 }
 
 export function SeasonSelector({ onSeasonChange }: SeasonSelectorProps) {
-  const [seasons, setSeasons] = React.useState<Season[]>([]);
-  const [selectedSeason, setSelectedSeason] = React.useState<Season>();
+  const [seasons, setSeasons] = useState<Season[]>([]);
+  const [selectedSeason, setSelectedSeason] = useState<Season>();
 
-  React.useEffect(() => {
+  // Memoize the season change handler
+  const handleSeasonChange = useCallback((season: Season) => {
+    setSelectedSeason(season);
+    onSeasonChange(season.id);
+  }, [onSeasonChange]);
+
+  useEffect(() => {
     fetch('/api/seasons')
       .then(res => res.json())
       .then(data => {
         setSeasons(data);
         const activeSeason = data.find((s: Season) => s.isActive);
         if (activeSeason) {
-          setSelectedSeason(activeSeason);
-          onSeasonChange(activeSeason.id);
+          handleSeasonChange(activeSeason);
         }
       });
-  }, []);
+  }, [handleSeasonChange]); // Add handleSeasonChange to deps
 
   return (
     <div className="w-full overflow-auto">
@@ -38,8 +44,7 @@ export function SeasonSelector({ onSeasonChange }: SeasonSelectorProps) {
           <button
             key={season.id}
             onClick={() => {
-              setSelectedSeason(season);
-              onSeasonChange(season.id);
+              handleSeasonChange(season);
             }}
             className={cn(
               "relative rounded-md px-4 py-2 text-sm font-medium transition-all",

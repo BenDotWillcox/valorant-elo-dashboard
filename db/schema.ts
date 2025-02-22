@@ -1,6 +1,14 @@
 import { pgTable, varchar, decimal, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 
 // Types
+export type NewMap = {
+  mapName: string;
+  completedAt: Date;
+  winnerScore: number;
+  loserScore: number;
+  seasonId: number;
+};
+
 export type NewEloRating = {
   teamId: number;
   rating: number;

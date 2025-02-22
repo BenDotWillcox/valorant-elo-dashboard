@@ -75,7 +75,17 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
   // Get all selected data points
   const selectedData = selectedTeams.flatMap(teamKey => {
     const [mapName, teamName] = teamKey.split('-');
-    return data.find(t => t.teamName === teamName)?.data.filter(d => d.mapName === mapName) || [];
+    const teamData = data.find(t => t.teamName === teamName);
+    
+    if (!teamData) return [];
+
+    // For byTeam view, filter by both team and map
+    if (viewType === 'byTeam') {
+      return teamData.data.filter(d => d.mapName === mapName);
+    }
+    
+    // For byMap view, show all data points for the selected maps for this team
+    return teamData.data.filter(d => d.mapName === mapName && selectedMaps.includes(d.mapName));
   });
 
   const eloRange = getEloRange(data); // Keep global range for y-axis

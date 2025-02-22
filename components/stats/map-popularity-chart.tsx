@@ -11,7 +11,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/tooltip";
-import { Formatter, ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
+import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface MapPopularityProps {
   onDateChange: (startDate: Date, endDate: Date) => void;
@@ -22,13 +22,6 @@ interface MapPopularityProps {
   }[];
 }
 
-interface TooltipFormatterProps {
-  payload: Array<{
-    value: number;
-    name: string;
-    dataKey: string;
-  }>;
-}
 
 export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
   const [endDate, setEndDate] = useState<Date>(new Date());

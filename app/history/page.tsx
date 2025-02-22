@@ -2,10 +2,11 @@
 
 import { HistoryFilters } from "@/components/filters/history-filters";
 import { EloHistoryChart } from "@/components/charts/elo-history-chart";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TeamData, EloHistoryData } from "@/types/elo";
 import { SeasonSelector } from "@/components/season-selector";
 import { Season } from "@/db/schema";
+import { debounce } from 'lodash';
 
 type ViewType = 'byTeam' | 'byMap';
 
@@ -46,29 +47,29 @@ export default function HistoryPage() {
       });
   }, []); // Empty dependency array for initial load
 
-  // First, move the effect's logic into a memoized callback
+  // Add this effect to handle view type changes
+  useEffect(() => {
+    if (viewType === 'byMap') {
+      // When switching to byMap view, clear team selections but keep map selections
+      setSelectedTeams([]);
+    } else {
+      // When switching to byTeam view, clear map selections
+      setSelectedMaps([]);
+    }
+  }, [viewType]);
+
+  // Modify handleSeasonChange to not reset selections
   const handleSeasonChange = useCallback((data: EloHistoryData[]) => {
     const groupedData = processData(data);
     setData(groupedData);
-
-    if (viewType === 'byTeam' && selectedTeams.length > 0) {
-      const [, teamName] = selectedTeams[0].split('-');
-      const team = groupedData.find(t => t.teamName === teamName);
-      
-      if (team) {
-        const teamMaps = team.data.map(d => d.mapName);
-        const uniqueMaps = Array.from(new Set(teamMaps));
-        setSelectedMaps(uniqueMaps);
-        const newTeams = uniqueMaps.map(map => `${map}-${teamName}`);
-        setSelectedTeams(newTeams);
-      }
-    } else if (viewType === 'byMap') {
-      setSelectedMaps([]);
-      setSelectedTeams([]);
-    }
-    
     setLoading(false);
-  }, [viewType, selectedTeams]);
+  }, []);
+
+  // Add debounced callback
+  const debouncedHandleSeasonChange = useMemo(
+    () => debounce((data: EloHistoryData[]) => handleSeasonChange(data), 300),
+    [handleSeasonChange]
+  );
 
   // Then update the useEffect
   useEffect(() => {
@@ -77,12 +78,16 @@ export default function HistoryPage() {
     setLoading(true);
     fetch(`/api/elo-history?seasonId=${selectedSeason}`)
       .then(res => res.json())
-      .then(data => handleSeasonChange(data))
+      .then(data => debouncedHandleSeasonChange(data))
       .catch(error => {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
-  }, [selectedSeason, handleSeasonChange]);
+
+    return () => {
+      debouncedHandleSeasonChange.cancel();
+    };
+  }, [selectedSeason, debouncedHandleSeasonChange]);
 
   if (loading) {
     return (

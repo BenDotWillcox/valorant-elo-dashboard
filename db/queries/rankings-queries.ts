@@ -3,22 +3,30 @@ import { eloRatingsCurrentTable, teamsTable, eloRatingsTable, mapsTable, seasons
 import { desc, eq, and, sql, gte, lt } from "drizzle-orm";
 import { initializeSeasons } from "@/db/queries/elo-processor";
 
-export async function getCurrentMapRankings(mapName: string) {
-  return await db
+export async function getCurrentMapRankings(
+  mapName?: string,
+  seasonId?: number
+) {
+  const query = db
     .select({
       teamId: eloRatingsCurrentTable.teamId,
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
+      mapName: eloRatingsCurrentTable.mapName,
       rating: eloRatingsCurrentTable.effectiveRating,
+      logoUrl: teamsTable.logoUrl,
     })
     .from(eloRatingsCurrentTable)
     .innerJoin(teamsTable, eq(eloRatingsCurrentTable.teamId, teamsTable.id))
-    .where(and(
-      eq(eloRatingsCurrentTable.mapName, mapName),
-      sql`NOT (global_rating = 1000 AND map_offset = 0)` // Exclude unplayed maps
-    ))
+    .where(
+      and(
+        mapName ? eq(eloRatingsCurrentTable.mapName, mapName) : undefined,
+        seasonId ? eq(eloRatingsCurrentTable.seasonId, seasonId) : undefined
+      )
+    )
     .orderBy(desc(eloRatingsCurrentTable.effectiveRating));
+
+  return query;
 }
 
 export async function getAllMapNames() {

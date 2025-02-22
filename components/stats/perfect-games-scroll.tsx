@@ -2,19 +2,21 @@
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Image from 'next/image';
-import { TEAM_LOGOS } from '@/lib/constants/images';
+import { TEAM_LOGOS, TeamSlug } from '@/lib/constants/images';
 import { format } from 'date-fns';
 
+interface Game {
+  winnerSlug: TeamSlug;
+  winnerName: string;
+  winnerLogo: string;
+  loserName: string;
+  loserSlug: string;
+  mapName: string;
+  matchDate: string;
+}
+
 interface PerfectGamesProps {
-  data: {
-    winnerName: string;
-    winnerSlug: string;
-    winnerLogo: string;
-    loserName: string;
-    loserSlug: string;
-    mapName: string;
-    matchDate: string;
-  }[];
+  data: Game[];
 }
 
 export function PerfectGamesScroll({ data }: PerfectGamesProps) {

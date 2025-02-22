@@ -63,3 +63,5 @@ export const TEAM_LOGOS = {
   'XLG': '/images/teams/xlg_logo.png',
   'ZETA': '/images/teams/zeta_logo.png',
 } as const;
+
+export type TeamSlug = keyof typeof TEAM_LOGOS;

@@ -3,7 +3,9 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TeamLogoDot } from "@/components/charts/team-logo-dot";
 import { TEAM_COLORS, MAP_COLORS } from "@/lib/constants/colors";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TeamData, EloHistoryData, EloDataPoint } from "@/types/elo";
+/* eslint-enable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { EloTooltip } from "./elo-tooltip";
 

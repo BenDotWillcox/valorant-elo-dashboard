@@ -6,8 +6,7 @@ import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, X } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import type { TeamData } from "@/types/elo";
 import { useState } from "react";
-import { TEAM_REGIONS, getTeamRegion } from "@/lib/constants/regions";
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { getTeamRegion } from "@/lib/constants/regions";
 import { MAP_COLORS } from "@/lib/constants/colors";
 
 interface HistoryFiltersProps {

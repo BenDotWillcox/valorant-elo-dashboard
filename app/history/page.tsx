@@ -2,7 +2,7 @@
 
 import { HistoryFilters } from "@/components/filters/history-filters";
 import { EloHistoryChart } from "@/components/charts/elo-history-chart";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TeamData, EloHistoryData } from "@/types/elo";
 import { SeasonSelector } from "@/components/season-selector";
 import { Season } from "@/db/schema";
@@ -46,50 +46,43 @@ export default function HistoryPage() {
       });
   }, []); // Empty dependency array for initial load
 
-  // Separate effect for season changes
+  // First, move the effect's logic into a memoized callback
+  const handleSeasonChange = useCallback((data: EloHistoryData[]) => {
+    const groupedData = processData(data);
+    setData(groupedData);
+
+    if (viewType === 'byTeam' && selectedTeams.length > 0) {
+      const [, teamName] = selectedTeams[0].split('-');
+      const team = groupedData.find(t => t.teamName === teamName);
+      
+      if (team) {
+        const teamMaps = team.data.map(d => d.mapName);
+        const uniqueMaps = Array.from(new Set(teamMaps));
+        setSelectedMaps(uniqueMaps);
+        const newTeams = uniqueMaps.map(map => `${map}-${teamName}`);
+        setSelectedTeams(newTeams);
+      }
+    } else if (viewType === 'byMap') {
+      setSelectedMaps([]);
+      setSelectedTeams([]);
+    }
+    
+    setLoading(false);
+  }, [viewType, selectedTeams]);
+
+  // Then update the useEffect
   useEffect(() => {
-    if (!selectedSeason) return; // Skip if no season selected yet
+    if (!selectedSeason) return;
     
     setLoading(true);
     fetch(`/api/elo-history?seasonId=${selectedSeason}`)
       .then(res => res.json())
-      .then(data => {
-        const groupedData = processData(data);
-        setData(groupedData);
-
-        if (viewType === 'byTeam' && selectedTeams.length > 0) {
-          // Get the team name from the first selected team (format is "mapName-teamName")
-          const [, teamName] = selectedTeams[0].split('-');
-          const team = groupedData.find(t => t.teamName === teamName);
-          
-          if (team) {
-            // Get all maps this team played in the selected season
-            const teamMaps = team.data.map(d => d.mapName);
-            const uniqueMaps = Array.from(new Set(teamMaps));
-            
-            // Update selections
-            setSelectedMaps(uniqueMaps);
-            const newTeams = uniqueMaps.map(map => `${map}-${teamName}`);
-            setSelectedTeams(newTeams);
-          }
-        } else if (viewType === 'byMap') {
-          // Reset selections for map comparison view
-          setSelectedMaps([]);
-          setSelectedTeams([]);
-        }
-        
-        setLoading(false);
-      })
+      .then(data => handleSeasonChange(data))
       .catch(error => {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
-  }, [selectedSeason, viewType]);
-
-  // Add selectedTeams to dependency array
-  useEffect(() => {
-    // ... existing code ...
-  }, [selectedTeams, viewType, selectedSeason]); // Add all dependencies
+  }, [selectedSeason, handleSeasonChange]);
 
   if (loading) {
     return (

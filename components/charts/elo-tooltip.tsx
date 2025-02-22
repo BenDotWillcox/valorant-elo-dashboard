@@ -1,11 +1,7 @@
 import { cn } from "@/lib/utils";
 import { EloDataPoint } from "@/types/elo";
 
-interface TooltipPayload {
-  value: number;
-  name: string;
-  payload: EloDataPoint;
-}
+
 
 interface EloTooltipProps {
   active?: boolean;

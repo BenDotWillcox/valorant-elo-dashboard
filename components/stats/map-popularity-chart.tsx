@@ -22,6 +22,14 @@ interface MapPopularityProps {
   }[];
 }
 
+interface TooltipFormatterProps {
+  payload: Array<{
+    value: number;
+    name: string;
+    dataKey: string;
+  }>;
+}
+
 export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [startDate, setStartDate] = useState<Date>(subDays(endDate, 30));

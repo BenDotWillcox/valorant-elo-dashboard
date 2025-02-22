@@ -1,8 +1,7 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
-import { format } from "date-fns";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
 import { MAP_COLORS } from "@/lib/constants/colors";
 import { InfoTooltip } from "@/components/ui/tooltip";
 
@@ -16,7 +15,7 @@ interface MapRatingRangeProps {
 }
 
 export function MapRatingRangeChart({ data }: MapRatingRangeProps) {
-  const chartData = data.reduce((acc, curr) => {
+  const chartData = data.reduce((acc: Record<string, { date: string; [key: string]: string | number }>, curr) => {
     const date = curr.date.split('T')[0];
     if (!acc[date]) {
       acc[date] = { date };
@@ -24,7 +23,7 @@ export function MapRatingRangeChart({ data }: MapRatingRangeProps) {
     acc[date][`${curr.mapName}-high`] = curr.highestRating;
     acc[date][`${curr.mapName}-low`] = curr.lowestRating;
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as Record<string, { date: string; [key: string]: string | number }>);
 
   const transformedData = Object.values(chartData)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());

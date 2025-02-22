@@ -11,6 +11,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { Formatter, ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface MapPopularityProps {
   onDateChange: (startDate: Date, endDate: Date) => void;
@@ -140,10 +141,13 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                formatter={(value: any, name: any, props: any) => {
+                formatter={(value: ValueType, name: NameType, props: any): JSX.Element => {
                   if (props?.payload && Array.isArray(props.payload)) {
-                    [...props.payload].sort((a: any, b: any) => (b.value ?? 0) - (a.value ?? 0));
+                    props.payload.sort((a: { value: number | null }, b: { value: number | null }) => 
+                      ((b.value ?? 0) - (a.value ?? 0))
+                    );
                   }
+                  const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
                   return (
                     <div className="flex items-center gap-2">
                       <div 
@@ -151,11 +155,11 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
                         style={{ backgroundColor: MAP_COLORS[name as keyof typeof MAP_COLORS] }} 
                       />
                       <span>{name}:</span>
-                      <span>{value === undefined || value === null ? '0%' : `${Number(value).toFixed(1)}%`}</span>
+                      <span>{numValue === undefined || numValue === null ? '0%' : `${numValue.toFixed(1)}%`}</span>
                     </div>
                   );
                 }}
-                labelFormatter={(label: any) => format(new Date(label.split('T')[0]), "MMM d, yyyy")}
+                labelFormatter={(label: string) => format(new Date(label.split('T')[0]), "MMM d, yyyy")}
               />
             }
           />

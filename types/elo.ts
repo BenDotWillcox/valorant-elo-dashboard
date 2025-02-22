@@ -15,7 +15,7 @@ export interface EloDataPoint {
   rating: number;
   ratingDate: number;
   opponent: string;
-  score: number;
+  score: string;
   mapName: string;
   isInterpolated?: boolean;
   prevRating?: number;

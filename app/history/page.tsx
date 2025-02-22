@@ -217,8 +217,8 @@ function processData(data: EloHistoryData[]): TeamData[] {
       ratingDate: currentDate,
       opponent: item.opponentName,
       score: item.isWinner 
-        ? Number(`${item.winnerScore}`)
-        : Number(`${item.loserScore}`),
+        ? `${item.winnerScore}-${item.loserScore}`
+        : `${item.loserScore}-${item.winnerScore}`,
       mapName: item.mapName,
       prevRating: 1000,
       teamName: item.teamName,

@@ -17,17 +17,7 @@ interface EloHistoryChartProps {
 interface TooltipPayload {
   value: number;
   name: string;
-  payload: {
-    rating: number;
-    ratingDate: number;
-    opponent: string;
-    score: number;
-    mapName: string;
-    prevRating?: number;
-    isDataPoint?: boolean;
-    teamName: string;
-    opponentName: string;
-  };
+  payload: EloDataPoint;  // Use EloDataPoint directly since it has score as string
 }
 
 export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }: EloHistoryChartProps) {
@@ -36,13 +26,13 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
     coords: { x: number; y: number };
   } | null>(null);
 
-  const handlePointMouseEnter = (event: React.MouseEvent, payload: any) => {
+  const handlePointMouseEnter = (event: React.MouseEvent, payload: EloDataPoint) => {
     const rect = (event.target as Element).getBoundingClientRect();
     setHoveredPoint({
       payload: {
-        value: payload.value,
-        name: payload.name,
-        payload: payload  // The actual data point is the payload itself
+        value: payload.rating,
+        name: payload.teamName,
+        payload: payload
       },
       coords: {
         x: rect.left + rect.width / 2,
@@ -218,7 +208,7 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
                       r={Math.max(4, 6 - (selectedTeams.length * 0.4))}
                       fill={MAP_COLORS[mapName as keyof typeof MAP_COLORS]}
                       style={{ cursor: 'pointer' }}
-                      onMouseEnter={(e) => handlePointMouseEnter(e, props.payload as TooltipPayload)}
+                      onMouseEnter={(e) => handlePointMouseEnter(e, props.payload as EloDataPoint)}
                       onMouseLeave={handlePointMouseLeave}
                     />
                   )

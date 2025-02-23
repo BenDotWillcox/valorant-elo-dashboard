@@ -1,4 +1,5 @@
 import { pgTable, varchar, decimal, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // Types
 export type Season = {
@@ -35,7 +36,7 @@ export type NewEloRatingCurrent = {
 
 // Tables
 export const seasonsTable = pgTable('seasons', {
-  id: integer('id').primaryKey(),
+  id: integer('id').primaryKey().notNull().default(sql`nextval('seasons_id_seq')`),
   year: integer('year').notNull(),
   isActive: boolean('is_active').notNull().default(false),
   startDate: timestamp('start_date').notNull(),
@@ -64,9 +65,11 @@ export const mapsTable = pgTable('maps', {
 });
 
 export const eloRatingsTable = pgTable('elo_ratings', {
-  id: integer('id').primaryKey(),
+  id: integer('id').primaryKey().notNull().default(sql`nextval('elo_ratings_id_seq')`),
   teamId: integer('team_id').notNull(),
   rating: decimal('rating').notNull(),
+  globalRating: decimal('global_rating').notNull(),
+  mapOffset: decimal('map_offset').notNull(),
   effectiveRating: decimal('effective_rating').notNull(),
   ratingDate: timestamp('rating_date').notNull(),
   mapId: integer('map_id').notNull(),

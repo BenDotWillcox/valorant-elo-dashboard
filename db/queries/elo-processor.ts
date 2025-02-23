@@ -8,7 +8,7 @@ export async function getUnprocessedMaps() {
     .select()
     .from(mapsTable)
     .where(eq(mapsTable.processed, false))
-    .orderBy(mapsTable.completed_at);
+    .orderBy(mapsTable.completedAt);
 }
 
 export async function getCurrentRatings(teamId: number, mapName: string, beforeDate: Date) {
@@ -42,8 +42,8 @@ export async function processEloUpdates() {
   const unprocessedMaps = await getUnprocessedMaps();
 
   for (const map of unprocessedMaps) {
-    const winnerRatings = await getCurrentRatings(map.winner_team_id, map.map_name, map.completed_at!);
-    const loserRatings = await getCurrentRatings(map.loser_team_id, map.map_name, map.completed_at!);
+    const winnerRatings = await getCurrentRatings(map.winner_team_id, map.mapName, map.completedAt);
+    const loserRatings = await getCurrentRatings(map.loser_team_id, map.mapName, map.completedAt);
 
     const newRatings = calculateHybridEloUpdate(
       winnerRatings.globalRating,
@@ -52,27 +52,33 @@ export async function processEloUpdates() {
       loserRatings.mapOffset,
       map.winner_rounds,
       map.loser_rounds,
-      map.map_name
+      map.mapName
     );
 
     // Save historical ratings
     await db.insert(eloRatingsTable).values([
       {
         teamId: map.winner_team_id,
+        mapName: map.mapName,
+        seasonId: map.seasonId,
+        rating: String(newRatings.winner.globalRating),
         globalRating: String(newRatings.winner.globalRating),
-        mapName: map.map_name,
         mapOffset: String(newRatings.winner.mapOffset),
         effectiveRating: String(newRatings.winner.globalRating + newRatings.winner.mapOffset),
-        ratingDate: map.completed_at!,
+        ratingDate: map.completedAt,
+        mapId: map.id,
         mapPlayedId: map.id,
       },
       {
         teamId: map.loser_team_id,
+        mapName: map.mapName,
+        seasonId: map.seasonId,
+        rating: String(newRatings.loser.globalRating),
         globalRating: String(newRatings.loser.globalRating),
-        mapName: map.map_name,
         mapOffset: String(newRatings.loser.mapOffset),
         effectiveRating: String(newRatings.loser.globalRating + newRatings.loser.mapOffset),
-        ratingDate: map.completed_at!,
+        ratingDate: map.completedAt,
+        mapId: map.id,
         mapPlayedId: map.id,
       },
     ]);
@@ -162,12 +168,15 @@ async function insertSeasonResetRatings(resetDate: Date) {
   const resetRatings = teams.flatMap(team => 
     maps.map(mapName => ({
       teamId: team.id,
-      globalRating: "1000",
       mapName,
+      seasonId: resetDate.getFullYear(),
+      rating: "1000",
+      globalRating: "1000",
       mapOffset: "0",
       effectiveRating: "1000",
       ratingDate: resetDate,
-      // No mapPlayedId for reset entries
+      mapId: 0,  // Use placeholder values for these
+      mapPlayedId: 0  // since they're not real matches
     }))
   );
 
@@ -177,9 +186,9 @@ async function insertSeasonResetRatings(resetDate: Date) {
 
 async function getAllMapNames() {
   const maps = await db
-    .select({ mapName: mapsTable.map_name })
+    .select({ mapName: mapsTable.mapName })
     .from(mapsTable)
-    .groupBy(mapsTable.map_name);
+    .groupBy(mapsTable.mapName);
   
   return maps.map(m => m.mapName);
 }

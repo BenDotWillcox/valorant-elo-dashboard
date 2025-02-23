@@ -60,6 +60,7 @@ export const mapsTable = pgTable('maps', {
   loser_team_id: integer('loser_team_id').notNull(),
   winner_rounds: integer('winner_rounds').notNull(),
   loser_rounds: integer('loser_rounds').notNull(),
+  processed: boolean('processed').notNull().default(false),
 });
 
 export const eloRatingsTable = pgTable('elo_ratings', {

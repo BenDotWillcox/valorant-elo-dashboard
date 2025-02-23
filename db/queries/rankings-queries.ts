@@ -31,10 +31,10 @@ export async function getCurrentMapRankings(
 
 export async function getAllMapNames() {
   const results = await db
-    .select({ mapName: mapsTable.map_name })
+    .select({ mapName: mapsTable.mapName })
     .from(mapsTable)
-    .groupBy(mapsTable.map_name)
-    .orderBy(mapsTable.map_name);
+    .groupBy(mapsTable.mapName)
+    .orderBy(mapsTable.mapName);
   
   return results.map(r => r.mapName);
 }

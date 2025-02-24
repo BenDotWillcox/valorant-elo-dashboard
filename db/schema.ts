@@ -45,6 +45,12 @@ export type NewEloRatingCurrent = {
   updatedAt?: Date;
 };
 
+export type NewTeam = {
+  name: string;
+  slug: string;
+  logoUrl?: string;
+};
+
 // Tables
 export const seasonsTable = pgTable('seasons', {
   id: integer('id').primaryKey().notNull().default(sql`nextval('seasons_id_seq')`),

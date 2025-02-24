@@ -29,8 +29,8 @@ export type NewEloRating = {
 export type NewEloRatingCurrent = {
   teamId: number;
   mapName: string;
-  rating: number | string;
-  effectiveRating: number | string;
+  rating: string;
+  effectiveRating: string;
   seasonId: number;
   updatedAt?: Date;
 };

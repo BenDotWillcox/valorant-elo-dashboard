@@ -19,7 +19,11 @@ export const getCurrentEloRating = async (teamId: number, mapName: string) => {
 export const upsertCurrentEloRating = async (rating: NewEloRatingCurrent) => {
   return await db
     .insert(eloRatingsCurrentTable)
-    .values(rating)
+    .values({
+      ...rating,
+      rating: String(rating.rating),
+      effectiveRating: String(rating.effectiveRating)
+    })
     .onConflictDoUpdate({
       target: [eloRatingsCurrentTable.teamId, eloRatingsCurrentTable.mapName],
       set: {

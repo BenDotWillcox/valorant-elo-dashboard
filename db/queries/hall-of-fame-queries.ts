@@ -134,10 +134,10 @@ export async function getBiggestUpsets() {
       loserElo: sql<number>`(SELECT effective_rating FROM elo_ratings 
         WHERE team_id = ${mapsTable.loser_team_id} 
         AND map_played_id = ${mapsTable.id})`,
-      mapName: mapsTable.map_name,
+      mapName: mapsTable.mapName,
       winnerScore: mapsTable.winner_rounds,
       loserScore: mapsTable.loser_rounds,
-      matchDate: mapsTable.completed_at,
+      matchDate: mapsTable.completedAt,
     })
     .from(mapsTable)
     .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
@@ -236,8 +236,8 @@ export async function getPerfectGames() {
       loserTeamId: mapsTable.loser_team_id,
       loserName: sql`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
       loserSlug: sql`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
-      mapName: mapsTable.map_name,
-      matchDate: mapsTable.completed_at,
+      mapName: mapsTable.mapName,
+      matchDate: mapsTable.completedAt,
     })
     .from(mapsTable)
     .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
@@ -245,7 +245,7 @@ export async function getPerfectGames() {
       eq(mapsTable.winner_rounds, 13),
       eq(mapsTable.loser_rounds, 0)
     ))
-    .orderBy(mapsTable.completed_at);
+    .orderBy(mapsTable.completedAt);
 }
 
 export async function getMapSpecialists(limit = 10) {

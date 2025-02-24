@@ -16,6 +16,11 @@ export type NewMap = {
   winnerScore: number;
   loserScore: number;
   seasonId: number;
+  winner_team_id: number;
+  loser_team_id: number;
+  winner_rounds: number;
+  loser_rounds: number;
+  processed?: boolean;
 };
 
 export type NewEloRating = {

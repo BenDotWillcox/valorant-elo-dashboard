@@ -16,7 +16,13 @@ export const getTeamEloRatings = async (teamId: number) => {
 };
 
 export const createEloRating = async (rating: NewEloRating) => {
-  return await db.insert(eloRatingsTable).values(rating).returning();
+  return await db.insert(eloRatingsTable).values({
+    ...rating,
+    rating: String(rating.rating),
+    globalRating: String(rating.globalRating),
+    mapOffset: String(rating.mapOffset),
+    effectiveRating: String(rating.effectiveRating)
+  }).returning();
 };
 
 export const getLatestEloRating = async (teamId: number, mapName: string) => {

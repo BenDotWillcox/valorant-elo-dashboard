@@ -20,9 +20,14 @@ export type NewMap = {
 
 export type NewEloRating = {
   teamId: number;
-  rating: number;
+  mapName: string;
+  rating: string;
+  globalRating: string;
+  mapOffset: string;
+  effectiveRating: string;
   ratingDate: Date;
   mapId: number;
+  mapPlayedId: number;
   seasonId: number;
 };
 

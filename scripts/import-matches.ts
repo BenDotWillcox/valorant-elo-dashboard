@@ -43,14 +43,15 @@ async function importMatches() {
 
     await db.insert(mapsTable)
       .values({
-        map_name: record.map,
+        mapName: record.map,
+        winnerScore: parseInt(record.winning_team_score),
+        loserScore: parseInt(record.losing_team_score),
         winner_team_id: winnerTeamId,
         loser_team_id: loserTeamId,
         winner_rounds: parseInt(record.winning_team_score),
         loser_rounds: parseInt(record.losing_team_score),
-        event_name: record.event,
-        region: record.region,
-        completed_at: new Date(record.match_timestamp),
+        completedAt: new Date(record.match_timestamp),
+        seasonId: parseInt(record.league),
         processed: false,
       });
   }

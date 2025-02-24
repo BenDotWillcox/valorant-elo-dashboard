@@ -62,7 +62,7 @@ export const teamsTable = pgTable('teams', {
 });
 
 export const mapsTable = pgTable('maps', {
-  id: integer('id').primaryKey(),
+  id: integer('id').primaryKey().notNull().default(sql`nextval('maps_id_seq')`),
   mapName: varchar('map_name').notNull(),
   completedAt: timestamp('completed_at').notNull(),
   winnerScore: integer('winner_score').notNull(),

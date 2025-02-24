@@ -13,7 +13,7 @@ export async function getCurrentMapRankings(
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
       mapName: eloRatingsCurrentTable.mapName,
-      rating: eloRatingsCurrentTable.effectiveRating,
+      rating: sql<string>`CAST(${eloRatingsCurrentTable.effectiveRating} AS TEXT)`,
       logoUrl: teamsTable.logoUrl,
     })
     .from(eloRatingsCurrentTable)
@@ -46,7 +46,7 @@ export async function getEloHistory(seasonId?: number) {
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
       mapName: eloRatingsTable.mapName,
-      rating: eloRatingsTable.effectiveRating,
+      rating: sql<string>`CAST(${eloRatingsTable.effectiveRating} AS TEXT)`,
       ratingDate: eloRatingsTable.ratingDate,
       opponentName: sql<string>`
         CASE 

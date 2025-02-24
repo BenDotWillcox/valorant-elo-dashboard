@@ -175,8 +175,8 @@ async function insertSeasonResetRatings(resetDate: Date) {
       mapOffset: "0",
       effectiveRating: "1000",
       ratingDate: resetDate,
-      mapId: 0,  // Use placeholder values for these
-      mapPlayedId: 0  // since they're not real matches
+      mapId: 0,
+      mapPlayedId: 0
     }))
   );
 

@@ -1,6 +1,6 @@
 // scrape_new_maps.ts
 import axios from 'axios';
-import cheerio from 'cheerio';
+import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
 import { tournaments } from '@/lib/constants/tournaments';
 import { db } from '@/db/db';
@@ -23,7 +23,7 @@ async function scrapeRecentMaps() {
       continue;  // skip this event on error
     }
 
-    const $ = cheerio.load(eventHtml);
+    const $ = load(eventHtml);
     // Select all match links on the event page that are completed
     const matchLinks: string[] = [];
     $('a').each((_, element) => {
@@ -50,7 +50,7 @@ async function scrapeRecentMaps() {
         console.error(`Failed to fetch match page ${matchUrl}:`, err);
         continue;
       }
-      const $$ = cheerio.load(matchHtml);
+      const $$ = load(matchHtml);
 
       // Extract team IDs from team anchor hrefs (e.g., /team/1234/Team-Name)
       const teamLinks = $$('a[href*="/team/"]');

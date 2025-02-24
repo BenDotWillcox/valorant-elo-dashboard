@@ -61,7 +61,7 @@ export const seasonsTable = pgTable('seasons', {
 });
 
 export const teamsTable = pgTable('teams', {
-  id: integer('id').primaryKey(),
+  id: integer('id').primaryKey().notNull().default(sql`nextval('teams_id_seq')`),
   name: varchar('name').notNull(),
   slug: varchar('slug').notNull(),
   logoUrl: varchar('logo_url'),

@@ -11,17 +11,16 @@ export const getTeamEloRatings = async (teamId: number) => {
   return await db
     .select()
     .from(eloRatingsTable)
-    .where(eq(eloRatingsTable.teamId, teamId))
-    .orderBy(desc(eloRatingsTable.ratingDate));
+    .where(eq(eloRatingsTable.team_id, teamId))
+    .orderBy(desc(eloRatingsTable.rating_date));
 };
 
 export const createEloRating = async (rating: NewEloRating) => {
   return await db.insert(eloRatingsTable).values({
     ...rating,
-    rating: String(rating.rating),
-    globalRating: String(rating.globalRating),
-    mapOffset: String(rating.mapOffset),
-    effectiveRating: String(rating.effectiveRating)
+    global_rating: String(rating.global_rating),
+    map_offset: String(rating.map_offset),
+    effective_rating: String(rating.effective_rating)
   }).returning();
 };
 
@@ -31,10 +30,10 @@ export const getLatestEloRating = async (teamId: number, mapName: string) => {
     .from(eloRatingsTable)
     .where(
       and(
-        eq(eloRatingsTable.teamId, teamId),
-        eq(eloRatingsTable.mapName, mapName)
+        eq(eloRatingsTable.team_id, teamId),
+        eq(eloRatingsTable.map_name, mapName)
       )
     )
-    .orderBy(desc(eloRatingsTable.ratingDate))
+    .orderBy(desc(eloRatingsTable.rating_date))
     .limit(1);
 }; 

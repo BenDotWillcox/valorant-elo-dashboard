@@ -5,10 +5,19 @@ import { calculateHybridEloUpdate, DEFAULT_CONFIG } from "@/lib/elo/elo-calculat
 
 export async function getUnprocessedMaps() {
   return await db
-    .select()
+    .select({
+      id: mapsTable.id,
+      map_name: mapsTable.map_name,
+      winner_team_id: mapsTable.winner_team_id,
+      loser_team_id: mapsTable.loser_team_id,
+      winner_rounds: mapsTable.winner_rounds,
+      loser_rounds: mapsTable.loser_rounds,
+      completed_at: mapsTable.completed_at,
+      processed: mapsTable.processed
+    })
     .from(mapsTable)
     .where(eq(mapsTable.processed, false))
-    .orderBy(mapsTable.completedAt);
+    .orderBy(mapsTable.completed_at);
 }
 
 export async function getCurrentRatings(teamId: number, mapName: string, beforeDate: Date) {
@@ -20,21 +29,21 @@ export async function getCurrentRatings(teamId: number, mapName: string, beforeD
     .from(eloRatingsTable)
     .where(
       and(
-        eq(eloRatingsTable.teamId, teamId),
-        eq(eloRatingsTable.mapName, mapName),
-        lt(eloRatingsTable.ratingDate, beforeDate),
-        gte(eloRatingsTable.ratingDate, seasonResetDate)
+        eq(eloRatingsTable.team_id, teamId),
+        eq(eloRatingsTable.map_name, mapName),
+        lt(eloRatingsTable.rating_date, beforeDate),
+        gte(eloRatingsTable.rating_date, seasonResetDate)
       )
     )
-    .orderBy(desc(eloRatingsTable.ratingDate))
+    .orderBy(desc(eloRatingsTable.rating_date))
     .limit(1);
 
   return historicalElo.length ? {
-    globalRating: Number(historicalElo[0].globalRating),
-    mapOffset: Number(historicalElo[0].mapOffset)
+    global_rating: Number(historicalElo[0].global_rating),
+    map_offset: Number(historicalElo[0].map_offset)
   } : {
-    globalRating: DEFAULT_CONFIG.initialGlobal,
-    mapOffset: DEFAULT_CONFIG.initialOffset
+    global_rating: DEFAULT_CONFIG.initialGlobal,
+    map_offset: DEFAULT_CONFIG.initialOffset
   };
 }
 
@@ -42,48 +51,43 @@ export async function processEloUpdates() {
   const unprocessedMaps = await getUnprocessedMaps();
 
   for (const map of unprocessedMaps) {
-    const winnerRatings = await getCurrentRatings(map.winner_team_id, map.mapName, map.completedAt);
-    const loserRatings = await getCurrentRatings(map.loser_team_id, map.mapName, map.completedAt);
+    const season_id = map.completed_at.getFullYear();
+    
+    const winnerRatings = await getCurrentRatings(map.winner_team_id, map.map_name, map.completed_at);
+    const loserRatings = await getCurrentRatings(map.loser_team_id, map.map_name, map.completed_at);
 
     const newRatings = calculateHybridEloUpdate(
-      winnerRatings.globalRating,
-      winnerRatings.mapOffset,
-      loserRatings.globalRating,
-      loserRatings.mapOffset,
+      winnerRatings.global_rating,
+      winnerRatings.map_offset,
+      loserRatings.global_rating,
+      loserRatings.map_offset,
       map.winner_rounds,
       map.loser_rounds,
-      map.mapName
+      map.map_name
     );
 
-    // Save historical ratings
-    await db.insert(eloRatingsTable).values([
-      {
-        teamId: map.winner_team_id,
-        mapName: map.mapName,
-        seasonId: map.seasonId,
-        rating: String(newRatings.winner.globalRating),
-        globalRating: String(newRatings.winner.globalRating),
-        mapOffset: String(newRatings.winner.mapOffset),
-        effectiveRating: String(newRatings.winner.globalRating + newRatings.winner.mapOffset),
-        ratingDate: map.completedAt,
-        mapId: map.id,
-        mapPlayedId: map.id,
-      },
-      {
-        teamId: map.loser_team_id,
-        mapName: map.mapName,
-        seasonId: map.seasonId,
-        rating: String(newRatings.loser.globalRating),
-        globalRating: String(newRatings.loser.globalRating),
-        mapOffset: String(newRatings.loser.mapOffset),
-        effectiveRating: String(newRatings.loser.globalRating + newRatings.loser.mapOffset),
-        ratingDate: map.completedAt,
-        mapId: map.id,
-        mapPlayedId: map.id,
-      },
+    // Save historical ratings without the redundant rating field
+    await Promise.all([
+      db.insert(eloRatingsTable).values({
+        team_id: map.winner_team_id,
+        map_name: map.map_name,
+        global_rating: String(newRatings.winner.global_rating),
+        map_offset: String(newRatings.winner.map_offset),
+        effective_rating: String(newRatings.winner.global_rating + newRatings.winner.map_offset),
+        rating_date: map.completed_at,
+        map_played_id: map.id,
+      }),
+      db.insert(eloRatingsTable).values({ 
+        team_id: map.loser_team_id,
+        map_name: map.map_name,
+        global_rating: String(newRatings.loser.global_rating),
+        map_offset: String(newRatings.loser.map_offset),
+        effective_rating: String(newRatings.loser.global_rating + newRatings.loser.map_offset),
+        rating_date: map.completed_at,
+        map_played_id: map.id,
+      })
     ]);
 
-    // Mark map as processed
     await db.update(mapsTable)
       .set({ processed: true })
       .where(eq(mapsTable.id, map.id));
@@ -96,7 +100,7 @@ async function getCurrentSeason() {
   const activeSeason = await db
     .select()
     .from(seasonsTable)
-    .where(eq(seasonsTable.isActive, true))
+    .where(eq(seasonsTable.is_active, true))
     .limit(1);
   
   if (!activeSeason.length) {
@@ -121,7 +125,7 @@ async function updateCurrentRatings() {
         effective_rating,
         rating_date
       FROM elo_ratings
-      WHERE rating_date >= '${currentSeason.startDate.toISOString()}'
+      WHERE rating_date >= '${currentSeason.start_date.toISOString()}'
       ORDER BY team_id, map_name, rating_date DESC
     )
     INSERT INTO elo_ratings_current (
@@ -167,16 +171,14 @@ async function insertSeasonResetRatings(resetDate: Date) {
   // Insert reset ratings for each team/map combo
   const resetRatings = teams.flatMap(team => 
     maps.map(mapName => ({
-      teamId: team.id,
-      mapName,
-      seasonId: resetDate.getFullYear(),
-      rating: "1000",
-      globalRating: "1000",
-      mapOffset: "0",
-      effectiveRating: "1000",
-      ratingDate: resetDate,
-      mapId: 0,
-      mapPlayedId: 0
+      team_id: team.id,
+      map_name: mapName,
+      season_id: resetDate.getFullYear(),
+      global_rating: "1000",
+      map_offset: "0",
+      effective_rating: "1000",
+      rating_date: resetDate,
+      map_played_id: 0
     }))
   );
 
@@ -186,11 +188,11 @@ async function insertSeasonResetRatings(resetDate: Date) {
 
 async function getAllMapNames() {
   const maps = await db
-    .select({ mapName: mapsTable.mapName })
+    .select({ map_name: mapsTable.map_name })
     .from(mapsTable)
-    .groupBy(mapsTable.mapName);
+    .groupBy(mapsTable.map_name);
   
-  return maps.map(m => m.mapName);
+  return maps.map(m => m.map_name);
 }
 
 export async function createNewSeason(year: number) {
@@ -198,23 +200,23 @@ export async function createNewSeason(year: number) {
   await db
     .update(seasonsTable)
     .set({ 
-      isActive: false,
-      endDate: new Date()
+      is_active: false,
+      end_date: new Date()
     })
-    .where(eq(seasonsTable.isActive, true));
+    .where(eq(seasonsTable.is_active, true));
 
   // Create new season
   const [newSeason] = await db
     .insert(seasonsTable)
     .values({
       year,
-      startDate: new Date(`${year}-01-01`),
-      isActive: true
+      start_date: new Date(`${year}-01-01`),
+      is_active: true
     })
     .returning();
 
   // Insert baseline ratings for all teams
-  await insertSeasonResetRatings(newSeason.startDate);
+  await insertSeasonResetRatings(newSeason.start_date);
   
   return newSeason;
 }
@@ -227,15 +229,15 @@ export async function initializeSeasons() {
     await db.insert(seasonsTable).values([
       {
         year: 2023,
-        startDate: new Date('2023-01-01'),
-        endDate: new Date('2023-12-31'),
-        isActive: false
+        start_date: new Date('2023-01-01'),
+        end_date: new Date('2023-12-31'),
+        is_active: false
       },
       {
         year: 2024,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-12-31'),
-        isActive: false
+        start_date: new Date('2024-01-01'),
+        end_date: new Date('2024-12-31'),
+        is_active: false
       }
     ]);
 

@@ -3,14 +3,14 @@ import { teamsTable } from "./teams-schema";
 
 export const eloRatingsCurrentTable = pgTable("elo_ratings_current", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  teamId: bigserial("team_id", { mode: "number" })
+  team_id: bigserial("team_id", { mode: "number" })
     .notNull()
     .references(() => teamsTable.id),
-  mapName: varchar("map_name").notNull(),
+  map_name: varchar("map_name").notNull(),
   rating: numeric("rating").notNull(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 }, (table) => ({
-  teamMapUnique: uniqueIndex("team_map_unique_idx").on(table.teamId, table.mapName),
+  team_map_unique: uniqueIndex("team_map_unique_idx").on(table.team_id, table.map_name),
 }));
 
 export type EloRatingCurrent = typeof eloRatingsCurrentTable.$inferSelect;

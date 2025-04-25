@@ -6,9 +6,9 @@ export const teamsTable = pgTable("teams", {
   vlr_slug: varchar("vlr_slug"),
   name: varchar("name").notNull(),
   region: varchar("region"),
-  logoUrl: varchar("logo_url"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  logo_url: varchar("logo_url"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export type Team = typeof teamsTable.$inferSelect;

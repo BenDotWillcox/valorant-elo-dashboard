@@ -5,111 +5,111 @@ import { eloRatingsTable, teamsTable, mapsTable, seasonsTable } from "@/db/schem
 export async function getTopMapRatings(limit = 10) {
   const subquery = db
     .select({
-      teamId: eloRatingsTable.teamId,
-      mapName: eloRatingsTable.mapName,
-      seasonId: seasonsTable.id,
-      maxRating: sql`MAX(${eloRatingsTable.effectiveRating})`.as('max_rating'),
+      team_id: eloRatingsTable.team_id,
+      map_name: eloRatingsTable.map_name,
+      season_id: seasonsTable.id,
+      max_rating: sql`MAX(${eloRatingsTable.effective_rating})`.as('max_rating'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
-    .groupBy(eloRatingsTable.teamId, eloRatingsTable.mapName, seasonsTable.id)
+    .groupBy(eloRatingsTable.team_id, eloRatingsTable.map_name, seasonsTable.id)
     .as('max_ratings');
 
   return await db
     .select({
-      teamId: subquery.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      mapName: subquery.mapName,
-      rating: subquery.maxRating,
-      ratingDate: eloRatingsTable.ratingDate,
-      seasonId: subquery.seasonId,
-      seasonYear: seasonsTable.year,
+      team_id: subquery.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      map_name: subquery.map_name,
+      rating: subquery.max_rating,
+      rating_date: eloRatingsTable.rating_date,
+      season_id: subquery.season_id,
+      season_year: seasonsTable.year,
     })
     .from(subquery)
-    .innerJoin(teamsTable, eq(subquery.teamId, teamsTable.id))
+    .innerJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
     .innerJoin(eloRatingsTable, and(
-      eq(eloRatingsTable.teamId, subquery.teamId),
-      eq(eloRatingsTable.mapName, subquery.mapName),
-      eq(eloRatingsTable.effectiveRating, subquery.maxRating)
+      eq(eloRatingsTable.team_id, subquery.team_id),
+      eq(eloRatingsTable.map_name, subquery.map_name),
+      eq(eloRatingsTable.effective_rating, subquery.max_rating)
     ))
-    .innerJoin(seasonsTable, eq(subquery.seasonId, seasonsTable.id))
-    .orderBy(desc(subquery.maxRating))
+    .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
+    .orderBy(desc(subquery.max_rating))
     .limit(limit);
 }
 
 export async function getWorstMapRatings(limit = 10) {
   return await db
     .select({
-      teamId: eloRatingsTable.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      mapName: eloRatingsTable.mapName,
-      rating: sql`MIN(${eloRatingsTable.effectiveRating})`.as('rating'),
-      ratingDate: sql`${eloRatingsTable.ratingDate}`,
+      team_id: eloRatingsTable.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      map_name: eloRatingsTable.map_name,
+      rating: sql`MIN(${eloRatingsTable.effective_rating})`.as('rating'),
+      rating_date: sql`${eloRatingsTable.rating_date}`,
       seasonId: seasonsTable.id,
       seasonYear: seasonsTable.year,
     })
     .from(eloRatingsTable)
-    .innerJoin(teamsTable, eq(eloRatingsTable.teamId, teamsTable.id))
+    .innerJoin(teamsTable, eq(eloRatingsTable.team_id, teamsTable.id))
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
     .groupBy(
-      eloRatingsTable.teamId,
+      eloRatingsTable.team_id,
       teamsTable.name,
       teamsTable.slug,
-      teamsTable.logoUrl,
-      eloRatingsTable.mapName,
-      eloRatingsTable.ratingDate,
+      teamsTable.logo_url,
+      eloRatingsTable.map_name,
+      eloRatingsTable.rating_date,
       seasonsTable.id,
       seasonsTable.year
     )
-    .orderBy(asc(sql`MIN(${eloRatingsTable.effectiveRating})`))
+    .orderBy(asc(sql`MIN(${eloRatingsTable.effective_rating})`))
     .limit(limit);
 }
 
 export async function getBiggestVariances() {
   return await db
     .select({
-      teamId: eloRatingsTable.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      mapName: eloRatingsTable.mapName,
-      variance: sql`MAX(${eloRatingsTable.effectiveRating}) - MIN(${eloRatingsTable.effectiveRating})`.as('variance'),
-      maxRating: sql`MAX(${eloRatingsTable.effectiveRating})`,
-      minRating: sql`MIN(${eloRatingsTable.effectiveRating})`,
-      seasonId: seasonsTable.id,
-      seasonYear: seasonsTable.year,
+      team_id: eloRatingsTable.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      map_name: eloRatingsTable.map_name,
+      variance: sql`MAX(${eloRatingsTable.effective_rating}) - MIN(${eloRatingsTable.effective_rating})`.as('variance'),
+      max_rating: sql`MAX(${eloRatingsTable.effective_rating})`,
+      min_rating: sql`MIN(${eloRatingsTable.effective_rating})`,
+      season_id: seasonsTable.id,
+      season_year: seasonsTable.year,
     })
     .from(eloRatingsTable)
-    .innerJoin(teamsTable, eq(eloRatingsTable.teamId, teamsTable.id))
+    .innerJoin(teamsTable, eq(eloRatingsTable.team_id, teamsTable.id))
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
     .groupBy(
-      eloRatingsTable.teamId,
+      eloRatingsTable.team_id,
       teamsTable.name,
       teamsTable.slug,
-      teamsTable.logoUrl,
-      eloRatingsTable.mapName,
+      teamsTable.logo_url,
+      eloRatingsTable.map_name,
       seasonsTable.id,
       seasonsTable.year
     )
@@ -120,11 +120,11 @@ export async function getBiggestVariances() {
 export async function getBiggestUpsets() {
   return await db
     .select({
-      winnerTeamId: mapsTable.winner_team_id,
-      winnerName: teamsTable.name,
-      winnerSlug: teamsTable.slug,
-      winnerLogo: teamsTable.logoUrl,
-      winnerElo: sql<number>`(SELECT effective_rating FROM elo_ratings 
+      winner_team_id: mapsTable.winner_team_id,
+      winner_name: teamsTable.name,
+      winner_slug: teamsTable.slug,
+      winner_logo: teamsTable.logo_url,
+      winner_elo: sql<number>`(SELECT effective_rating FROM elo_ratings 
         WHERE team_id = ${mapsTable.winner_team_id} 
         AND map_played_id = ${mapsTable.id})`,
       loserTeamId: mapsTable.loser_team_id,
@@ -134,10 +134,10 @@ export async function getBiggestUpsets() {
       loserElo: sql<number>`(SELECT effective_rating FROM elo_ratings 
         WHERE team_id = ${mapsTable.loser_team_id} 
         AND map_played_id = ${mapsTable.id})`,
-      mapName: mapsTable.mapName,
-      winnerScore: mapsTable.winner_rounds,
-      loserScore: mapsTable.loser_rounds,
-      matchDate: mapsTable.completedAt,
+      map_name: mapsTable.map_name,
+      winner_score: mapsTable.winner_rounds,
+      loser_score: mapsTable.loser_rounds,
+      match_date: mapsTable.completed_at,
     })
     .from(mapsTable)
     .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
@@ -230,14 +230,14 @@ export async function getPerfectGames() {
   return await db
     .select({
       winnerTeamId: mapsTable.winner_team_id,
-      winnerName: teamsTable.name,
-      winnerSlug: teamsTable.slug,
-      winnerLogo: teamsTable.logoUrl,
-      loserTeamId: mapsTable.loser_team_id,
-      loserName: sql`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
-      loserSlug: sql`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
-      mapName: mapsTable.mapName,
-      matchDate: mapsTable.completedAt,
+      winner_name: teamsTable.name,
+      winner_slug: teamsTable.slug,
+      winner_logo: teamsTable.logo_url,
+      loser_team_id: mapsTable.loser_team_id,
+      loser_name: sql`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
+      loser_slug: sql`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
+      map_name: mapsTable.map_name,
+      match_date: mapsTable.completed_at,
     })
     .from(mapsTable)
     .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
@@ -245,174 +245,174 @@ export async function getPerfectGames() {
       eq(mapsTable.winner_rounds, 13),
       eq(mapsTable.loser_rounds, 0)
     ))
-    .orderBy(mapsTable.completedAt);
+    .orderBy(mapsTable.completed_at);
 }
 
 export async function getMapSpecialists(limit = 10) {
   const subquery = db
     .select({
-      teamId: eloRatingsTable.teamId,
-      mapName: eloRatingsTable.mapName,
-      seasonId: seasonsTable.id,
-      mapOffset: sql`MAX(${eloRatingsTable.mapOffset})`.as('max_offset'),
+      team_id: eloRatingsTable.team_id,
+      map_name: eloRatingsTable.map_name,
+      season_id: seasonsTable.id,
+      map_offset: sql`MAX(${eloRatingsTable.map_offset})`.as('max_offset'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
-    .groupBy(eloRatingsTable.teamId, eloRatingsTable.mapName, seasonsTable.id)
+    .groupBy(eloRatingsTable.team_id, eloRatingsTable.map_name, seasonsTable.id)
     .as('map_offsets');
 
   return await db
     .select({
-      teamId: subquery.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      mapName: subquery.mapName,
-      mapOffset: subquery.mapOffset,
-      seasonId: subquery.seasonId,
-      seasonYear: seasonsTable.year,
+      team_id: subquery.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      map_name: subquery.map_name,
+      map_offset: subquery.map_offset,
+      season_id: subquery.season_id,
+      season_year: seasonsTable.year,
     })
     .from(subquery)
-    .innerJoin(teamsTable, eq(subquery.teamId, teamsTable.id))
-    .innerJoin(seasonsTable, eq(subquery.seasonId, seasonsTable.id))
-    .orderBy(desc(subquery.mapOffset))
+    .innerJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
+    .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
+    .orderBy(desc(subquery.map_offset))
     .limit(limit);
 }
 
 export async function getMapStrugglers(limit = 10) {
   const subquery = db
     .select({
-      teamId: eloRatingsTable.teamId,
-      mapName: eloRatingsTable.mapName,
-      seasonId: seasonsTable.id,
-      mapOffset: sql`MIN(${eloRatingsTable.mapOffset})`.as('min_offset'),
+      team_id: eloRatingsTable.team_id,
+      map_name: eloRatingsTable.map_name,
+      season_id: seasonsTable.id,
+      map_offset: sql`MIN(${eloRatingsTable.map_offset})`.as('min_offset'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
-    .groupBy(eloRatingsTable.teamId, eloRatingsTable.mapName, seasonsTable.id)
+    .groupBy(eloRatingsTable.team_id, eloRatingsTable.map_name, seasonsTable.id)
     .as('map_offsets');
 
   return await db
     .select({
-      teamId: subquery.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      mapName: subquery.mapName,
-      mapOffset: subquery.mapOffset,
-      seasonId: subquery.seasonId,
-      seasonYear: seasonsTable.year,
+      team_id: subquery.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      map_name: subquery.map_name,
+      map_offset: subquery.map_offset,
+      season_id: subquery.season_id,
+      season_year: seasonsTable.year,
     })
     .from(subquery)
-    .innerJoin(teamsTable, eq(subquery.teamId, teamsTable.id))
-    .innerJoin(seasonsTable, eq(subquery.seasonId, seasonsTable.id))
-    .orderBy(asc(subquery.mapOffset))
+    .innerJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
+    .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
+    .orderBy(asc(subquery.map_offset))
     .limit(limit);
 }
 
 export async function getGreatestTeams(limit = 10) {
   const subquery = db
     .select({
-      teamId: eloRatingsTable.teamId,
-      seasonId: seasonsTable.id,
-      maxGlobal: sql`MAX(${eloRatingsTable.globalRating})`.as('max_global'),
-      peakDate: sql`${eloRatingsTable.ratingDate}`.as('peak_date'),
+      team_id: eloRatingsTable.team_id,
+      season_id: seasonsTable.id,
+      max_global: sql`MAX(${eloRatingsTable.global_rating})`.as('max_global'),
+      peak_date: sql`${eloRatingsTable.rating_date}`.as('peak_date'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
-    .where(sql`${eloRatingsTable.globalRating} = (
+    .where(sql`${eloRatingsTable.global_rating} = (
       SELECT MAX(global_rating) 
       FROM elo_ratings e2 
       INNER JOIN seasons s2 ON (
         e2.rating_date >= s2.start_date AND 
         (e2.rating_date < s2.end_date OR s2.end_date IS NULL)
       )
-      WHERE e2.team_id = ${eloRatingsTable.teamId}
+      WHERE e2.team_id = ${eloRatingsTable.team_id}
       AND s2.id = ${seasonsTable.id}
     )`)
-    .groupBy(eloRatingsTable.teamId, seasonsTable.id, eloRatingsTable.ratingDate)
+    .groupBy(eloRatingsTable.team_id, seasonsTable.id, eloRatingsTable.rating_date)
     .as('peak_ratings');
 
   return await db
     .select({
-      teamId: subquery.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      globalRating: subquery.maxGlobal,
-      peakDate: subquery.peakDate,
-      seasonId: subquery.seasonId,
-      seasonYear: seasonsTable.year,
+      team_id: subquery.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      global_rating: subquery.max_global,
+      peak_date: subquery.peak_date,
+      season_id: subquery.season_id,
+      season_year: seasonsTable.year,
     })
     .from(subquery)
-    .innerJoin(teamsTable, eq(subquery.teamId, teamsTable.id))
-    .innerJoin(seasonsTable, eq(subquery.seasonId, seasonsTable.id))
-    .orderBy(desc(subquery.maxGlobal))
+    .innerJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
+    .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
+    .orderBy(desc(subquery.max_global))
     .limit(limit);
 }
 
 export async function getWorstTeams(limit = 10) {
   const subquery = db
     .select({
-      teamId: eloRatingsTable.teamId,
-      seasonId: seasonsTable.id,
-      minGlobal: sql`MIN(${eloRatingsTable.globalRating})`.as('min_global'),
-      lowestDate: sql`${eloRatingsTable.ratingDate}::date`.as('lowest_date'),
+      team_id: eloRatingsTable.team_id,
+      season_id: seasonsTable.id,
+      min_global: sql`MIN(${eloRatingsTable.global_rating})`.as('min_global'),
+      lowest_date: sql`${eloRatingsTable.rating_date}::date`.as('lowest_date'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
-      gte(eloRatingsTable.ratingDate, seasonsTable.startDate),
+      gte(eloRatingsTable.rating_date, seasonsTable.start_date),
       or(
-        lt(eloRatingsTable.ratingDate, seasonsTable.endDate),
-        isNull(seasonsTable.endDate)
+        lt(eloRatingsTable.rating_date, seasonsTable.end_date),
+        isNull(seasonsTable.end_date)
       )
     ))
-    .where(sql`${eloRatingsTable.globalRating} = (
+    .where(sql`${eloRatingsTable.global_rating} = (
       SELECT MIN(global_rating) 
       FROM elo_ratings e2 
       INNER JOIN seasons s2 ON (
         e2.rating_date >= s2.start_date AND 
         (e2.rating_date < s2.end_date OR s2.end_date IS NULL)
       )
-      WHERE e2.team_id = ${eloRatingsTable.teamId}
+      WHERE e2.team_id = ${eloRatingsTable.team_id}
       AND s2.id = ${seasonsTable.id}
     )`)
-    .groupBy(eloRatingsTable.teamId, seasonsTable.id, eloRatingsTable.ratingDate)
+    .groupBy(eloRatingsTable.team_id, seasonsTable.id, eloRatingsTable.rating_date)
     .as('lowest_ratings');
 
   return await db
     .select({
-      teamId: subquery.teamId,
-      teamName: teamsTable.name,
-      teamSlug: teamsTable.slug,
-      logoUrl: teamsTable.logoUrl,
-      globalRating: subquery.minGlobal,
-      lowestDate: subquery.lowestDate,
-      seasonId: subquery.seasonId,
-      seasonYear: seasonsTable.year,
+      team_id: subquery.team_id,
+      team_name: teamsTable.name,
+      team_slug: teamsTable.slug,
+      logo_url: teamsTable.logo_url,
+      global_rating: subquery.min_global,
+      lowest_date: subquery.lowest_date,
+      season_id: subquery.season_id,
+      season_year: seasonsTable.year,
     })
     .from(subquery)
-    .innerJoin(teamsTable, eq(subquery.teamId, teamsTable.id))
-    .innerJoin(seasonsTable, eq(subquery.seasonId, seasonsTable.id))
-    .orderBy(asc(subquery.minGlobal))
+    .innerJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
+    .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
+    .orderBy(asc(subquery.min_global))
     .limit(limit);
 }
 

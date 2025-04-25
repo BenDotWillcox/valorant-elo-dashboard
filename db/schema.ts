@@ -5,17 +5,17 @@ import { sql } from "drizzle-orm";
 export type Season = {
   id: number;
   year: number;
-  isActive: boolean;
-  startDate: Date;
-  endDate?: Date;
+  is_active: boolean;
+  start_date: Date;
+  end_date?: Date;
 };
 
 export type NewMap = {
-  mapName: string;
-  completedAt: Date;
-  winnerScore: number;
-  loserScore: number;
-  seasonId: number;
+  map_name: string;
+  completed_at: Date;
+  winner_score: number;
+  loser_score: number;
+  season_id: number;
   winner_team_id: number;
   loser_team_id: number;
   winner_rounds: number;
@@ -24,56 +24,54 @@ export type NewMap = {
 };
 
 export type NewEloRating = {
-  teamId: number;
-  mapName: string;
-  rating: string;
-  globalRating: string;
-  mapOffset: string;
-  effectiveRating: string;
-  ratingDate: Date;
-  mapId: number;
-  mapPlayedId: number;
-  seasonId: number;
+  team_id: number;
+  map_name: string;
+  global_rating: string;
+  map_offset: string;
+  effective_rating: string;
+  rating_date: Date;
+  map_id: number;
+  map_played_id: number;
+  season_id: number;
 };
 
 export type NewEloRatingCurrent = {
-  teamId: number;
-  mapName: string;
-  rating: string;
-  effectiveRating: string;
-  seasonId: number;
-  updatedAt?: Date;
+  team_id: number;
+  map_name: string;
+  effective_rating: string;
+  season_id: number;
+  updated_at?: Date;
 };
 
 export type NewTeam = {
   name: string;
   slug: string;
-  logoUrl?: string;
+  logo_url?: string;
 };
 
 // Tables
 export const seasonsTable = pgTable('seasons', {
   id: integer('id').primaryKey().notNull().default(sql`nextval('seasons_id_seq')`),
   year: integer('year').notNull(),
-  isActive: boolean('is_active').notNull().default(false),
-  startDate: timestamp('start_date').notNull(),
-  endDate: timestamp('end_date'),
+  is_active: boolean('is_active').notNull().default(false),
+  start_date: timestamp('start_date').notNull(),
+  end_date: timestamp('end_date'),
 });
 
 export const teamsTable = pgTable('teams', {
   id: integer('id').primaryKey().notNull().default(sql`nextval('teams_id_seq')`),
   name: varchar('name').notNull(),
   slug: varchar('slug').notNull(),
-  logoUrl: varchar('logo_url'),
+  logo_url: varchar('logo_url'),
 });
 
 export const mapsTable = pgTable('maps', {
   id: integer('id').primaryKey().notNull().default(sql`nextval('maps_id_seq')`),
-  mapName: varchar('map_name').notNull(),
-  completedAt: timestamp('completed_at').notNull(),
-  winnerScore: integer('winner_score').notNull(),
-  loserScore: integer('loser_score').notNull(),
-  seasonId: integer('season_id').notNull(),
+  map_name: varchar('map_name').notNull(),
+  completed_at: timestamp('completed_at').notNull(),
+  winner_score: integer('winner_score').notNull(),
+  loser_score: integer('loser_score').notNull(),
+  season_id: integer('season_id').notNull(),
   winner_team_id: integer('winner_team_id').notNull(),
   loser_team_id: integer('loser_team_id').notNull(),
   winner_rounds: integer('winner_rounds').notNull(),
@@ -83,23 +81,19 @@ export const mapsTable = pgTable('maps', {
 
 export const eloRatingsTable = pgTable('elo_ratings', {
   id: integer('id').primaryKey().notNull().default(sql`nextval('elo_ratings_id_seq')`),
-  teamId: integer('team_id').notNull(),
-  rating: decimal('rating').notNull(),
-  globalRating: decimal('global_rating').notNull(),
-  mapOffset: decimal('map_offset').notNull(),
-  effectiveRating: decimal('effective_rating').notNull(),
-  ratingDate: timestamp('rating_date').notNull(),
-  mapId: integer('map_id').notNull(),
-  mapPlayedId: integer('map_played_id').notNull(),
-  mapName: varchar('map_name').notNull(),
-  seasonId: integer('season_id').notNull(),
+  team_id: integer('team_id').notNull(),
+  global_rating: decimal('global_rating').notNull(),
+  map_offset: decimal('map_offset').notNull(),
+  effective_rating: decimal('effective_rating').notNull(),
+  rating_date: timestamp('rating_date').notNull(),
+  map_played_id: integer('map_played_id').notNull(),
+  map_name: varchar('map_name').notNull(),
 });
 
 export const eloRatingsCurrentTable = pgTable('elo_ratings_current', {
-  teamId: integer('team_id').notNull(),
-  mapName: varchar('map_name').notNull(),
-  rating: decimal('rating').notNull(),
-  effectiveRating: decimal('effective_rating').notNull(),
-  seasonId: integer('season_id').notNull(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  team_id: integer('team_id').notNull(),
+  map_name: varchar('map_name').notNull(),
+  effective_rating: decimal('effective_rating').notNull(),
+  season_id: integer('season_id').notNull(),
+  updated_at: timestamp('updated_at').defaultNow(),
 }); 

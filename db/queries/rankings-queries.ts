@@ -9,32 +9,32 @@ export async function getCurrentMapRankings(
 ) {
   const query = db
     .select({
-      teamId: eloRatingsCurrentTable.teamId,
+      teamId: eloRatingsCurrentTable.team_id,
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
-      mapName: eloRatingsCurrentTable.mapName,
-      rating: sql<string>`CAST(${eloRatingsCurrentTable.effectiveRating} AS TEXT)`,
-      logoUrl: teamsTable.logoUrl,
+      mapName: eloRatingsCurrentTable.map_name,
+      rating: sql<string>`CAST(${eloRatingsCurrentTable.effective_rating} AS TEXT)`,
+      logoUrl: teamsTable.logo_url,
     })
     .from(eloRatingsCurrentTable)
-    .innerJoin(teamsTable, eq(eloRatingsCurrentTable.teamId, teamsTable.id))
+    .innerJoin(teamsTable, eq(eloRatingsCurrentTable.team_id, teamsTable.id))
     .where(
       and(
-        mapName ? eq(eloRatingsCurrentTable.mapName, mapName) : undefined,
-        seasonId ? eq(eloRatingsCurrentTable.seasonId, seasonId) : undefined
+        mapName ? eq(eloRatingsCurrentTable.map_name, mapName) : undefined,
+        seasonId ? eq(eloRatingsCurrentTable.season_id, seasonId) : undefined
       )
     )
-    .orderBy(desc(eloRatingsCurrentTable.effectiveRating));
+    .orderBy(desc(eloRatingsCurrentTable.effective_rating));
 
   return query;
 }
 
 export async function getAllMapNames() {
   const results = await db
-    .select({ mapName: mapsTable.mapName })
+    .select({ mapName: mapsTable.map_name })
     .from(mapsTable)
-    .groupBy(mapsTable.mapName)
-    .orderBy(mapsTable.mapName);
+    .groupBy(mapsTable.map_name)
+    .orderBy(mapsTable.map_name);
   
   return results.map(r => r.mapName);
 }
@@ -45,35 +45,35 @@ export async function getEloHistory(seasonId?: number) {
       teamId: teamsTable.id,
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
-      mapName: eloRatingsTable.mapName,
-      rating: sql<string>`CAST(${eloRatingsTable.effectiveRating} AS TEXT)`,
-      ratingDate: eloRatingsTable.ratingDate,
+      mapName: eloRatingsTable.map_name,
+      rating: sql<string>`CAST(${eloRatingsTable.effective_rating} AS TEXT)`,
+      ratingDate: eloRatingsTable.rating_date,
       opponentName: sql<string>`
         CASE 
-          WHEN ${mapsTable.winner_team_id} = ${eloRatingsTable.teamId} 
+          WHEN ${mapsTable.winner_team_id} = ${eloRatingsTable.team_id} 
           THEN (SELECT name FROM ${teamsTable} WHERE id = ${mapsTable.loser_team_id})
           ELSE (SELECT name FROM ${teamsTable} WHERE id = ${mapsTable.winner_team_id})
         END
       `,
-      isWinner: sql<boolean>`${mapsTable.winner_team_id} = ${eloRatingsTable.teamId}`,
+      isWinner: sql<boolean>`${mapsTable.winner_team_id} = ${eloRatingsTable.team_id}`,
       winnerScore: mapsTable.winner_rounds,
       loserScore: mapsTable.loser_rounds
     })
     .from(eloRatingsTable)
-    .innerJoin(teamsTable, eq(eloRatingsTable.teamId, teamsTable.id))
-    .innerJoin(mapsTable, eq(eloRatingsTable.mapPlayedId, mapsTable.id));
+    .innerJoin(teamsTable, eq(eloRatingsTable.team_id, teamsTable.id))
+    .innerJoin(mapsTable, eq(eloRatingsTable.map_played_id, mapsTable.id));
 
   if (seasonId) {
     const season = await db.select().from(seasonsTable).where(eq(seasonsTable.id, seasonId)).limit(1);
     if (season.length) {
       query.where(and(
-        gte(eloRatingsTable.ratingDate, season[0].startDate),
-        season[0].endDate ? lt(eloRatingsTable.ratingDate, season[0].endDate) : undefined
+        gte(eloRatingsTable.rating_date, season[0].start_date),
+        season[0].end_date ? lt(eloRatingsTable.rating_date, season[0].end_date) : undefined
       ));
     }
   }
 
-  return await query.orderBy(desc(eloRatingsTable.ratingDate));
+  return await query.orderBy(desc(eloRatingsTable.rating_date));
 }
 
 export async function getSeasons() {

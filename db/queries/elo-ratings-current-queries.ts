@@ -9,8 +9,8 @@ export const getCurrentEloRating = async (teamId: number, mapName: string) => {
     .from(eloRatingsCurrentTable)
     .where(
       and(
-        eq(eloRatingsCurrentTable.teamId, teamId),
-        eq(eloRatingsCurrentTable.mapName, mapName)
+        eq(eloRatingsCurrentTable.team_id, teamId),
+        eq(eloRatingsCurrentTable.map_name, mapName)
       )
     )
     .limit(1);
@@ -19,16 +19,12 @@ export const getCurrentEloRating = async (teamId: number, mapName: string) => {
 export const upsertCurrentEloRating = async (rating: NewEloRatingCurrent) => {
   return await db
     .insert(eloRatingsCurrentTable)
-    .values({
-      ...rating,
-      rating: String(rating.rating),
-      effectiveRating: String(rating.effectiveRating)
-    })
+    .values(rating)
     .onConflictDoUpdate({
-      target: [eloRatingsCurrentTable.teamId, eloRatingsCurrentTable.mapName],
+      target: [eloRatingsCurrentTable.team_id, eloRatingsCurrentTable.map_name],
       set: {
-        rating: rating.rating,
-        updatedAt: new Date(),
+        effective_rating: rating.effective_rating,
+        updated_at: new Date(),
       },
     })
     .returning();

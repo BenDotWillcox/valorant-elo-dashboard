@@ -5,12 +5,26 @@ import puppeteer from 'puppeteer';
 import { tournaments } from '@/lib/constants/tournaments';
 import { db } from '@/db/db';
 import { mapsTable } from '@/db/schema/maps-schema';
+import { teamsTable } from '@/db/schema/teams-schema';
+import { sql } from 'drizzle-orm';
 // import { mapsTable } from './maps-schema'; // (assuming this defines table/columns, not explicitly needed for query)
 
 const REQUEST_DELAY = 1000;  // 1 second delay between requests to avoid flooding&#8203;:contentReference[oaicite:3]{index=3}
 
 async function scrapeRecentMaps() {
   for (const [eventName, eventInfo] of Object.entries(tournaments)) {
+    // Skip completed tournaments
+    if (eventInfo.status === 'completed') {
+      console.log(`Skipping completed tournament: ${eventName}`);
+      continue;
+    }
+
+    // Skip upcoming tournaments
+    if (eventInfo.status === 'upcoming') {
+      console.log(`Skipping upcoming tournament: ${eventName}`);
+      continue;
+    }
+
     const { id: eventId, region } = eventInfo;
     const eventUrl = `https://www.vlr.gg/event/matches/${eventId}`;
     let eventHtml: string;
@@ -52,18 +66,29 @@ async function scrapeRecentMaps() {
       }
       const $$ = load(matchHtml);
 
-      // Extract team IDs from team anchor hrefs (e.g., /team/1234/Team-Name)
+      // Extract team IDs from team anchor hrefs
       const teamLinks = $$('a[href*="/team/"]');
       if (teamLinks.length < 2) {
         console.warn(`Team links not found on ${matchUrl}, skipping match.`);
         continue;
       }
-      const team1Href = $$(teamLinks[0]).attr('href') || '';
-      const team2Href = $$(teamLinks[1]).attr('href') || '';
-      const team1Id = team1Href.split('/')[2] || null;
-      const team2Id = team2Href.split('/')[2] || null;
+
+      // Get team slugs instead of raw IDs
+      const team1Slug = ($$(teamLinks[0]).attr('href') || '').split('/').pop() || '';
+      const team2Slug = ($$(teamLinks[1]).attr('href') || '').split('/').pop() || '';
+
+      // Get team IDs from database
+      const [team1Data, team2Data] = await Promise.all([
+        db.select().from(teamsTable).where(sql`vlr_slug = ${team1Slug}`).limit(1),
+        db.select().from(teamsTable).where(sql`vlr_slug = ${team2Slug}`).limit(1)
+      ]);
+
+      const team1Id = team1Data[0]?.id;
+      const team2Id = team2Data[0]?.id;
+
       if (!team1Id || !team2Id) {
-        console.warn(`Could not parse team IDs from hrefs on ${matchUrl}`);
+        console.warn(`Could not find team IDs for ${team1Slug} or ${team2Slug} in database`);
+        continue;
       }
 
       // Determine how many maps were played from the match score (e.g., "2 : 1")
@@ -89,30 +114,32 @@ async function scrapeRecentMaps() {
       // Extract match date/time and format completed_at
       let completedAt: string | null = null;
       try {
-        // Get date and time strings from the page
-        const dateText = $$('div.match-header-date').first().text().trim() || '';    // e.g. "Thursday, August 1st"
-        const timeText = $$('div.match-header-date').last().text().trim() || '';     // e.g. "3:00 AM CDT"
-        // If the site uses the same class for date and time, handle accordingly:
-        let datePart = dateText, timePart = timeText;
-        if (!timeText && dateText.match(/(AM|PM)/)) {
-          // If both date and time are in dateText (no separate timeText)
-          const match = dateText.match(/^(.+)\s+(\d+:\d+\s*(AM|PM)\s*[A-Z]+)$/);
-          if (match) {
-            datePart = match[1];
-            timePart = match[2];
-          }
+        const dateText = $$('div.match-header-date').first().text().trim();
+        const timeText = $$('div.match-header-date').last().text().trim();
+        
+        // Extract date components with regex
+        const dateMatch = dateText.match(/(\w+),\s+(\w+)\s+(\d+)/);
+        const timeMatch = timeText.match(/(\d+):(\d+)\s+(AM|PM)\s+(\w+)/);
+        
+        if (dateMatch && timeMatch) {
+          const [_, __, month, day] = dateMatch;
+          const [___, hours, minutes, meridiem, timezone] = timeMatch;
+          
+          // Convert to 24-hour format
+          let hour = parseInt(hours);
+          if (meridiem === 'PM' && hour !== 12) hour += 12;
+          if (meridiem === 'AM' && hour === 12) hour = 0;
+          
+          // Create date string in SQL format
+          const dateStr = `2025-${getMonthNumber(month)}-${day.padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minutes}:00`;
+          completedAt = dateStr;
+        } else {
+          console.warn(`Could not parse date components for ${matchUrl}`);
+          completedAt = null;
         }
-        // Infer year from event name or current year if not present
-        let year = new Date().getFullYear();
-        const yearMatch = eventName.match(/\b(20\d{2})\b/);
-        if (yearMatch) year = parseInt(yearMatch[1]);
-        // Remove ordinal suffixes from date (1st -> 1, 2nd -> 2, etc.)
-        const ordinalDate = datePart.replace(/(\d+)(st|nd|rd|th)/, '$1');
-        const dateTimeStr = `${ordinalDate}, ${year} ${timePart}`;  // e.g. "Thursday, August 1, 2025 3:00 AM CDT"
-        const dateObj = new Date(dateTimeStr);
-        completedAt = dateObj.toISOString();  // ISO format (UTC) for DB storage
-      } catch (e) {
-        console.warn(`Failed to parse date/time for match ${matchUrl}:`, e);
+      } catch (err) {
+        console.error(`Date parse error for ${matchUrl}:`, err);
+        completedAt = null;
       }
 
       // Now retrieve per-map details with reliable score extraction
@@ -204,28 +231,47 @@ async function scrapeRecentMaps() {
         if (browser) await browser.close();
       }
 
-      // Insert each map result into the database
+      // Check if map already exists before insertion
       for (const result of mapResults) {
         const { map, winner, loser, win_rounds, lose_rounds } = result;
-        if (winner === null || loser === null) {
-          // Skip if we couldn't determine winner/loser (e.g., incomplete data)
+        
+        const winnerTeamId = winner === parseInt(team1Id.toString()) ? team1Id : team2Id;
+        const loserTeamId = loser === parseInt(team1Id.toString()) ? team1Id : team2Id;
+
+        try {
+          // Check if this map result already exists
+          const existingMap = await db.select()
+            .from(mapsTable)
+            .where(sql`
+              map_name = ${map} AND 
+              winner_team_id = ${winnerTeamId} AND 
+              loser_team_id = ${loserTeamId} AND 
+              winner_rounds = ${win_rounds} AND 
+              loser_rounds = ${lose_rounds} AND 
+              event_name = ${eventName}
+            `)
+            .limit(1);
+
+          if (existingMap.length > 0) {
+            console.log(`Skipping existing map: [${eventName}] ${map}`);
           continue;
         }
-        try {
+
+          // Insert new map result
           await db.insert(mapsTable).values({
             map_name: map,
-            winner_team_id: winner,
-            loser_team_id: loser,
+            winner_team_id: winnerTeamId,
+            loser_team_id: loserTeamId,
             winner_rounds: win_rounds,
             loser_rounds: lose_rounds,
             event_name: eventName,
             region: region,
             completed_at: completedAt ? new Date(completedAt) : null
-          }).onConflictDoNothing();
+          });
           
-          console.log(`Inserted: [${eventName}] ${map} – ${winner} beat ${loser} (${win_rounds}-${lose_rounds})`);
+          console.log(`Inserted new map: [${eventName}] ${map} – ${winnerTeamId} beat ${loserTeamId} (${win_rounds}-${lose_rounds})`);
         } catch (dbErr) {
-          console.error(`DB insert error for ${eventName} ${map}:`, dbErr);
+          console.error(`DB error for ${eventName} ${map}:`, dbErr);
         }
       }
     } // matches loop
@@ -240,3 +286,13 @@ scrapeRecentMaps().then(() => {
   console.error("Unexpected error in scrapeRecentMaps:", err);
   process.exit(1);
 });
+
+// Helper function to convert month name to number
+function getMonthNumber(month: string): string {
+  const months: Record<string, string> = {
+    'January': '01', 'February': '02', 'March': '03', 'April': '04',
+    'May': '05', 'June': '06', 'July': '07', 'August': '08',
+    'September': '09', 'October': '10', 'November': '11', 'December': '12'
+  };
+  return months[month] || '01';
+}

@@ -58,14 +58,19 @@ export function calculateHybridEloUpdate(
 
   const updateFactor = marginFactor * (1 - expectedProbability);
 
+  const newWinnerGlobal = winnerGlobalRating + config.kGlobal * updateFactor;
+  const newWinnerOffset = winnerMapOffset + config.kOffset * updateFactor;
+  const newLoserGlobal = loserGlobalRating - config.kGlobal * updateFactor;
+  const newLoserOffset = loserMapOffset - config.kOffset * updateFactor;
+
   return {
     winner: {
-      globalRating: winnerGlobalRating + config.kGlobal * updateFactor,
-      mapOffset: winnerMapOffset + config.kOffset * updateFactor,
+      global_rating: newWinnerGlobal,
+      map_offset: newWinnerOffset
     },
     loser: {
-      globalRating: loserGlobalRating - config.kGlobal * updateFactor,
-      mapOffset: loserMapOffset - config.kOffset * updateFactor,
+      global_rating: newLoserGlobal,
+      map_offset: newLoserOffset
     }
   };
 } 

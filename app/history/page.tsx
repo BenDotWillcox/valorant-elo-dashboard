@@ -26,7 +26,7 @@ export default function HistoryPage() {
     fetch('/api/seasons')
       .then(res => res.json())
       .then(seasons => {
-        const activeSeason = seasons.find((s: Season) => s.isActive);
+        const activeSeason = seasons.find((s: Season) => s.is_active);
         if (activeSeason) {
           setSelectedSeason(activeSeason.id);
           // Then fetch data for active season

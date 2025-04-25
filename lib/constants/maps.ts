@@ -1,4 +1,4 @@
 export const MAP_POOL = {
-  active: ['Pearl', 'Lotus', 'Split', 'Bind', 'Haven', 'Icebox', 'Ascent'],
-  inactive: ['Breeze', 'Sunset', 'Fracture', 'Abyss']
+  active: ['Pearl', 'Lotus', 'Split', 'Fracture', 'Haven', 'Icebox', 'Ascent'],
+  inactive: ['Breeze', 'Sunset', 'Bind', 'Abyss']
 }; 

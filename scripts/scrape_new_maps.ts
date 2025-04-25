@@ -93,8 +93,8 @@ async function scrapeRecentMaps() {
 
       // Determine how many maps were played from the match score (e.g., "2 : 1")
       let mapsPlayed = 0;
-      let winnerTeamId: number | null = null;
-      let loserTeamId: number | null = null;
+      let winnerTeamId: string | null = null;
+      let loserTeamId: string | null = null;
       const scoreText = $$('.match-header').text(); // try to get the match score text
       const scoreMatch = scoreText.match(/(\d+)\s*:\s*(\d+)/);
       if (scoreMatch) {
@@ -103,11 +103,11 @@ async function scrapeRecentMaps() {
         mapsPlayed = teamAWins + teamBWins;
         // Determine match winner (for context, not directly needed for per-map but useful for logging)
         if (teamAWins > teamBWins) {
-          winnerTeamId = team1Id ? parseInt(team1Id) : null;
-          loserTeamId = team2Id ? parseInt(team2Id) : null;
+          winnerTeamId = team1Id ? team1Id.toString() : null;
+          loserTeamId = team2Id ? team2Id.toString() : null;
         } else if (teamBWins > teamAWins) {
-          winnerTeamId = team2Id ? parseInt(team2Id) : null;
-          loserTeamId = team1Id ? parseInt(team1Id) : null;
+          winnerTeamId = team2Id ? team2Id.toString() : null;
+          loserTeamId = team1Id ? team1Id.toString() : null;
         }
       }
 
@@ -204,18 +204,18 @@ async function scrapeRecentMaps() {
               let winner = null, loser = null;
               
               if (scoreA > scoreB) {
-                winner = team1Id ? parseInt(team1Id) : null;
-                loser = team2Id ? parseInt(team2Id) : null;
+                winner = team1Id ? team1Id.toString() : null;
+                loser = team2Id ? team2Id.toString() : null;
               } else if (scoreB > scoreA) {
-                winner = team2Id ? parseInt(team2Id) : null;
-                loser = team1Id ? parseInt(team1Id) : null;
+                winner = team2Id ? team2Id.toString() : null;
+                loser = team1Id ? team1Id.toString() : null;
               }
 
               if (winner && loser) {
                 mapResults.push({
                   map: mapNames[i],
-                  winner,
-                  loser,
+                  winner: parseInt(winner),
+                  loser: parseInt(loser),
                   win_rounds: Math.max(scoreA, scoreB),
                   lose_rounds: Math.min(scoreA, scoreB)
                 });

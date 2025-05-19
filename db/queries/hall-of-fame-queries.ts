@@ -127,11 +127,11 @@ export async function getBiggestUpsets() {
       winner_elo: sql<number>`(SELECT effective_rating FROM elo_ratings 
         WHERE team_id = ${mapsTable.winner_team_id} 
         AND map_played_id = ${mapsTable.id})`,
-      loserTeamId: mapsTable.loser_team_id,
-      loserName: sql<string>`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
-      loserSlug: sql<string>`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
-      loserLogo: sql<string>`(SELECT logo_url FROM teams WHERE id = maps.loser_team_id)`,
-      loserElo: sql<number>`(SELECT effective_rating FROM elo_ratings 
+      loser_team_id: mapsTable.loser_team_id,
+      loser_name: sql<string>`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
+      loser_slug: sql<string>`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
+      loser_logo: sql<string>`(SELECT logo_url FROM teams WHERE id = maps.loser_team_id)`,
+      loser_elo: sql<number>`(SELECT effective_rating FROM elo_ratings 
         WHERE team_id = ${mapsTable.loser_team_id} 
         AND map_played_id = ${mapsTable.id})`,
       map_name: mapsTable.map_name,

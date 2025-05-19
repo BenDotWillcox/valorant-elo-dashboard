@@ -10,18 +10,18 @@ import { InfoTooltip } from '@/components/ui/tooltip';
 interface UpsetCarouselProps {
   title: string;
   data: {
-    matchDate: string;
-    winnerName: string;
-    winnerSlug: string;
-    winnerLogo: string;
-    loserName: string;
-    loserSlug: string;
-    loserLogo: string;
-    mapName: string;
-    winnerScore: number;
-    loserScore: number;
-    winnerElo: number;
-    loserElo: number;
+    match_date: string;
+    winner_name: string;
+    winner_slug: string;
+    winner_logo: string;
+    loser_name: string;
+    loser_slug: string;
+    loser_logo: string;
+    map_name: string;
+    winner_score: number;
+    loser_score: number;
+    winner_elo: number;
+    loser_elo: number;
   }[];
 }
 
@@ -55,16 +55,21 @@ export function UpsetCarousel({ title, data }: UpsetCarouselProps) {
         <div className="relative px-8">
           <div className="text-center">
             <div className="text-sm text-muted-foreground mb-4">
-              {format(new Date(upset.matchDate), 'MMMM d, yyyy')}
+            {(() => {
+                const date = upset.match_date ? new Date(upset.match_date) : null;
+                return date && !isNaN(date.getTime())
+                  ? format(date, 'MMMM d, yyyy')
+                  : 'Unknown date';
+              })()}
             </div>
 
             <div className="grid grid-cols-[minmax(0,2fr)_auto_minmax(0,2fr)] items-center gap-4 mb-4">
               <div className="flex items-center justify-end gap-2 min-w-0">
-                <span className="text-lg font-medium truncate">{upset.winnerName}</span>
+                <span className="text-lg font-medium truncate">{upset.winner_name}</span>
                 <div className="relative w-8 h-8 flex-shrink-0">
                   <Image
-                    src={TEAM_LOGOS[upset.winnerSlug as keyof typeof TEAM_LOGOS] || upset.winnerLogo}
-                    alt={upset.winnerName}
+                    src={TEAM_LOGOS[upset.winner_slug as keyof typeof TEAM_LOGOS] || upset.winner_logo}
+                    alt={upset.winner_name}
                     fill
                     className="object-contain"
                   />
@@ -74,20 +79,20 @@ export function UpsetCarousel({ title, data }: UpsetCarouselProps) {
               <div className="flex items-center justify-start gap-2 min-w-0">
                 <div className="relative w-8 h-8 flex-shrink-0">
                   <Image
-                    src={TEAM_LOGOS[upset.loserSlug as keyof typeof TEAM_LOGOS] || upset.loserLogo}
-                    alt={upset.loserName}
+                    src={TEAM_LOGOS[upset.loser_slug as keyof typeof TEAM_LOGOS] || upset.loser_logo}
+                    alt={upset.loser_name}
                     fill
                     className="object-contain"
                   />
                 </div>
-                <span className="text-lg font-medium truncate">{upset.loserName}</span>
+                <span className="text-lg font-medium truncate">{upset.loser_name}</span>
               </div>
             </div>
 
-            <div className="text-lg text-muted-foreground mb-1">{upset.mapName}</div>
-            <div className="text-3xl font-bold mb-2">{upset.winnerScore} - {upset.loserScore}</div>
+            <div className="text-lg text-muted-foreground mb-1">{upset.map_name}</div>
+            <div className="text-3xl font-bold mb-2">{upset.winner_score} - {upset.loser_score}</div>
             <div className="text-sm font-medium text-purple-500">
-              {Math.round(upset.loserElo - upset.winnerElo)} Elo Difference
+              {Math.round(upset.loser_elo - upset.winner_elo)} Elo Difference
             </div>
           </div>
         </div>

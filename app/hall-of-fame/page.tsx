@@ -10,13 +10,13 @@ import { UpsetCarousel } from '@/components/stats/upset-carousel';
 import { MapPopularityChart } from '@/components/stats/map-popularity-chart';
 
 interface Team {
-  seasonYear: number;
-  teamName: string;
-  teamSlug: string;
-  logoUrl: string;
-  globalRating: number;
-  peakDate?: string;
-  lowestDate?: string;
+  season_year: number;
+  team_name: string;
+  team_slug: string;
+  logo_url: string;
+  global_rating: number;
+  peak_date?: string;
+  lowest_date?: string;
 }
 
 
@@ -102,31 +102,43 @@ export default function HallOfFamePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-auto">
         {/* Top Row - Best Performers */}
-        <StatCarousel title="Greatest Teams" tooltip="Teams that achieved the highest global Elo ratings across all seasons" data={greatestTeams} renderContent={(team) => (
-          <div className="text-center">
-            <div className="text-sm text-muted-foreground mb-4">
-              Season {team.seasonYear}
-            </div>
-            
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="relative w-8 h-8">
-                <Image
-                  src={TEAM_LOGOS[team.teamSlug as keyof typeof TEAM_LOGOS] || team.logoUrl}
-                  alt={team.teamName}
-                  fill
-                  className="object-contain"
-                />
+        <StatCarousel title="Greatest Teams" tooltip="Teams that achieved the highest global Elo ratings across all seasons" data={greatestTeams} renderContent={(team) => {
+          const globalRatingNumber = Number(team.global_rating);
+          const displayRating = !isNaN(globalRatingNumber) ? Math.round(globalRatingNumber) : 'N/A';
+          let displayPeakDate = 'Unknown date';
+          if (team.peak_date) {
+            const date = new Date(team.peak_date);
+            if (!isNaN(date.getTime())) {
+              displayPeakDate = format(date, 'MMMM d, yyyy');
+            }
+          }
+          
+          return (
+            <div className="text-center">
+              <div className="text-sm text-muted-foreground mb-4">
+                Season {team.season_year}
               </div>
-              <span className="text-xl font-medium">{team.teamName}</span>
-            </div>
+              
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="relative w-8 h-8">
+                  <Image
+                    src={TEAM_LOGOS[team.team_slug as keyof typeof TEAM_LOGOS] || team.logo_url}
+                    alt={team.team_name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-xl font-medium">{team.team_name}</span>
+              </div>
 
-            <div className="text-sm text-muted-foreground mb-1">Peak Elo</div>
-            <div className="text-3xl font-bold mb-1">{Math.round(Number(team.globalRating))}</div>
-            <div className="text-sm text-muted-foreground">
-              {team.peakDate ? format(new Date(team.peakDate), 'MMMM d, yyyy') : ''}
+              <div className="text-sm text-muted-foreground mb-1">Peak Elo</div>
+              <div className="text-3xl font-bold mb-1">{displayRating}</div>
+              <div className="text-sm text-muted-foreground">
+                {displayPeakDate}
+              </div>
             </div>
-          </div>
-        )} />
+          );
+        }} />
         <StatCarousel 
           title="Top Map Performances" 
           tooltip="Highest team ratings achieved on specific maps"
@@ -184,31 +196,43 @@ export default function HallOfFamePage() {
         )} />
 
         {/* Second Row - Worst Performers */}
-        <StatCarousel title="Worst Teams" tooltip="Teams that hit the lowest global Elo ratings across all seasons" data={worstTeams} renderContent={(team) => (
-          <div className="text-center">
-            <div className="text-sm text-muted-foreground mb-4">
-              Season {team.seasonYear}
-            </div>
-            
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="relative w-8 h-8">
-                <Image
-                  src={TEAM_LOGOS[team.teamSlug as keyof typeof TEAM_LOGOS] || team.logoUrl}
-                  alt={team.teamName}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-xl font-medium">{team.teamName}</span>
-            </div>
+        <StatCarousel title="Worst Teams" tooltip="Teams that hit the lowest global Elo ratings across all seasons" data={worstTeams} renderContent={(team) => {
+          const globalRatingNumber = Number(team.global_rating);
+          const displayRating = !isNaN(globalRatingNumber) ? Math.round(globalRatingNumber) : 'N/A';
+          let displayLowestDate = 'Unknown date';
+          if (team.lowest_date) {
+            const date = new Date(team.lowest_date.split('T')[0]); 
+            if (!isNaN(date.getTime())) {
+              displayLowestDate = format(date, 'MMMM d, yyyy');
+            }
+          }
 
-            <div className="text-sm text-muted-foreground mb-1">Lowest Elo</div>
-            <div className="text-3xl font-bold mb-1">{Math.round(Number(team.globalRating))}</div>
-            <div className="text-sm text-muted-foreground">
-              {team.lowestDate ? format(new Date(team.lowestDate.split('T')[0]), 'MMMM d, yyyy') : ''}
+          return (
+            <div className="text-center">
+              <div className="text-sm text-muted-foreground mb-4">
+                Season {team.season_year}
+              </div>
+              
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="relative w-8 h-8">
+                  <Image
+                    src={TEAM_LOGOS[team.team_slug as keyof typeof TEAM_LOGOS] || team.logo_url}
+                    alt={team.team_name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-xl font-medium">{team.team_name}</span>
+              </div>
+
+              <div className="text-sm text-muted-foreground mb-1">Lowest Elo</div>
+              <div className="text-3xl font-bold mb-1">{displayRating}</div>
+              <div className="text-sm text-muted-foreground">
+                {displayLowestDate}
+              </div>
             </div>
-          </div>
-        )} />
+          );
+        }} />
         <StatCarousel 
           title="Worst Map Performances" 
           tooltip="Lowest team ratings achieved on specific maps"

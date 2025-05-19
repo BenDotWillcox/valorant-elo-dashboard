@@ -9,7 +9,7 @@ import { teamsTable } from '@/db/schema/teams-schema';
 import { sql } from 'drizzle-orm';
 // import { mapsTable } from './maps-schema'; // (assuming this defines table/columns, not explicitly needed for query)
 
-const REQUEST_DELAY = 1000;  // 1 second delay between requests to avoid flooding&#8203;:contentReference[oaicite:3]{index=3}
+const REQUEST_DELAY = 1000;  // 1 second delay between requests to avoid flooding
 
 async function scrapeRecentMaps() {
   for (const [eventName, eventInfo] of Object.entries(tournaments)) {
@@ -55,7 +55,7 @@ async function scrapeRecentMaps() {
     });
 
     for (const matchUrl of matchLinks) {
-      await new Promise(res => setTimeout(res, REQUEST_DELAY));  // throttle requests&#8203;:contentReference[oaicite:4]{index=4}
+      await new Promise(res => setTimeout(res, REQUEST_DELAY));  // throttle requests
       let matchHtml: string;
       try {
         const res = await axios.get(matchUrl);

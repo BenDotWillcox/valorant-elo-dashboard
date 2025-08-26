@@ -8,7 +8,7 @@ export async function getTopMapRatings(limit = 10) {
       team_id: eloRatingsTable.team_id,
       map_name: eloRatingsTable.map_name,
       season_id: seasonsTable.id,
-      max_rating: sql`MAX(${eloRatingsTable.effective_rating})`.as('max_rating'),
+      max_rating: sql`MAX(${eloRatingsTable.rating})`.as('max_rating'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
@@ -38,7 +38,7 @@ export async function getTopMapRatings(limit = 10) {
     .innerJoin(eloRatingsTable, and(
       eq(eloRatingsTable.team_id, subquery.team_id),
       eq(eloRatingsTable.map_name, subquery.map_name),
-      eq(eloRatingsTable.effective_rating, subquery.max_rating)
+      eq(eloRatingsTable.rating, subquery.max_rating)
     ))
     .innerJoin(seasonsTable, eq(subquery.season_id, seasonsTable.id))
     .orderBy(desc(subquery.max_rating))
@@ -53,7 +53,7 @@ export async function getWorstMapRatings(limit = 10) {
       team_slug: teamsTable.slug,
       logo_url: teamsTable.logo_url,
       map_name: eloRatingsTable.map_name,
-      rating: sql`MIN(${eloRatingsTable.effective_rating})`.as('rating'),
+      rating: sql`MIN(${eloRatingsTable.rating})`.as('rating'),
       rating_date: sql`${eloRatingsTable.rating_date}`,
       seasonId: seasonsTable.id,
       seasonYear: seasonsTable.year,
@@ -77,7 +77,7 @@ export async function getWorstMapRatings(limit = 10) {
       seasonsTable.id,
       seasonsTable.year
     )
-    .orderBy(asc(sql`MIN(${eloRatingsTable.effective_rating})`))
+    .orderBy(asc(sql`MIN(${eloRatingsTable.rating})`))
     .limit(limit);
 }
 
@@ -89,9 +89,9 @@ export async function getBiggestVariances() {
       team_slug: teamsTable.slug,
       logo_url: teamsTable.logo_url,
       map_name: eloRatingsTable.map_name,
-      variance: sql`MAX(${eloRatingsTable.effective_rating}) - MIN(${eloRatingsTable.effective_rating})`.as('variance'),
-      max_rating: sql`MAX(${eloRatingsTable.effective_rating})`,
-      min_rating: sql`MIN(${eloRatingsTable.effective_rating})`,
+      variance: sql`MAX(${eloRatingsTable.rating}) - MIN(${eloRatingsTable.rating})`.as('variance'),
+      max_rating: sql`MAX(${eloRatingsTable.rating})`,
+      min_rating: sql`MIN(${eloRatingsTable.rating})`,
       season_id: seasonsTable.id,
       season_year: seasonsTable.year,
     })
@@ -254,7 +254,7 @@ export async function getMapSpecialists(limit = 10) {
       team_id: eloRatingsTable.team_id,
       map_name: eloRatingsTable.map_name,
       season_id: seasonsTable.id,
-      map_offset: sql`MAX(${eloRatingsTable.map_offset})`.as('max_offset'),
+      map_offset: sql`MAX(${eloRatingsTable.rating})`.as('max_offset'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
@@ -291,7 +291,7 @@ export async function getMapStrugglers(limit = 10) {
       team_id: eloRatingsTable.team_id,
       map_name: eloRatingsTable.map_name,
       season_id: seasonsTable.id,
-      map_offset: sql`MIN(${eloRatingsTable.map_offset})`.as('min_offset'),
+      map_offset: sql`MIN(${eloRatingsTable.rating})`.as('min_offset'),
     })
     .from(eloRatingsTable)
     .innerJoin(seasonsTable, and(
@@ -327,7 +327,7 @@ export async function getGreatestTeams(limit = 10) {
     .select({
       team_id: eloRatingsTable.team_id,
       season_id: seasonsTable.id,
-      max_global: sql`MAX(${eloRatingsTable.global_rating})`.as('max_global'),
+      max_global: sql`MAX(${eloRatingsTable.rating})`.as('max_global'),
       peak_date: sql`${eloRatingsTable.rating_date}`.as('peak_date'),
     })
     .from(eloRatingsTable)
@@ -338,8 +338,8 @@ export async function getGreatestTeams(limit = 10) {
         isNull(seasonsTable.end_date)
       )
     ))
-    .where(sql`${eloRatingsTable.global_rating} = (
-      SELECT MAX(global_rating) 
+    .where(sql`${eloRatingsTable.rating} = (
+      SELECT MAX(rating) 
       FROM elo_ratings e2 
       INNER JOIN seasons s2 ON (
         e2.rating_date >= s2.start_date AND 
@@ -374,7 +374,7 @@ export async function getWorstTeams(limit = 10) {
     .select({
       team_id: eloRatingsTable.team_id,
       season_id: seasonsTable.id,
-      min_global: sql`MIN(${eloRatingsTable.global_rating})`.as('min_global'),
+      min_global: sql`MIN(${eloRatingsTable.rating})`.as('min_global'),
       lowest_date: sql`${eloRatingsTable.rating_date}::date`.as('lowest_date'),
     })
     .from(eloRatingsTable)
@@ -385,7 +385,7 @@ export async function getWorstTeams(limit = 10) {
         isNull(seasonsTable.end_date)
       )
     ))
-    .where(sql`${eloRatingsTable.global_rating} = (
+    .where(sql`${eloRatingsTable.rating} = (
       SELECT MIN(global_rating) 
       FROM elo_ratings e2 
       INNER JOIN seasons s2 ON (

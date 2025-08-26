@@ -1,9 +1,20 @@
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import { eloRatingsCurrentTable, seasonsTable, teamsTable, mapsTable, playersTable, matchVetoesTable, playerMapStatsTable, matchesTable } from "./schema";
 
 config({ path: ".env.local" });
+
+const schema = {
+  eloRatingsCurrent: eloRatingsCurrentTable,
+  seasons: seasonsTable,
+  teams: teamsTable,
+  maps: mapsTable,
+  players: playersTable,
+  playerMapStats: playerMapStatsTable,
+  matchVetoes: matchVetoesTable,
+  matches: matchesTable,
+};
 
 const client = postgres(process.env.DATABASE_URL!);
 

@@ -57,7 +57,7 @@ export function MapStatsChart({ data, selectedTeams }: MapStatsChartProps) {
           <PolarGrid />
           <PolarAngleAxis 
             dataKey="map" 
-            tick={{ fill: '#888', fontSize: '12px' }}
+            tick={{ fill: '#9aa0a6', fontSize: '12px' }}
           />
           {allTeamMapData.map(team => (
             <Radar

@@ -1,62 +1,68 @@
 export const TEAM_COLORS = {
-    'Sentinels': '#d00434',
-    'Cloud9': '#28ace4',
-    'G2 Esports': '#ffffff',
-    'KRU Esports': '#ff1c8c',
-    'NRG Esports': '#ffffff',
-    'Leviatan': '#70acdc',
-    'LOUD': '#18fc04',
-    '100 Thieves': '#ea3232',
-    'MIBR': '#ffffff',
-    'Furia': '#ffffff',
-    'Evil Geniuses': '#4287f5',
-    'Karmine Corp': '#ffffff',
-    'Fnatic': '#ff5c04',
-    'Vitality': '#fffc04',
-    'Team Liquid': '#1a90ff',
-    'BBL Esports': '#c39109',
-    'Team Heretics': '#d5a938',
-    'Natus Vincere': '#ffec04',
-    'KOI': '#d2ae74',
-    'FUT Esports': '#4287f5',
-    'Gentle Mates': '#ffffff',
-    'GIANTX': '#4287f5',
-    'EDward Gaming': '#ffffff',
-    'Dragon Ranger Gaming': '#76f35d',
-    'Bilibili': '#36d0f4',
-    'Nova Esports': '#a854bc',
-    'Wolves Esports': '#faa61a',
-    'FunPlus Phoenix': '#ff0404',
-    'Trace Esports': '#3f446a',
-    'Titan Esports Club': '#e02c1c',
-    'JD Gaming': '#d0142c',
-    'All Gamers': '#da251c',
-    'TYLOO': '#d63831',
-    'Gen.G': '#ac8c04',
-    'Global Esports': '#124091',
-    'T1': '#e8042c',
-    'Team Secret': '#ffffff',
-    'BLEED': '#c3252d',
-    'DetonatioN FocusMe': '#2364ec',
-    'DRX': '#0f03a3',
-    'Paper Rex': 'purple',
-    'Rex Regum Qeon': '#f3aa36',
-    'Talon Esports': '#e80444',
-    'ZETA DIVISION': '#ffffff'
+    'Sentinels': '#d00434', // Red  
+    'Cloud9': '#28ace4', // Blue
+    'G2 Esports': '#ffffff', // White
+    'KRU Esports': '#ff1c8c', // Pink
+    'NRG Esports': '#ffffff', // White
+    'Leviatan': '#70acdc', // Light Blue
+    'LOUD': '#18fc04', // Green
+    '100 Thieves': '#ea3232', // Red
+    'MIBR': '#ffffff', // White
+    'Furia': '#ffffff', // White
+    'Evil Geniuses': '#4287f5', // Blue
+    'Karmine Corp': '#ffffff', // White
+    'Fnatic': '#ff5c04', // Orange
+    'Vitality': '#fffc04', // Yellow
+    'Team Liquid': '#1a90ff', // Blue
+    'BBL Esports': '#c39109', // Yellow
+    'Team Heretics': '#d5a938', // Light Yellow
+    'Natus Vincere': '#ffec04', // Yellow
+    'KOI': '#d2ae74', // Light Brown
+    'FUT Esports': '#4287f5', // Blue
+    'Gentle Mates': '#ffffff', // White
+    'GIANTX': '#4287f5', // Blue
+    'Apeks': '#ffa500', // Orange
+    'EDward Gaming': '#ffffff', // White
+    'Dragon Ranger Gaming': '#76f35d', // Light Green
+    'Bilibili': '#36d0f4', // Light Blue
+    'Nova Esports': '#a854bc', // Purple
+    'Wolves Esports': '#faa61a', // Orange
+    'FunPlus Phoenix': '#ff0404', // Red
+    'Trace Esports': '#3f446a', // Dark Blue
+    'Titan Esports Club': '#e02c1c', // Red
+    'JD Gaming': '#d0142c', // Red
+    'All Gamers': '#da251c', // Red
+    'TYLOO': '#d63831', // Red
+    'Gen.G': '#ac8c04', // Yellow
+    'Global Esports': '#124091', // Blue
+    'T1': '#e8042c', // Red
+    'Team Secret': '#ffffff', // White
+    'BLEED': '#c3252d', // Red
+    'DetonatioN FocusMe': '#2364ec', // Blue
+    'DRX': '#0f03a3', // Blue
+    'Paper Rex': '#e653e6', // Purple
+    'Rex Regum Qeon': '#f3aa36', // Yellow
+    'Talon Esports': '#e80444', // Red
+    'ZETA DIVISION': '#ffffff', // White
+    'Nongshim RedForce': '#d00434', // Red
+    'Xi Lai Gaming': '#1EF5BF', // Teal
+    '2Game Esports': '#9d05f5', // Purple
+    'BOOM Esports': '#8a1616', // Red
 }
 
 export const MAP_COLORS = {
-  'Abyss': '#FFFFFF',
-  'Ascent': '#1f77b4',
-  'Bind': '#ff7f0e',
-  'Breeze': '#2ca02c',
-  'Haven': '#8c564b',
-  'Icebox': '#e377c2',
-  'Lotus': '#9467bd',
-  'Split': '#7c7d7c',
-  'Sunset': '#d62728',
-  'Pearl': '#1EF5BF',
-  'Fracture': '#E2A735'
+  'Abyss': 'hsl(var(--foreground))',
+  'Ascent': '#1f77b4', // Blue
+  'Bind': '#ff7f0e', // Orange
+  'Breeze': '#2ca02c', // Green
+  'Corrode': '#a87474', // Light Brown
+  'Haven': '#784338', // Dark Brown
+  'Icebox': '#e377c2', // Pink
+  'Lotus': '#9467bd', // Purple
+  'Split': '#7c7d7c', // Gray
+  'Sunset': '#d62728', // Red 
+  'Pearl': '#1EF5BF', // Teal
+  'Fracture': '#E2A735' // Yellow
 } as const;
 
 

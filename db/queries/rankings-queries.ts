@@ -1,7 +1,7 @@
 import { db } from "@/db/db";
 import { eloRatingsCurrentTable, teamsTable, eloRatingsTable, mapsTable, seasonsTable } from "@/db/schema";
-import { desc, eq, and, sql, gte, lt } from "drizzle-orm";
-import { initializeSeasons } from "@/db/queries/elo-processor";
+import { desc, eq, and, sql, gte, lt, or, inArray } from "drizzle-orm";
+import { initializeSeasons } from "@/db/elo/elo-processor";
 
 export async function getCurrentMapRankings(
   mapName?: string,
@@ -13,7 +13,7 @@ export async function getCurrentMapRankings(
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
       mapName: eloRatingsCurrentTable.map_name,
-      rating: sql<string>`CAST(${eloRatingsCurrentTable.effective_rating} AS TEXT)`,
+      rating: sql<string>`CAST(${eloRatingsCurrentTable.rating} AS TEXT)`,
       logoUrl: teamsTable.logo_url,
     })
     .from(eloRatingsCurrentTable)
@@ -24,7 +24,7 @@ export async function getCurrentMapRankings(
         seasonId ? eq(eloRatingsCurrentTable.season_id, seasonId) : undefined
       )
     )
-    .orderBy(desc(eloRatingsCurrentTable.effective_rating));
+    .orderBy(desc(eloRatingsCurrentTable.rating));
 
   return query;
 }
@@ -39,14 +39,19 @@ export async function getAllMapNames() {
   return results.map(r => r.mapName);
 }
 
-export async function getEloHistory(seasonId?: number) {
+export type TeamMapPair = {
+  teamId: number;
+  mapName: string;
+};
+
+export async function getEloHistory(seasonId: number, filters?: { teamId?: number, teamMapPairs?: TeamMapPair[] }) {
   const query = db
     .select({
       teamId: teamsTable.id,
       teamName: teamsTable.name,
       teamSlug: teamsTable.slug,
       mapName: eloRatingsTable.map_name,
-      rating: sql<string>`CAST(${eloRatingsTable.effective_rating} AS TEXT)`,
+      rating: eloRatingsTable.rating,
       ratingDate: eloRatingsTable.rating_date,
       opponentName: sql<string>`
         CASE 
@@ -63,15 +68,31 @@ export async function getEloHistory(seasonId?: number) {
     .innerJoin(teamsTable, eq(eloRatingsTable.team_id, teamsTable.id))
     .innerJoin(mapsTable, eq(eloRatingsTable.map_played_id, mapsTable.id));
 
-  if (seasonId) {
-    const season = await db.select().from(seasonsTable).where(eq(seasonsTable.id, seasonId)).limit(1);
-    if (season.length) {
-      query.where(and(
-        gte(eloRatingsTable.rating_date, season[0].start_date),
-        season[0].end_date ? lt(eloRatingsTable.rating_date, season[0].end_date) : undefined
-      ));
-    }
+  const season = await db.select().from(seasonsTable).where(eq(seasonsTable.id, seasonId)).limit(1);
+  if (!season.length) {
+    return [];
   }
+  
+  const conditions = [
+    gte(eloRatingsTable.rating_date, season[0].start_date),
+    season[0].end_date ? lt(eloRatingsTable.rating_date, season[0].end_date) : undefined,
+  ];
+
+  if (filters?.teamId) {
+    conditions.push(eq(eloRatingsTable.team_id, filters.teamId));
+  }
+
+  if (filters?.teamMapPairs && filters.teamMapPairs.length > 0) {
+    const pairConditions = filters.teamMapPairs.map(pair => 
+      and(
+        eq(eloRatingsTable.team_id, pair.teamId),
+        eq(eloRatingsTable.map_name, pair.mapName)
+      )
+    );
+    conditions.push(or(...pairConditions));
+  }
+
+  query.where(and(...conditions.filter(c => c !== undefined)));
 
   return await query.orderBy(desc(eloRatingsTable.rating_date));
 }

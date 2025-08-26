@@ -1,4 +1,4 @@
-import { createNewSeason } from "@/db/queries/elo-processor";
+import { createNewSeason } from "@/db/elo/elo-processor";
 
 const year = process.argv[2] ? parseInt(process.argv[2]) : new Date().getFullYear();
 

@@ -1,5 +1,5 @@
-import { processEloUpdates } from "@/db/queries/elo-processor";
-import { initializeSeasons } from "@/db/queries/elo-processor";
+import { processEloUpdates } from "@/db/elo/elo-processor";
+import { initializeSeasons } from "@/db/elo/elo-processor";
 
 async function main() {
   try {

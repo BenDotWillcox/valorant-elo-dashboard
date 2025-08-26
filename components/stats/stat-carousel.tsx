@@ -22,18 +22,18 @@ export function StatCarousel<T>({ title, tooltip, data, renderContent }: StatCar
   const item = data[currentIndex];
 
   return (
-    <div className="bg-card rounded-lg overflow-hidden shadow-lg">
-      <div className="px-4 py-2 bg-muted border-b flex items-center justify-between">
+    <div className="bg-card/70 backdrop-blur rounded-xl overflow-hidden shadow-lg border border-border/60">
+      <div className="px-4 py-2 border-b border-border/60 bg-gradient-to-r from-fuchsia-500/15 via-transparent to-cyan-400/15 flex items-center justify-between">
         <div className="flex items-center justify-center">
           <h3 className="font-semibold">{title}</h3>
           {tooltip && <InfoTooltip content={tooltip} />}
         </div>
-        <div className="text-lg font-bold text-purple-500">#{currentIndex + 1}</div>
+        <div className="text-lg font-bold bg-gradient-to-r from-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">#{currentIndex + 1}</div>
       </div>
       <div className="relative p-6">
         <button 
           onClick={prev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-muted hover:bg-accent"
+          className="absolute left-2 top-1/2 -translate-y-1/2 p-1 rounded-full border border-border/60 bg-background/60 hover:bg-foreground/10 backdrop-blur"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -46,7 +46,7 @@ export function StatCarousel<T>({ title, tooltip, data, renderContent }: StatCar
 
         <button 
           onClick={next}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-muted hover:bg-accent"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full border border-border/60 bg-background/60 hover:bg-foreground/10 backdrop-blur"
         >
           <ChevronRight className="h-5 w-5" />
         </button>

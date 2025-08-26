@@ -1,4 +1,4 @@
-import { initializeSeasons } from "@/db/queries/elo-processor";
+import { initializeSeasons } from "@/db/elo/elo-processor";
 
 initializeSeasons().then(() => {
   console.log("Seasons initialized");

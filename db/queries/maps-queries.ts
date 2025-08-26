@@ -1,39 +1,31 @@
 import { db } from "@/db/db";
-import { mapsTable, teamsTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { NewMap } from "@/db/schema";
+import { mapsTable, NewMap, Map } from "@/db/schema/maps-schema";
+import { eq, and } from "drizzle-orm";
 
-export const getMaps = async () => {
+// CREATE
+export async function createMap(data: NewMap): Promise<Map[]> {
+  return await db.insert(mapsTable).values(data).returning();
+}
+
+// READ
+export async function getMapById(id: number): Promise<Map[]> {
+  return await db.select().from(mapsTable).where(eq(mapsTable.id, id));
+}
+
+export async function getMapsByMatchId(matchId: number): Promise<Map[]> {
+  return await db.select().from(mapsTable).where(eq(mapsTable.match_id, matchId));
+}
+
+export async function getAllMaps(): Promise<Map[]> {
   return await db.select().from(mapsTable);
-};
+}
 
-export const getMapById = async (id: number) => {
-  return await db
-    .select()
-    .from(mapsTable)
-    .where(eq(mapsTable.id, id))
-    .limit(1);
-};
+// UPDATE
+export async function updateMap(id: number, data: Partial<NewMap>): Promise<Map[]> {
+  return await db.update(mapsTable).set(data).where(eq(mapsTable.id, id)).returning();
+}
 
-export const createMap = async (map: NewMap) => {
-  return await db.insert(mapsTable).values(map).returning();
-};
-
-export const updateMap = async (id: number, map: Partial<NewMap>) => {
-  return await db
-    .update(mapsTable)
-    .set(map)
-    .where(eq(mapsTable.id, id))
-    .returning();
-};
-
-export const deleteMap = async (id: number) => {
+// DELETE
+export async function deleteMap(id: number): Promise<Map[]> {
   return await db.delete(mapsTable).where(eq(mapsTable.id, id)).returning();
-};
-
-export const getUnprocessedMaps = async () => {
-  return await db
-    .select()
-    .from(mapsTable)
-    .where(eq(mapsTable.processed, false));
-}; 
+} 

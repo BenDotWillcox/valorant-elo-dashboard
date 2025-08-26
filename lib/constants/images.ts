@@ -3,6 +3,7 @@ export const MAP_IMAGES = {
   'Ascent': '/images/maps/ascent_image.PNG',
   'Bind': '/images/maps/bind_image.PNG',
   'Breeze': '/images/maps/breeze_image.PNG',
+  'Corrode': '/images/maps/corrode_image.PNG',
   'Haven': '/images/maps/haven_image.PNG',
   'Icebox': '/images/maps/icebox_image.PNG',
   'Lotus': '/images/maps/lotus_image.PNG',

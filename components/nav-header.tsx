@@ -6,7 +6,7 @@ import { ThemeToggle } from "./ui/theme-toggle"
 import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
-import { useIsMobile } from "@/hooks/use-mobile"
+// import { useIsMobile } from "@/hooks/use-mobile"
 import {
   Sheet,
   SheetContent,

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { DndContext, DragEndEvent, useDraggable, useDroppable, DragOverlay, Active } from '@dnd-kit/core';
 import Image from 'next/image';
-import { TEAM_LOGOS } from "@/lib/constants/images";
+
 
 interface TeamItem {
   id: string;

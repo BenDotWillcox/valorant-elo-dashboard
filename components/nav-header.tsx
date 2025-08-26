@@ -50,8 +50,8 @@ const navItems = [
   },
 ]
 
-const glowVariants = {
-  initial: { opacity: 0, scale: 0.9 },
+/*const glowVariants = {
+  #initial: { opacity: 0, scale: 0.9 },
   hover: {
     opacity: 1,
     scale: 1.15,
@@ -61,6 +61,7 @@ const glowVariants = {
     },
   },
 }
+*/
 
 const itemVariants = {
   initial: { rotateX: 0, opacity: 1 },
@@ -138,7 +139,7 @@ function DesktopNav({ pathname }: { pathname: string }) {
                 className="block absolute inset-0 flex items-center justify-center"
                 variants={backVariants}
                 transition={sharedTransition}
-                style={{ transformOrigin: "center top", rotateX: 90 as any }}
+                style={{ transformOrigin: "center top", rotateX: 90 }}
               >
                 {item.name}
               </motion.span>
@@ -188,7 +189,7 @@ function MobileNav({ pathname }: { pathname: string }) {
 export function NavHeader() {
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
-  const isMobile = useIsMobile()
+  //const isMobile = useIsMobile()
 
   useEffect(() => {
     const handleScroll = () => {

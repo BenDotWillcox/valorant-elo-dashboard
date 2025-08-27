@@ -43,8 +43,8 @@ export default function PredictionsPage() {
         setEloData(data);
         const teams = Array.from(new Set(data.map((d: TeamElo) => d.teamSlug))).sort();
         if (teams.length >= 2) {
-          setTeam1(teams[0]);
-          setTeam2(teams[1]);
+          setTeam1(teams[0] as string);
+          setTeam2(teams[1] as string);
         }
         setLoading(false);
       });

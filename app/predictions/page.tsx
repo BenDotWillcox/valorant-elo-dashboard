@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { getOptimalMapSelection } from '@/lib/predictions/map-selection';
 import { MapSelectionProcess } from "@/components/predictions/map-selection-process";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import Image from "next/image";
+import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from '@/lib/constants/tournaments';
+import { Label } from '@/components/ui/label';
 
 interface TeamElo {
   teamId: number;
@@ -30,6 +32,7 @@ export default function PredictionsPage() {
   const [eloData, setEloData] = useState<TeamElo[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapBans, setMapBans] = useState<{ team1: string[], team2: string[] }>({ team1: [], team2: [] });
+  const [showUpcomingTournamentOnly, setShowUpcomingTournamentOnly] = useState(false);
 
   const requiredMaps = matchType === 'BO3' ? 3 : 5;
 
@@ -38,11 +41,23 @@ export default function PredictionsPage() {
       .then(res => res.json())
       .then(data => {
         setEloData(data);
+        const teams = Array.from(new Set(data.map((d: TeamElo) => d.teamSlug))).sort();
+        if (teams.length >= 2) {
+          setTeam1(teams[0]);
+          setTeam2(teams[1]);
+        }
         setLoading(false);
       });
   }, []);
 
-  const availableTeams = Array.from(new Set(eloData.map(d => d.teamSlug))).sort();
+  const availableTeams = useMemo(() => {
+    const allTeams = Array.from(new Set(eloData.map(d => d.teamSlug))).sort();
+    if (showUpcomingTournamentOnly) {
+      return allTeams.filter(teamSlug => UPCOMING_TOURNAMENT_QUALIFIED_TEAMS.includes(teamSlug));
+    }
+    return allTeams;
+  }, [eloData, showUpcomingTournamentOnly]);
+
   const availableMaps = autoMapSelection 
     ? MAP_POOL.active
     : [...MAP_POOL.active, ...MAP_POOL.inactive];
@@ -148,6 +163,16 @@ export default function PredictionsPage() {
         <CardHeader className="pb-3">
           <div className="flex flex-col items-center space-y-4">
             <CardTitle>Match Parameters</CardTitle>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="upcoming-tournament-only"
+                checked={showUpcomingTournamentOnly}
+                onCheckedChange={(checked) => setShowUpcomingTournamentOnly(Boolean(checked))}
+              />
+              <Label htmlFor="upcoming-tournament-only">{UPCOMING_TOURNAMENT_NAME} Teams Only</Label>
+            </div>
+
             {/* Team VS Display */}
             <div className="flex flex-col sm:flex-row items-center w-full gap-4">
               <div className="flex-1 flex flex-col sm:flex-row sm:justify-end items-center gap-3">

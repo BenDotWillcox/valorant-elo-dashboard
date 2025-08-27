@@ -13,7 +13,8 @@
     "backfill:maps": "npx tsx --require dotenv/config scripts/backfill_maps.ts",
     "scrape:new": "tsx scripts/scrape_new_maps.ts",
     "db:init-seasons": "tsx --require dotenv/config scripts/init-seasons.ts",
-    "elo:process": "tsx --require dotenv/config scripts/process-elo.ts"
+    "elo:process": "tsx --require dotenv/config scripts/process-elo.ts",
+    "analysis:pick-ban": "tsx --require dotenv/config scripts/process-pick-ban-analysis.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -7,6 +7,9 @@ import { TeamData, EloHistoryData } from "@/types/elo";
 import { SeasonSelector } from "@/components/season-selector";
 import { Season } from "@/db/schema";
 import { debounce } from 'lodash';
+import { getTeamRegion } from "@/lib/constants/regions";
+import { UPCOMING_TOURNAMENT_QUALIFIED_TEAMS, UPCOMING_TOURNAMENT_NAME } from "@/lib/constants/tournaments";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type ViewType = 'byTeam' | 'byMap';
 
@@ -18,6 +21,9 @@ export default function HistoryPage() {
   const [data, setData] = useState<TeamData[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeason, setSelectedSeason] = useState<number>();
+  const [seasons, setSeasons] = useState<Season[]>([]);
+  const [showUpcomingTournamentOnly, setShowUpcomingTournamentOnly] = useState(false);
+  const isMobile = useIsMobile();
 
   // Fetch initial data with current season
   useEffect(() => {
@@ -25,8 +31,9 @@ export default function HistoryPage() {
     // First get seasons to find active season
     fetch('/api/seasons')
       .then(res => res.json())
-      .then(seasons => {
-        const activeSeason = seasons.find((s: Season) => s.is_active);
+      .then(seasonsData => {
+        setSeasons(seasonsData);
+        const activeSeason = seasonsData.find((s: Season) => s.is_active);
         if (activeSeason) {
           setSelectedSeason(activeSeason.id);
           // Then fetch data for active season
@@ -38,6 +45,26 @@ export default function HistoryPage() {
         if (data) {
           const groupedData = processData(data);
           setData(groupedData);
+
+          // Default selection on initial load for 'byTeam' view
+          if (viewType === 'byTeam') {
+            const teamNameToSelect = "100 Thieves";
+            let teamToSelect = groupedData.find(t => t.teamName === teamNameToSelect);
+
+            // Fallback to the first team alphabetically if the preferred team isn't found
+            if (!teamToSelect && groupedData.length > 0) {
+              teamToSelect = [...groupedData].sort((a, b) => a.teamName.localeCompare(b.teamName))[0];
+            }
+
+            if (teamToSelect) {
+              const teamMaps = teamToSelect.data.map(d => d.mapName);
+              const uniqueMaps = Array.from(new Set(teamMaps));
+              
+              setSelectedMaps(uniqueMaps);
+              const newTeams = uniqueMaps.map(map => `${map}-${teamToSelect.teamName}`);
+              setSelectedTeams(newTeams);
+            }
+          }
         }
         setLoading(false);
       })
@@ -49,14 +76,61 @@ export default function HistoryPage() {
 
   // Add this effect to handle view type changes
   useEffect(() => {
+    const qualifiedTeamsData = data.filter(team => UPCOMING_TOURNAMENT_QUALIFIED_TEAMS.includes(team.teamSlug));
+    const sourceData = showUpcomingTournamentOnly ? qualifiedTeamsData : data;
+
     if (viewType === 'byMap') {
-      // When switching to byMap view, clear team selections but keep map selections
-      setSelectedTeams([]);
-    } else {
-      // When switching to byTeam view, clear map selections
+      const mapToSelect = 'Haven';
+      
+      if (showUpcomingTournamentOnly) {
+          const qualifiedTeamsOnMap = sourceData.filter(team => team.data.some(d => d.mapName === mapToSelect));
+
+          if (qualifiedTeamsOnMap.length > 0) {
+              setSelectedMaps([mapToSelect]);
+              setSelectedTeams(qualifiedTeamsOnMap.map(team => `${mapToSelect}-${team.teamName}`));
+          } else {
+              setSelectedTeams([]);
+              setSelectedMaps([]);
+          }
+      } else {
+          // When switching to byMap view, default to Haven and Americas
+          const regionToSelect = 'Americas';
+          
+          const teamsInRegion = sourceData
+            .filter(team => getTeamRegion(team.teamSlug) === regionToSelect)
+            .filter(team => team.data.some(d => d.mapName === mapToSelect));
+
+          if (teamsInRegion.length > 0) {
+            setSelectedMaps([mapToSelect]);
+            setSelectedTeams(teamsInRegion.map(team => `${mapToSelect}-${team.teamName}`));
+          } else {
+            // Fallback if no teams in Americas played on Haven
+            setSelectedTeams([]);
+            setSelectedMaps([]);
+          }
+      }
+    } else { // byTeam
+      // When switching to byTeam view, clear map selections and repopulate with default
       setSelectedMaps([]);
+      
+      const teamNameToSelect = "100 Thieves";
+      let teamToSelect = sourceData.find(t => t.teamName === teamNameToSelect);
+
+      if (!teamToSelect && sourceData.length > 0) {
+        teamToSelect = [...sourceData].sort((a, b) => a.teamName.localeCompare(b.teamName))[0];
+      }
+
+      if (teamToSelect) {
+        const teamMaps = teamToSelect.data.map(d => d.mapName);
+        const uniqueMaps = Array.from(new Set(teamMaps));
+        
+        setSelectedMaps(uniqueMaps);
+        setSelectedTeams(uniqueMaps.map(map => `${map}-${teamToSelect.teamName}`));
+      } else {
+        setSelectedTeams([]);
+      }
     }
-  }, [viewType]);
+  }, [viewType, data, showUpcomingTournamentOnly]);
 
   // Modify handleSeasonChange to not reset selections
   const handleSeasonChange = useCallback((data: EloHistoryData[]) => {
@@ -89,6 +163,49 @@ export default function HistoryPage() {
     };
   }, [selectedSeason, debouncedHandleSeasonChange]);
 
+  const generateChartDescription = () => {
+    const season = seasons.find(s => s.id === selectedSeason);
+    const seasonName = season ? season.year : '';
+
+    if (viewType === 'byTeam') {
+        const teamNames = Array.from(new Set(selectedTeams.map(t => t.split('-')[1])));
+        if (teamNames.length === 0) return 'Select a team to get started';
+        return `${seasonName} - ${teamNames.join(', ')}`;
+    }
+
+    if (viewType === 'byMap') {
+        if (selectedMaps.length === 0) return 'Select a map to get started';
+
+        if (showUpcomingTournamentOnly) {
+            return `${seasonName} - ${selectedMaps.join(', ')} - ${UPCOMING_TOURNAMENT_NAME} Teams Only`;
+        }
+
+        const selectedRegions = Array.from(new Set(selectedTeams.map(teamKey => {
+            const teamName = teamKey.split('-')[1];
+            const team = data.find(t => t.teamName === teamName);
+            return team ? getTeamRegion(team.teamSlug) : 'Unknown';
+        }))).sort();
+
+        return `${seasonName} - ${selectedMaps.join(', ')} - ${selectedRegions.join(', ')}`;
+    }
+
+    return '';
+  };
+
+  const chartDescription = useMemo(generateChartDescription, [
+    viewType,
+    selectedTeams,
+    selectedMaps,
+    seasons,
+    selectedSeason,
+    data,
+    showUpcomingTournamentOnly,
+  ]);
+
+  const mainContentClass = isMobile 
+    ? "px-4 flex-1" 
+    : `pr-4 transition-all duration-300 flex-1 ${isCollapsed ? 'pl-16' : 'pl-80'}`;
+
   if (loading) {
     return (
       <div className="relative">
@@ -97,31 +214,37 @@ export default function HistoryPage() {
             <div className="w-64 opacity-0 flex-shrink-0">
               {/* Empty div to balance layout */}
             </div>
-            <h1 className="flex-1 text-2xl md:text-4xl font-bold text-purple-600 dark:text-purple-400 font-display text-center">
+            <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
               Elo Rating History
             </h1>
-            <div className="w-64 flex-shrink-0 flex justify-end">
-              <SeasonSelector onSeasonChange={setSelectedSeason} />
-            </div>
+            <div className="w-64 flex-shrink-0 flex justify-end" />
           </div>
         </div>
 
         <div className="flex min-h-[calc(100vh-12rem)]">
-          <div className="w-64 flex-shrink-0 border-r fixed left-0 top-[64px] bottom-0 bg-background overflow-y-auto scrollbar-hide">
-            <HistoryFilters
-              data={data}
-              viewType={viewType}
-              setViewType={setViewType}
-              selectedTeams={selectedTeams}
-              setSelectedTeams={setSelectedTeams}
-              selectedMaps={selectedMaps}
-              setSelectedMaps={setSelectedMaps}
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-            />
-          </div>
+          {!isMobile && (
+            <div className="flex-shrink-0 fixed left-0 top-0 pt-16 h-full bg-background overflow-y-auto scrollbar-hide z-10">
+              <HistoryFilters
+                data={data}
+                viewType={viewType}
+                setViewType={setViewType}
+                selectedTeams={selectedTeams}
+                setSelectedTeams={setSelectedTeams}
+                selectedMaps={selectedMaps}
+                setSelectedMaps={setSelectedMaps}
+                isCollapsed={isCollapsed}
+                setIsCollapsed={setIsCollapsed}
+                showUpcomingTournamentOnly={showUpcomingTournamentOnly}
+                setShowUpcomingTournamentOnly={setShowUpcomingTournamentOnly}
+                seasons={seasons}
+                selectedSeason={selectedSeason}
+                onSeasonChange={setSelectedSeason}
+              />
+            </div>
+          )}
 
-          <div className="flex-1 pl-72 pr-4">
+          <div className={mainContentClass}>
+            <h2 className="text-lg font-semibold text-center mb-4 text-muted-foreground">{chartDescription}</h2>
             <EloHistoryChart
               data={data}
               viewType={viewType}
@@ -141,17 +264,36 @@ export default function HistoryPage() {
           <div className="w-64 opacity-0 flex-shrink-0">
             {/* Empty div to balance layout */}
           </div>
-          <h1 className="flex-1 text-2xl md:text-4xl font-bold text-purple-600 dark:text-purple-400 font-display text-center">
+          <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
             Elo Rating History
           </h1>
-          <div className="w-64 flex-shrink-0 flex justify-end">
-            <SeasonSelector onSeasonChange={setSelectedSeason} />
-          </div>
+          <div className="w-64 flex-shrink-0 flex justify-end" />
         </div>
       </div>
 
       <div className="flex min-h-[calc(100vh-12rem)]">
-        <div className="w-64 flex-shrink-0 border-r fixed left-0 top-[64px] bottom-0 bg-background overflow-y-auto scrollbar-hide">
+        {!isMobile && (
+          <div className="flex-shrink-0 fixed left-0 top-0 pt-16 h-full bg-background overflow-y-auto scrollbar-hide z-10">
+            <HistoryFilters
+              data={data}
+              viewType={viewType}
+              setViewType={setViewType}
+              selectedTeams={selectedTeams}
+              setSelectedTeams={setSelectedTeams}
+              selectedMaps={selectedMaps}
+              setSelectedMaps={setSelectedMaps}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
+              showUpcomingTournamentOnly={showUpcomingTournamentOnly}
+              setShowUpcomingTournamentOnly={setShowUpcomingTournamentOnly}
+              seasons={seasons}
+              selectedSeason={selectedSeason}
+              onSeasonChange={setSelectedSeason}
+            />
+          </div>
+        )}
+        
+        {isMobile && (
           <HistoryFilters
             data={data}
             viewType={viewType}
@@ -162,10 +304,16 @@ export default function HistoryPage() {
             setSelectedMaps={setSelectedMaps}
             isCollapsed={isCollapsed}
             setIsCollapsed={setIsCollapsed}
+            showUpcomingTournamentOnly={showUpcomingTournamentOnly}
+            setShowUpcomingTournamentOnly={setShowUpcomingTournamentOnly}
+            seasons={seasons}
+            selectedSeason={selectedSeason}
+            onSeasonChange={setSelectedSeason}
           />
-        </div>
+        )}
 
-        <div className="flex-1 pl-72 pr-4">
+        <div className={mainContentClass}>
+          <h2 className="text-lg font-semibold text-center mb-4 text-muted-foreground">{chartDescription}</h2>
           <EloHistoryChart
             data={data}
             viewType={viewType}

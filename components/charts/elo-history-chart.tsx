@@ -8,6 +8,7 @@ import { TeamData, EloHistoryData, EloDataPoint } from "@/types/elo";
 /* eslint-enable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { EloTooltip } from "./elo-tooltip";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EloHistoryChartProps {
   data: TeamData[];
@@ -27,6 +28,7 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
     payload: TooltipPayload;
     coords: { x: number; y: number };
   } | null>(null);
+  const isMobile = useIsMobile();
 
   const handlePointMouseEnter = (event: React.MouseEvent, payload: EloDataPoint) => {
     const rect = (event.target as Element).getBoundingClientRect();
@@ -100,7 +102,7 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
         <LineChart 
           margin={{ 
             top: 20, 
-            right: 10, 
+            right: isMobile ? 20 : 110, 
             left: 10,  // Add some left margin for the y-axis
             bottom: 60 // Increased bottom margin for rotated labels
           }} 

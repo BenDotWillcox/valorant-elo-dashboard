@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MapPopularityProps {
   onDateChange: (startDate: Date, endDate: Date) => void;
@@ -80,18 +81,19 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
     },
     {} as Record<string, { label: string; color: string }>,
   );
+  const isMobile = useIsMobile();
 
   return (
     <div className="w-full space-y-4 rounded-lg border p-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
         <div className="flex items-center">
-          <h2 className="text-lg font-semibold">Map Play Percentage</h2>
+          <h2 className="text-lg font-semibold whitespace-nowrap">Map Play Percentage</h2>
           <InfoTooltip content="Shows the percentage of matches played on each map over a 30-day rolling window. Use the date picker to explore different time periods." />
         </div>
         <div className="flex gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-[160px] justify-start text-left font-normal")}>
+              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {format(startDate, "MMM d, yyyy")}
               </Button>
@@ -108,7 +110,7 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
           <span className="self-center">→</span>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-[160px] justify-start text-left font-normal")}>
+              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {format(endDate, "MMM d, yyyy")}
               </Button>
@@ -125,14 +127,14 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
         </div>
       </div>
 
-      <ChartContainer config={config} className="aspect-[2/1]">
+      <ChartContainer config={config} className={cn("aspect-[2/1]", isMobile && "aspect-[1/1]")}>
         <LineChart
           data={chartData}
           margin={{
             top: 16,
-            right: 16,
-            bottom: 40,
-            left: 40,
+            right: isMobile ? 20 : 16,
+            bottom: 0,
+            left: isMobile ? -20 : 16,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -177,7 +179,7 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
               />
             }
           />
-          <Legend verticalAlign="top" height={40} />
+          <Legend verticalAlign="bottom" height={40} />
           {Object.entries(MAP_COLORS).map(([map, color]) => (
             <Line
               key={map}

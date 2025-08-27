@@ -8,6 +8,7 @@ import { StatCarousel } from '@/components/stats/stat-carousel';
 import { PerfectGamesScroll } from '@/components/stats/perfect-games-scroll';
 import { UpsetCarousel } from '@/components/stats/upset-carousel';
 import { MapPopularityChart } from '@/components/stats/map-popularity-chart';
+import { Badge } from '@/components/ui/badge';
 
 interface Team {
   season_year: number;
@@ -17,6 +18,7 @@ interface Team {
   rating: number;
   peak_date?: string;
   lowest_date?: string;
+  map_name?: string;
 }
 
 
@@ -29,6 +31,7 @@ interface Streak {
   map_name: string;
   streak_length: number;
   avg_margin: number;
+  is_active: boolean;
 }
 
 interface MapRating {
@@ -96,13 +99,12 @@ export default function HallOfFamePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8 text-center text-purple-600 dark:text-purple-400 font-display">
+      <h1 className="text-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display">
         Hall of Fame
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-auto">
-        {/* Top Row - Best Performers */}
-        <StatCarousel title="Greatest Teams" tooltip="Teams that achieved the highest global Elo ratings across all seasons" data={greatestTeams} renderContent={(team) => {
+        <StatCarousel title="Strongest Maps" tooltip="Teams that achieved the highest Elo rating on a map across all seasons" data={greatestTeams} renderContent={(team) => {
           const ratingNumber = Number(team.rating);
           const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayPeakDate = 'Unknown date';
@@ -131,6 +133,7 @@ export default function HallOfFamePage() {
                 <span className="text-xl font-medium">{team.team_name}</span>
               </div>
 
+              <div className="text-lg font-bold mb-2">{team.map_name}</div>
               <div className="text-sm text-muted-foreground mb-1">Peak Elo</div>
               <div className="text-3xl font-bold mb-1">{displayRating}</div>
               <div className="text-sm text-muted-foreground">
@@ -139,40 +142,11 @@ export default function HallOfFamePage() {
             </div>
           );
         }} />
-        <StatCarousel 
-          title="Top Map Performances" 
-          tooltip="Highest team ratings achieved on specific maps"
-          data={topMaps}
-          renderContent={(map) => (
-            <div className="text-center">
-              <div className="text-lg font-bold mb-4">
-                {map.map_name}
-              </div>
-              
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="relative w-8 h-8">
-                  <Image
-                    src={TEAM_LOGOS[map.team_slug as keyof typeof TEAM_LOGOS]}
-                    alt={map.team_name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <span className="text-xl font-medium">{map.team_name}</span>
-              </div>
 
-              <div className="text-sm text-muted-foreground mb-1">Peak Elo</div>
-              <div className="text-3xl font-bold mb-1">{Math.round(map.rating)}</div>
-              <div className="text-sm text-muted-foreground">
-                {map.rating_date ? format(new Date(map.rating_date.split('T')[0]), 'MMMM d, yyyy') : ''}
-              </div>
-            </div>
-          )}
-        />
         <StatCarousel title="Longest Win Streaks" tooltip="Teams with the longest consecutive win streaks on a single map" data={winStreaks} renderContent={(streak) => (
           <div className="text-center">
             <div className="text-sm text-muted-foreground mb-4">
-              {format(new Date(streak.start_date), 'MMMM d, yyyy')} - {format(new Date(streak.end_date), 'MMMM d, yyyy')}
+              {format(new Date(streak.start_date), 'MMMM d, yyyy')} - {streak.is_active ? 'Present' : format(new Date(streak.end_date), 'MMMM d, yyyy')}
             </div>
 
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -188,15 +162,42 @@ export default function HallOfFamePage() {
             </div>
 
             <div className="text-lg text-muted-foreground mb-1">{streak.map_name}</div>
-            <div className="text-3xl font-bold mb-2">{streak.streak_length} Maps</div>
+            <div className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
+              {streak.streak_length} Maps
+              {streak.is_active && <Badge variant="destructive">Active</Badge>}
+            </div>
             <div className="text-sm font-medium text-green-500">
               +{Number(streak.avg_margin).toFixed(1)} Rounds/Map
             </div>
           </div>
         )} />
+        
+        <div className="relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium">Peak Player Rating</h3>
+          </div>
+          <div className="p-6 pt-0 relative blur-sm pointer-events-none">
+            <div className="text-center">
+              <div className="text-sm text-muted-foreground mb-4">Season 2024</div>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="relative w-8 h-8 rounded-full bg-muted" />
+                <span className="text-xl font-medium">Player Name</span>
+              </div>
+              <div className="text-lg font-bold mb-2">Jett</div>
+              <div className="text-sm text-muted-foreground mb-1">Peak Rating</div>
+              <div className="text-3xl font-bold mb-1">2.2</div>
+              <div className="text-sm text-muted-foreground">August 15, 2024</div>
+            </div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/20">
+            <div className="text-center bg-secondary/80 p-4 rounded-lg">
+              <h4 className="font-bold text-lg">Player Ratings</h4>
+              <p className="text-muted-foreground">Coming Soon</p>
+            </div>
+          </div>
+        </div>
 
-        {/* Second Row - Worst Performers */}
-        <StatCarousel title="Worst Teams" tooltip="Teams that hit the lowest global Elo ratings across all seasons" data={worstTeams} renderContent={(team) => {
+        <StatCarousel title="Weakest Maps" tooltip="Teams that hit the lowest Elo rating on a map across all seasons" data={worstTeams} renderContent={(team) => {
           const ratingNumber = Number(team.rating);
           const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayLowestDate = 'Unknown date';
@@ -225,6 +226,7 @@ export default function HallOfFamePage() {
                 <span className="text-xl font-medium">{team.team_name}</span>
               </div>
 
+              <div className="text-lg font-bold mb-2">{team.map_name}</div>
               <div className="text-sm text-muted-foreground mb-1">Lowest Elo</div>
               <div className="text-3xl font-bold mb-1">{displayRating}</div>
               <div className="text-sm text-muted-foreground">
@@ -233,40 +235,11 @@ export default function HallOfFamePage() {
             </div>
           );
         }} />
-        <StatCarousel 
-          title="Worst Map Performances" 
-          tooltip="Lowest team ratings achieved on specific maps"
-          data={worstMaps}
-          renderContent={(map) => (
-            <div className="text-center">
-              <div className="text-lg font-bold mb-4">
-                {map.map_name}
-              </div>
-              
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="relative w-8 h-8">
-                  <Image
-                    src={TEAM_LOGOS[map.team_slug as keyof typeof TEAM_LOGOS]}
-                    alt={map.team_name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <span className="text-xl font-medium">{map.team_name}</span>
-              </div>
-
-              <div className="text-sm text-muted-foreground mb-1">Lowest Elo</div>
-              <div className="text-3xl font-bold mb-1">{Math.round(map.rating)}</div>
-              <div className="text-sm text-muted-foreground">
-                {map.rating_date ? format(new Date(map.rating_date.split('T')[0]), 'MMMM d, yyyy') : ''}
-              </div>
-            </div>
-          )}
-        />
+        
         <StatCarousel title="Longest Losing Streaks" tooltip="Teams with the longest consecutive loss streaks on a single map" data={loseStreaks} renderContent={(streak) => (
           <div className="text-center">
             <div className="text-sm text-muted-foreground mb-4">
-              {format(new Date(streak.start_date), 'MMMM d, yyyy')} - {format(new Date(streak.end_date), 'MMMM d, yyyy')}
+              {format(new Date(streak.start_date), 'MMMM d, yyyy')} - {streak.is_active ? 'Present' : format(new Date(streak.end_date), 'MMMM d, yyyy')}
             </div>
 
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -282,18 +255,45 @@ export default function HallOfFamePage() {
             </div>
 
             <div className="text-lg text-muted-foreground mb-1">{streak.map_name}</div>
-            <div className="text-3xl font-bold mb-2">{streak.streak_length} Maps</div>
+            <div className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
+              {streak.streak_length} Maps
+              {streak.is_active && <Badge variant="destructive">Active</Badge>}
+            </div>
             <div className="text-sm font-medium text-red-500">
               {Number(streak.avg_margin).toFixed(1)} Rounds/Map
             </div>
           </div>
         )} />
 
+        <div className="relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium">Current Top Players</h3>
+          </div>
+          <div className="p-6 pt-0 relative blur-sm pointer-events-none">
+            <div className="text-center">
+              <div className="text-sm text-muted-foreground mb-4">As of Today</div>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="relative w-8 h-8 rounded-full bg-muted" />
+                <span className="text-xl font-medium">Another Player</span>
+              </div>
+              <div className="text-lg font-bold mb-2">Reyna</div>
+              <div className="text-sm text-muted-foreground mb-1">Current Rating</div>
+              <div className="text-3xl font-bold mb-1">1.9</div>
+              <div className="text-sm text-muted-foreground">Top 5 Player</div>
+            </div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/20">
+            <div className="text-center bg-secondary/80 p-4 rounded-lg">
+              <h4 className="font-bold text-lg">Player Ratings</h4>
+              <p className="text-muted-foreground">Coming Soon</p>
+            </div>
+          </div>
+        </div>
+
         {/* Map Stats Section */}
-        <div className="xl:col-span-3">
+        <div className="md:col-span-2 xl:col-span-3">
           <MapPopularityChart data={mapPopularity} onDateChange={(start, end) => {
-            setSelectedStartDate(start);
-            setSelectedEndDate(end);
+            // This is a placeholder for the actual fetch logic
           }} />
         </div>
 
@@ -303,7 +303,7 @@ export default function HallOfFamePage() {
         </div>
 
         {/* Perfect Games Section */}
-        <div className="xl:col-span-3">
+        <div className="md:col-span-2 xl:col-span-3">
           <PerfectGamesScroll data={perfectGames} />
         </div>
       </div>

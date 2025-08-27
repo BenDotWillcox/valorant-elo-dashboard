@@ -22,13 +22,13 @@ export function StatCarousel<T>({ title, tooltip, data, renderContent }: StatCar
   const item = data[currentIndex];
 
   return (
-    <div className="bg-card/70 backdrop-blur rounded-xl overflow-hidden shadow-lg border border-border/60">
-      <div className="px-4 py-2 border-b border-border/60 bg-gradient-to-r from-fuchsia-500/15 via-transparent to-cyan-400/15 flex items-center justify-between">
+    <div className="bg-card/70 backdrop-blur rounded-xl shadow-lg border border-border/60">
+      <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between">
         <div className="flex items-center justify-center">
-          <h3 className="font-semibold">{title}</h3>
+          <h3 className="font-semibold text-foreground">{title}</h3>
           {tooltip && <InfoTooltip content={tooltip} />}
         </div>
-        <div className="text-lg font-bold bg-gradient-to-r from-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">#{currentIndex + 1}</div>
+        <div className="text-lg font-bold text-foreground">#{currentIndex + 1}</div>
       </div>
       <div className="relative p-6">
         <button 

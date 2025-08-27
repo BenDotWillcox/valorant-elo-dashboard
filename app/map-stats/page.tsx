@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MapStatsChart } from '@/components/charts/map-stats-chart';
 import { Card } from "@/components/ui/card";
 import { TeamMapData } from '@/types/elo';
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { DndContext, DragEndEvent, useDraggable, useDroppable, DragOverlay, Active } from '@dnd-kit/core';
 import Image from 'next/image';
+import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from "@/lib/constants/tournaments";
 
 
 interface TeamItem {
@@ -34,6 +35,7 @@ export default function MapStatsPage() {
   const [dropZones, setDropZones] = useState<ChartDropZoneType[]>([{ id: 0, teams: [] }]);
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const [allTeams, setAllTeams] = useState<TeamItem[]>([]);
+  const [showUpcomingTournamentOnly, setShowUpcomingTournamentOnly] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -59,9 +61,27 @@ export default function MapStatsPage() {
           return acc;
         }, []).sort((a,b) => a.name.localeCompare(b.name));
         setAllTeams(uniqueTeams);
+
+        if (uniqueTeams.length >= 2) {
+            const defaultTeams = uniqueTeams.slice(0, 2);
+            setDropZones(zones => {
+                const newZones = [...zones];
+                if (newZones[0]) {
+                    newZones[0] = { ...newZones[0], teams: defaultTeams };
+                }
+                return newZones;
+            });
+        }
+
         setLoading(false);
       });
   }, [includeInactive]);
+
+  const filteredTeams = useMemo(() => {
+    return showUpcomingTournamentOnly
+      ? allTeams.filter(team => UPCOMING_TOURNAMENT_QUALIFIED_TEAMS.includes(team.slug))
+      : allTeams;
+  }, [allTeams, showUpcomingTournamentOnly]);
 
   const handleDragStart = (event: { active: Active }) => {
     setActiveId(event.active.id);
@@ -154,12 +174,22 @@ export default function MapStatsPage() {
 
         {/* Team List - Draggable Teams */}
         {isTeamListVisible && (
-          <Card className="p-4 space-y-2 max-h-[400px] overflow-y-auto">
-            <h3 className="font-semibold text-lg mb-2">Teams (Drag to Chart)</h3>
-            {allTeams.map(team => (
-                <DraggableTeamComponent key={team.id} team={team} />
-            ))}
-          </Card>
+          <div>
+            <div className="flex items-center space-x-2 mb-2 pl-1">
+              <Checkbox
+                id="upcoming-tournament-only"
+                checked={showUpcomingTournamentOnly}
+                onCheckedChange={(checked) => setShowUpcomingTournamentOnly(Boolean(checked))}
+              />
+              <Label htmlFor="upcoming-tournament-only">{UPCOMING_TOURNAMENT_NAME} Teams Only</Label>
+            </div>
+            <Card className="p-4 space-y-2 max-h-[400px] overflow-y-auto">
+              <h3 className="font-semibold text-lg mb-2">Teams (Drag to Chart)</h3>
+              {filteredTeams.map(team => (
+                  <DraggableTeamComponent key={team.id} team={team} />
+              ))}
+            </Card>
+          </div>
         )}
       </div>
       <DragOverlay dropAnimation={null}>

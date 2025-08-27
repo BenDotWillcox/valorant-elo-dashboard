@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface MapSelectionProcessProps {
   matchType: 'BO3' | 'BO5' | 'BO5_ADV';
@@ -21,7 +22,7 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
       >
         {type}
       </Badge>
-      <span className="truncate">{team} {type.toLowerCase()}s {map}</span>
+      <span className="whitespace-nowrap">{team} {type.toLowerCase()} {map}</span>
     </div>
   );
 
@@ -32,21 +33,24 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 text-sm">
-            {renderStep('Ban', team1, bans.team1[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Ban', team2, bans.team2[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team2, selectedMaps[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Ban', team1, bans.team1[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Ban', team2, bans.team2[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Decider', '', selectedMaps[2])}
-          </div>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex w-max items-center justify-between gap-2 md:gap-2 text-sm pb-4">
+              {renderStep('Ban', team1, bans.team1[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Ban', team2, bans.team2[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team2, selectedMaps[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Ban', team1, bans.team1[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Ban', team2, bans.team2[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Decider', '', selectedMaps[2])}
+            </div>
+            <ScrollBar orientation="horizontal" className="bg-muted [&_div]:bg-primary" />
+          </ScrollArea>
         </CardContent>
       </Card>
     );
@@ -59,21 +63,24 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 text-sm">
-            {renderStep('Ban', team1, bans.team1[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Ban', team2, bans.team2[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team2, selectedMaps[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[2])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team2, selectedMaps[3])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[4])}
-          </div>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex w-max items-center justify-between gap-2 md:gap-2 text-sm pb-4">
+              {renderStep('Ban', team1, bans.team1[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Ban', team2, bans.team2[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team2, selectedMaps[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[2])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team2, selectedMaps[3])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[4])}
+            </div>
+            <ScrollBar orientation="horizontal" className="bg-muted [&_div]:bg-primary" />
+          </ScrollArea>
         </CardContent>
       </Card>
     );
@@ -86,21 +93,24 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 text-sm">
-            {renderStep('Ban', team1, bans.team1[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Ban', team1, bans.team1[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[0])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team2, selectedMaps[1])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[2])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team2, selectedMaps[3])}
-            <div className="hidden md:block text-muted-foreground">→</div>
-            {renderStep('Pick', team1, selectedMaps[4])}
-          </div>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex w-max items-center justify-between gap-2 md:gap-2 text-sm pb-4">
+              {renderStep('Ban', team1, bans.team1[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Ban', team1, bans.team1[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[0])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team2, selectedMaps[1])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[2])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team2, selectedMaps[3])}
+              <div className="text-muted-foreground">→</div>
+              {renderStep('Pick', team1, selectedMaps[4])}
+            </div>
+            <ScrollBar orientation="horizontal" className="bg-muted [&_div]:bg-primary" />
+          </ScrollArea>
         </CardContent>
       </Card>
     );
@@ -112,23 +122,26 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
         <CardTitle className="text-lg">Map Selection Process</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 text-sm">
-          {renderStep('Ban', team1, bans.team1[0])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Ban', team2, bans.team2[0])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Pick', team1, selectedMaps[0])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Pick', team2, selectedMaps[1])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Pick', team1, selectedMaps[2])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Pick', team2, selectedMaps[3])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Pick', team1, selectedMaps[4])}
-          <div className="hidden md:block text-muted-foreground">→</div>
-          {renderStep('Decider', '', selectedMaps[5])}
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex w-max items-center justify-between gap-2 md:gap-4 text-sm pb-4">
+            {renderStep('Ban', team1, bans.team1[0])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Ban', team2, bans.team2[0])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Pick', team1, selectedMaps[0])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Pick', team2, selectedMaps[1])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Pick', team1, selectedMaps[2])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Pick', team2, selectedMaps[3])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Pick', team1, selectedMaps[4])}
+            <div className="text-muted-foreground">→</div>
+            {renderStep('Decider', '', selectedMaps[5])}
+          </div>
+          <ScrollBar orientation="horizontal" className="bg-muted [&_div]:bg-primary" />
+        </ScrollArea>
       </CardContent>
     </Card>
   );

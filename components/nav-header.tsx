@@ -41,7 +41,11 @@ const navItems = [
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
   },
-  //{ name: "Pick/Ban", href: "/pick-ban" },
+  { name: "Pick/Ban", 
+    href: "/pick-ban",
+    gradient:
+      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
   {
     name: "Hall of Fame",
     href: "/hall-of-fame",

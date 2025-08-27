@@ -49,3 +49,20 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "ongoing" },
     "Valorant Champions 2025": { id: 2283, region: "International", status: "upcoming" },
   };
+
+export const UPCOMING_TOURNAMENT_NAME = "Valorant Champions 2025";
+
+export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
+  'G2',
+  'SEN',
+  'MIBR',
+  'BILI',
+  'DRG',
+  'EDG',
+  'XLG',
+  'TL',
+  'FNC',
+  'PRX',
+  'RRQ',
+  'T1',
+];

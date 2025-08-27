@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TeamMapData } from '@/types/elo';
 import { MAP_POOL } from '@/lib/constants/maps';
 import { MAP_IMAGES } from "@/lib/constants/images";
@@ -8,10 +8,14 @@ import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import { cn } from "@/lib/utils";
+import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from "@/lib/constants/tournaments";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export default function RankingsPage() {
   const [mapRankings, setMapRankings] = useState<Record<string, TeamMapData[]>>({});
   const [loading, setLoading] = useState(true);
+  const [showUpcomingTournamentOnly, setShowUpcomingTournamentOnly] = useState(false);
 
   useEffect(() => {
     fetch('/api/rankings')
@@ -22,18 +26,42 @@ export default function RankingsPage() {
       });
   }, []);
 
+  const filteredRankings = useMemo(() => {
+    if (!showUpcomingTournamentOnly) {
+      return mapRankings;
+    }
+
+    const filtered: Record<string, TeamMapData[]> = {};
+    for (const mapName in mapRankings) {
+      filtered[mapName] = mapRankings[mapName].filter(team =>
+        UPCOMING_TOURNAMENT_QUALIFIED_TEAMS.includes(team.teamSlug)
+      );
+    }
+    return filtered;
+  }, [mapRankings, showUpcomingTournamentOnly]);
+
   if (loading) return <div>Loading...</div>;
 
   const sortedMaps = [...MAP_POOL.active.sort(), ...MAP_POOL.inactive.sort()];
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display">
+      <h1 className="text-4xl font-bold mb-4 text-center text-green-500 dark:text-green-400 font-display">
         Current Map Rankings
       </h1>
+      <div className="flex justify-center items-center space-x-2 mb-8">
+        <Checkbox
+          id="upcoming-tournament-only"
+          checked={showUpcomingTournamentOnly}
+          onCheckedChange={(checked) => setShowUpcomingTournamentOnly(Boolean(checked))}
+        />
+        <Label htmlFor="upcoming-tournament-only">
+          {UPCOMING_TOURNAMENT_NAME} Teams Only
+        </Label>
+      </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-8">
         {sortedMaps.map((mapName) => {
-          const rankings = mapRankings[mapName] || [];
+          const rankings = filteredRankings[mapName] || [];
           const isActive = MAP_POOL.active.includes(mapName);
           
           return (

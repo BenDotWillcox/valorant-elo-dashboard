@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, X, SlidersHorizontal, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, X, SlidersHorizontal, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TeamData } from "@/types/elo";
 import { useState } from "react";

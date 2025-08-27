@@ -12,12 +12,13 @@ interface EloTooltipProps {
 }
 
 export function EloTooltip({ active, payload, coordinate }: EloTooltipProps) {
+  const isMobile = useIsMobile();
+
   if (!active || !payload?.[0]?.payload || !coordinate) return null;
 
   const data = payload[0].payload.payload;
   const eloDelta = data.rating - (data.prevRating ?? data.rating);
   const isWin = eloDelta > 0;  // Simplified win condition
-  const isMobile = useIsMobile();
 
   return (
     <div 

@@ -4,7 +4,6 @@ import { HistoryFilters } from "@/components/filters/history-filters";
 import { EloHistoryChart } from "@/components/charts/elo-history-chart";
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TeamData, EloHistoryData } from "@/types/elo";
-import { SeasonSelector } from "@/components/season-selector";
 import { Season } from "@/db/schema";
 import { debounce } from 'lodash';
 import { getTeamRegion } from "@/lib/constants/regions";

@@ -34,14 +34,7 @@ interface Streak {
   is_active: boolean;
 }
 
-interface MapRating {
-  team_name: string;
-  team_slug: string;
-  map_name: string;
-  rating: number;
-  rating_date: string;
-  season_year: number;
-}
+
 
 export default function HallOfFamePage() {
   const [upsets, setUpsets] = useState([]);
@@ -52,10 +45,9 @@ export default function HallOfFamePage() {
   const [worstTeams, setWorstTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapPopularity, setMapPopularity] = useState([]);
-  const [selectedStartDate, setSelectedStartDate] = useState(subDays(new Date(), 30));
-  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
-  const [topMaps, setTopMaps] = useState<MapRating[]>([]);
-  const [worstMaps, setWorstMaps] = useState<MapRating[]>([]);
+  const [selectedStartDate] = useState(subDays(new Date(), 30));
+  const [selectedEndDate] = useState(new Date());
+
 
   useEffect(() => {
     Promise.all([
@@ -74,8 +66,6 @@ export default function HallOfFamePage() {
       setPerfectGames(perfect);
       setGreatestTeams(greatest);
       setWorstTeams(worstTeams);
-      setTopMaps(topMaps);
-      setWorstMaps(worstMaps);
       setLoading(false);
     });
   }, []);
@@ -292,7 +282,7 @@ export default function HallOfFamePage() {
 
         {/* Map Stats Section */}
         <div className="md:col-span-2 xl:col-span-3">
-          <MapPopularityChart data={mapPopularity} onDateChange={(start, end) => {
+          <MapPopularityChart data={mapPopularity} onDateChange={() => {
             // This is a placeholder for the actual fetch logic
           }} />
         </div>

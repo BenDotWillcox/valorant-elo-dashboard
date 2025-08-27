@@ -8,20 +8,20 @@ export async function GET() {
       t.name as "teamName",
       t.slug as "teamSlug",
       er.map_name as "mapName",
-      er.effective_rating as "effectiveRating",
+      er.rating as "rating",
       DATE_TRUNC('day', er.rating_date)::text as "achievedAt",
       EXTRACT(YEAR FROM er.rating_date) as "seasonYear"
     FROM elo_ratings er
     JOIN teams t ON t.id = er.team_id
-    WHERE (er.team_id, er.map_name, er.effective_rating) IN (
+    WHERE (er.team_id, er.map_name, er.rating) IN (
       SELECT 
         team_id,
         map_name,
-        MAX(effective_rating) as peak_rating
+        MAX(rating) as peak_rating
       FROM elo_ratings
       GROUP BY team_id, map_name
     )
-    ORDER BY er.effective_rating DESC
+    ORDER BY er.rating DESC
     LIMIT 10
   `);
 

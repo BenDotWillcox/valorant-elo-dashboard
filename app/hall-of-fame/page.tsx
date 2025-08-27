@@ -14,7 +14,7 @@ interface Team {
   team_name: string;
   team_slug: string;
   logo_url: string;
-  global_rating: number;
+  rating: number;
   peak_date?: string;
   lowest_date?: string;
 }
@@ -32,12 +32,12 @@ interface Streak {
 }
 
 interface MapRating {
-  teamName: string;
-  teamSlug: string;
-  mapName: string;
-  effectiveRating: number;
-  achievedAt: string;
-  seasonYear: number;
+  team_name: string;
+  team_slug: string;
+  map_name: string;
+  rating: number;
+  rating_date: string;
+  season_year: number;
 }
 
 export default function HallOfFamePage() {
@@ -103,8 +103,8 @@ export default function HallOfFamePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-auto">
         {/* Top Row - Best Performers */}
         <StatCarousel title="Greatest Teams" tooltip="Teams that achieved the highest global Elo ratings across all seasons" data={greatestTeams} renderContent={(team) => {
-          const globalRatingNumber = Number(team.global_rating);
-          const displayRating = !isNaN(globalRatingNumber) ? Math.round(globalRatingNumber) : 'N/A';
+          const ratingNumber = Number(team.rating);
+          const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayPeakDate = 'Unknown date';
           if (team.peak_date) {
             const date = new Date(team.peak_date);
@@ -146,25 +146,25 @@ export default function HallOfFamePage() {
           renderContent={(map) => (
             <div className="text-center">
               <div className="text-lg font-bold mb-4">
-                {map.mapName}
+                {map.map_name}
               </div>
               
               <div className="flex items-center justify-center gap-2 mb-4">
                 <div className="relative w-8 h-8">
                   <Image
-                    src={TEAM_LOGOS[map.teamSlug as keyof typeof TEAM_LOGOS]}
-                    alt={map.teamName}
+                    src={TEAM_LOGOS[map.team_slug as keyof typeof TEAM_LOGOS]}
+                    alt={map.team_name}
                     fill
                     className="object-contain"
                   />
                 </div>
-                <span className="text-xl font-medium">{map.teamName}</span>
+                <span className="text-xl font-medium">{map.team_name}</span>
               </div>
 
               <div className="text-sm text-muted-foreground mb-1">Peak Elo</div>
-              <div className="text-3xl font-bold mb-1">{Math.round(map.effectiveRating)}</div>
+              <div className="text-3xl font-bold mb-1">{Math.round(map.rating)}</div>
               <div className="text-sm text-muted-foreground">
-                {map.achievedAt ? format(new Date(map.achievedAt.split('T')[0]), 'MMMM d, yyyy') : ''}
+                {map.rating_date ? format(new Date(map.rating_date.split('T')[0]), 'MMMM d, yyyy') : ''}
               </div>
             </div>
           )}
@@ -197,8 +197,8 @@ export default function HallOfFamePage() {
 
         {/* Second Row - Worst Performers */}
         <StatCarousel title="Worst Teams" tooltip="Teams that hit the lowest global Elo ratings across all seasons" data={worstTeams} renderContent={(team) => {
-          const globalRatingNumber = Number(team.global_rating);
-          const displayRating = !isNaN(globalRatingNumber) ? Math.round(globalRatingNumber) : 'N/A';
+          const ratingNumber = Number(team.rating);
+          const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayLowestDate = 'Unknown date';
           if (team.lowest_date) {
             const date = new Date(team.lowest_date.split('T')[0]); 
@@ -240,25 +240,25 @@ export default function HallOfFamePage() {
           renderContent={(map) => (
             <div className="text-center">
               <div className="text-lg font-bold mb-4">
-                {map.mapName}
+                {map.map_name}
               </div>
               
               <div className="flex items-center justify-center gap-2 mb-4">
                 <div className="relative w-8 h-8">
                   <Image
-                    src={TEAM_LOGOS[map.teamSlug as keyof typeof TEAM_LOGOS]}
-                    alt={map.teamName}
+                    src={TEAM_LOGOS[map.team_slug as keyof typeof TEAM_LOGOS]}
+                    alt={map.team_name}
                     fill
                     className="object-contain"
                   />
                 </div>
-                <span className="text-xl font-medium">{map.teamName}</span>
+                <span className="text-xl font-medium">{map.team_name}</span>
               </div>
 
               <div className="text-sm text-muted-foreground mb-1">Lowest Elo</div>
-              <div className="text-3xl font-bold mb-1">{Math.round(map.effectiveRating)}</div>
+              <div className="text-3xl font-bold mb-1">{Math.round(map.rating)}</div>
               <div className="text-sm text-muted-foreground">
-                {map.achievedAt ? format(new Date(map.achievedAt.split('T')[0]), 'MMMM d, yyyy') : ''}
+                {map.rating_date ? format(new Date(map.rating_date.split('T')[0]), 'MMMM d, yyyy') : ''}
               </div>
             </div>
           )}

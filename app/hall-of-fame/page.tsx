@@ -59,7 +59,7 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/worst-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
+    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams]) => {
       setUpsets(ups);
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);

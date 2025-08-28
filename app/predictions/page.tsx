@@ -156,7 +156,7 @@ export default function PredictionsPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-8">
-      <h1 className="text-4xl font-bold mb-4">Match Predictions</h1>
+      <h1 className="text-4xl font-bold mbtext-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display-4">Match Predictions</h1>
       
       {/* Combined Parameters Card */}
       <Card className="w-full">

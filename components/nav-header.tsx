@@ -24,19 +24,13 @@ const navItems = [
       "radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(37,99,235,0.06) 50%, rgba(29,78,216,0) 100%)",
   },
   {
-    name: "History",
-    href: "/history",
-    gradient:
-      "radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(147,51,234,0.06) 50%, rgba(126,34,206,0) 100%)",
-  },
-  {
     name: "Predictions",
     href: "/predictions",
     gradient:
       "radial-gradient(circle, rgba(6,182,212,0.12) 0%, rgba(8,145,178,0.06) 50%, rgba(14,116,144,0) 100%)",
   },
   {
-    name: "Map Stats",
+    name: "Map Pools",
     href: "/map-stats",
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
@@ -45,6 +39,12 @@ const navItems = [
     href: "/pick-ban",
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+  {
+    name: "History",
+    href: "/history",
+    gradient:
+      "radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(147,51,234,0.06) 50%, rgba(126,34,206,0) 100%)",
   },
   {
     name: "Hall of Fame",

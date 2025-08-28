@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={displayFont.variable}>
-      <body className="min-h-screen antialiased bg-white text-black dark:bg-black dark:text-white">
+      <body className="min-h-screen antialiased">
         <Providers
           attribute="class"
           defaultTheme="dark"

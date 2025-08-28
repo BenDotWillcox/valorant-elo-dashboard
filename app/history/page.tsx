@@ -210,13 +210,13 @@ export default function HistoryPage() {
       <div className="relative">
         <div className="container mx-auto p-4">
           <div className="flex items-center mb-8">
-            <div className="w-64 opacity-0 flex-shrink-0">
+            <div className="hidden md:block w-64 flex-shrink-0">
               {/* Empty div to balance layout */}
             </div>
             <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
               Elo Rating History
             </h1>
-            <div className="w-64 flex-shrink-0 flex justify-end" />
+            <div className="hidden md:block w-64 flex-shrink-0" />
           </div>
         </div>
 
@@ -260,13 +260,14 @@ export default function HistoryPage() {
     <div className="relative">
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-8">
-          <div className="w-64 opacity-0 flex-shrink-0">
+          <div className="hidden md:block w-64 flex-shrink-0">
             {/* Empty div to balance layout */}
           </div>
           <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
             Elo Rating History
           </h1>
-          <div className="w-64 flex-shrink-0 flex justify-end" />
+          <div className="hidden md:block w-64 flex-shrink-0">
+          </div>
         </div>
       </div>
 

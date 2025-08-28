@@ -111,6 +111,7 @@ export default function MapStatsPage() {
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="container mx-auto p-4 space-y-6">
+      <h1 className="text-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display-4">Compare Map Pools</h1>
         {/* Controls */}
         <div className="flex items-center gap-4 flex-wrap">
           <input 

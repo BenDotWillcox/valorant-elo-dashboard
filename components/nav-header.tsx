@@ -16,7 +16,14 @@ import { Button } from "./ui/button"
 import { Menu } from "lucide-react"
 import { Logo } from "./logo"
 
-const navItems = [
+type NavItem = {
+  name: string
+  href: string
+  gradient: string
+  isComingSoon?: boolean
+}
+
+const navItems: NavItem[] = [
   {
     name: "Rankings",
     href: "/rankings",
@@ -35,16 +42,6 @@ const navItems = [
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
   },
-  { name: "Pick/Ban", 
-    href: "/pick-ban",
-    gradient:
-      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
-  },
-  { name: "Player Ratings", 
-    href: "/player-ratings",
-    gradient:
-      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
-  },
   {
     name: "History",
     href: "/history",
@@ -57,6 +54,29 @@ const navItems = [
     gradient:
       "radial-gradient(circle, rgba(236,72,153,0.12) 0%, rgba(219,39,119,0.06) 50%, rgba(190,24,93,0) 100%)",
   },
+  {
+    name: "Pick/Ban",
+    href: "/pick-ban",
+    isComingSoon: true,
+    gradient:
+      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+  {
+    name: "Simulations",
+    href: "/simulations",
+    isComingSoon: true,
+    gradient:
+      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+  {
+    name: "Player Ratings",
+    href: "/player-ratings",
+    isComingSoon: true,
+    gradient:
+      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+
+
 ]
 
 /*const glowVariants = {
@@ -133,6 +153,7 @@ function DesktopNav({ pathname }: { pathname: string }) {
                 pathname === item.href
                   ? "bg-transparent text-black dark:text-white border-black dark:border-white"
                   : "text-black/80 dark:text-muted-foreground/90 border-neutral-200 dark:border-border/50 hover:text-black dark:hover:text-foreground hover:border-neutral-300 dark:hover:border-foreground/30 hover:bg-black/5 dark:hover:bg-foreground/5",
+                item.isComingSoon && "opacity-60"
               )}
               style={{ transformStyle: "preserve-3d" }}
             >
@@ -143,6 +164,11 @@ function DesktopNav({ pathname }: { pathname: string }) {
                 style={{ transformOrigin: "center bottom" }}
               >
                 {item.name}
+                {item.isComingSoon && (
+                  <span className="ml-2 text-[10px] uppercase tracking-widest opacity-70">
+                    Soon
+                  </span>
+                )}
               </motion.span>
               <motion.span
                 className="block absolute inset-0 flex items-center justify-center"
@@ -151,6 +177,11 @@ function DesktopNav({ pathname }: { pathname: string }) {
                 style={{ transformOrigin: "center top", rotateX: 90 }}
               >
                 {item.name}
+                {item.isComingSoon && (
+                  <span className="ml-2 text-[10px] uppercase tracking-widest opacity-70">
+                    Soon
+                  </span>
+                )}
               </motion.span>
             </Link>
           </motion.div>
@@ -182,10 +213,16 @@ function MobileNav({ pathname }: { pathname: string }) {
                   pathname === item.href
                     ? "text-foreground"
                     : "text-muted-foreground",
+                  item.isComingSoon && "opacity-60"
                 )}
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}
+                {item.isComingSoon && (
+                  <span className="text-xs uppercase tracking-widest opacity-70">
+                    Soon
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -217,7 +254,7 @@ export function NavHeader() {
           : "bg-transparent text-black dark:text-white border-transparent"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
           <Logo />
         </div>

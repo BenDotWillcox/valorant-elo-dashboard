@@ -58,6 +58,20 @@ export default function PredictionsPage() {
     return allTeams;
   }, [eloData, showUpcomingTournamentOnly]);
 
+  useEffect(() => {
+    // When the filter changes, update the selected teams to the first two in the new list.
+    if (availableTeams.length >= 2) {
+      setTeam1(availableTeams[0]);
+      setTeam2(availableTeams[1]);
+    } else if (availableTeams.length === 1) {
+      setTeam1(availableTeams[0]);
+      setTeam2('');
+    } else {
+      setTeam1('');
+      setTeam2('');
+    }
+  }, [availableTeams]);
+
   const availableMaps = autoMapSelection 
     ? MAP_POOL.active
     : [...MAP_POOL.active, ...MAP_POOL.inactive];

@@ -55,6 +55,7 @@ export const UPCOMING_TOURNAMENT_NAME = "Valorant Champions 2025";
 export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
   'G2',
   'SEN',
+  'NRG',
   'MIBR',
   'BILI',
   'DRG',
@@ -62,7 +63,10 @@ export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
   'XLG',
   'TL',
   'FNC',
+  'TH',
+  'GX',
   'PRX',
   'RRQ',
   'T1',
+  'DRX'
 ];

@@ -90,7 +90,7 @@ export default function HallOfFamePage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display">
-        Hall of Fame
+        Record Book
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-auto">

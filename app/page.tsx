@@ -34,18 +34,18 @@ const features = [
     link: "/map-stats",
   },
   {
-    title: "Player Ratings",
-    description:
-      "View detailed Elo ratings for every player. See how players stack up against each other on different maps and agents.",
-    image: "/images/maps/bind_image.PNG",
-    link: "/player-ratings",
-  },
-  {
     title: "Elo History",
     description:
-      "Track the Elo rating history of your favorite teams. Visualize their performance over time with interactive charts.",
-    image: "/images/maps/haven_image.PNG",
+      "Track the Elo rating history of any VCT team across any season. Visualize their performance over time with interactive charts.",
+    image: "/images/web/History.PNG",
     link: "/history",
+  },
+  {
+    title: "Record Book",
+    description:
+      "View our VCT record book, including the greatest and worst teams of all time. Longest Winning Streaks, Longest Losing Streaks, 13-0's, and more.",
+    image: "/images/web/Book.PNG",
+    link: "/record-book",
   },
 
 ];
@@ -56,8 +56,7 @@ export default function Home() {
       <div className="text-center mb-12">
         <Logo className="text-4xl md:text-5xl lg:text-6xl mb-4" />
         <p className="text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Explore in-depth statistics, predictions, and rankings from the
-          Valorant competitive scene.
+          Explore in-depth statistics, predictions, and rankings from Valorant's VCT.
         </p>
       </div>
 

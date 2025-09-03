@@ -201,28 +201,16 @@ export default function HistoryPage() {
     showUpcomingTournamentOnly,
   ]);
 
-  const mainContentClass = isMobile 
-    ? "px-4 flex-1" 
-    : `pr-4 transition-all duration-300 flex-1 ${isCollapsed ? 'pl-16' : 'pl-80'}`;
+  const mainContentClass = isMobile
+    ? "px-4 flex-1"
+    : `px-4 flex-1 transition-all duration-300`;
 
   if (loading) {
     return (
       <div className="relative">
-        <div className="container mx-auto p-4">
-          <div className="flex items-center mb-8">
-            <div className="hidden md:block w-64 flex-shrink-0">
-              {/* Empty div to balance layout */}
-            </div>
-            <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
-              Elo Rating History
-            </h1>
-            <div className="hidden md:block w-64 flex-shrink-0" />
-          </div>
-        </div>
-
         <div className="flex min-h-[calc(100vh-12rem)]">
           {!isMobile && (
-            <div className="flex-shrink-0 fixed left-0 top-0 pt-16 h-full bg-background overflow-y-auto scrollbar-hide z-10">
+            <div className="sticky top-16 self-start h-[calc(100vh-4rem)] flex-shrink-0 bg-background overflow-y-auto scrollbar-hide">
               <HistoryFilters
                 data={data}
                 viewType={viewType}
@@ -243,6 +231,9 @@ export default function HistoryPage() {
           )}
 
           <div className={mainContentClass}>
+            <h1 className="text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center mb-8">
+              Elo Rating History
+            </h1>
             <h2 className="text-lg font-semibold text-center mb-4 text-muted-foreground">{chartDescription}</h2>
             <EloHistoryChart
               data={data}
@@ -258,22 +249,9 @@ export default function HistoryPage() {
 
   return (
     <div className="relative">
-      <div className="container mx-auto p-4">
-        <div className="flex items-center mb-8">
-          <div className="hidden md:block w-64 flex-shrink-0">
-            {/* Empty div to balance layout */}
-          </div>
-          <h1 className="flex-1 text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center">
-            Elo Rating History
-          </h1>
-          <div className="hidden md:block w-64 flex-shrink-0">
-          </div>
-        </div>
-      </div>
-
       <div className="flex min-h-[calc(100vh-12rem)]">
         {!isMobile && (
-          <div className="flex-shrink-0 fixed left-0 top-0 pt-16 h-full bg-background overflow-y-auto scrollbar-hide z-10">
+          <div className="sticky top-16 self-start h-[calc(100vh-4rem)] flex-shrink-0 bg-background overflow-y-auto scrollbar-hide">
             <HistoryFilters
               data={data}
               viewType={viewType}
@@ -313,6 +291,9 @@ export default function HistoryPage() {
         )}
 
         <div className={mainContentClass}>
+          <h1 className="text-2xl md:text-4xl font-bold text-green-500 dark:text-green-400 font-display text-center mb-8">
+            Elo Rating History
+          </h1>
           <h2 className="text-lg font-semibold text-center mb-4 text-muted-foreground">{chartDescription}</h2>
           <EloHistoryChart
             data={data}

@@ -49,13 +49,15 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
     setHoveredPoint(null);
   };
 
-  const getEloRange = (data: TeamData[]) => {
-    const allRatings = data.flatMap(team => 
-      team.data.map(d => d.rating)
-    );
+  const getEloRange = (selectedData: EloDataPoint[]) => {
+    if (selectedData.length === 0) {
+      return { min: 0, max: 1500 }; // Default range
+    }
+    const allRatings = selectedData.map(d => d.rating);
+    const maxElo = Math.max(...allRatings);
     return {
-      min: Math.floor(Math.min(...allRatings, 0) / 200) * 200,
-      max: Math.ceil(Math.max(...allRatings) / 200) * 200
+      min: 0,
+      max: Math.ceil((maxElo + 50) / 100) * 100 // Add a buffer and round up to the nearest 100
     };
   };
 
@@ -90,7 +92,7 @@ export function EloHistoryChart({ data, selectedTeams, selectedMaps, viewType }:
     return teamData.data.filter(d => d.mapName === mapName && selectedMaps.includes(d.mapName));
   });
 
-  const eloRange = getEloRange(data); // Keep global range for y-axis
+  const eloRange = getEloRange(selectedData);
   const ticks = Array.from(
     { length: (eloRange.max - eloRange.min) / 200 + 1 },
     (_, i) => eloRange.min + (i * 200)

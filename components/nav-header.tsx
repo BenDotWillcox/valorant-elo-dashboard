@@ -49,8 +49,8 @@ const navItems: NavItem[] = [
       "radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(147,51,234,0.06) 50%, rgba(126,34,206,0) 100%)",
   },
   {
-    name: "Hall of Fame",
-    href: "/hall-of-fame",
+    name: "Record Book",
+    href: "/record-book",
     gradient:
       "radial-gradient(circle, rgba(236,72,153,0.12) 0%, rgba(219,39,119,0.06) 50%, rgba(190,24,93,0) 100%)",
   },

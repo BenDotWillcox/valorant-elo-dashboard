@@ -284,7 +284,7 @@ function DraggableTeamComponent({ team, isOverlay }: { team: TeamItem, isOverlay
   return (
     <div
       ref={setNodeRef}
-      style={{...style, ...overlayStyle}}
+      style={{...style, ...overlayStyle, touchAction: 'none'}}
       {...listeners}
       {...attributes}
       className="flex items-center gap-2 p-2 border rounded cursor-move hover:bg-accent bg-card"

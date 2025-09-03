@@ -71,6 +71,7 @@ export default function HistoryPage() {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array for initial load
 
   // Add this effect to handle view type changes

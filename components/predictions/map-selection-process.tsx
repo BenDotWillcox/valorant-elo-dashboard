@@ -28,7 +28,7 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
 
   if (matchType === 'BO3') {
     return (
-      <Card className="w-full">
+      <Card className="w-full border border-black dark:border-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
@@ -58,7 +58,7 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
 
   if (matchType === 'BO5') {
     return (
-      <Card className="w-full">
+      <Card className="w-full border border-black dark:border-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
@@ -88,7 +88,7 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
 
   if (matchType === 'BO5_ADV') {
     return (
-      <Card className="w-full">
+      <Card className="w-full border border-black dark:border-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Map Selection Process</CardTitle>
         </CardHeader>
@@ -117,7 +117,7 @@ export function MapSelectionProcess({ matchType, selectedMaps, team1, team2, ban
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border border-black dark:border-white">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Map Selection Process</CardTitle>
       </CardHeader>

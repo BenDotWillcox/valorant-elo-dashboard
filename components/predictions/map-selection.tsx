@@ -21,7 +21,7 @@ export function MapSelection({ matchType, selectedMaps, onMapSelect, availableMa
   const isMapInactive = (mapName: string) => MAP_POOL.inactive.includes(mapName);
 
   return (
-    <Card>
+    <Card className="border border-black dark:border-white">
       <CardHeader className="pb-2">
         <CardTitle>Map Selection</CardTitle>
       </CardHeader>

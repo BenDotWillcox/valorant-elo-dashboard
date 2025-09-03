@@ -173,7 +173,7 @@ export default function PredictionsPage() {
       <h1 className="text-4xl font-bold mbtext-4xl font-bold mb-8 text-center text-green-500 dark:text-green-400 font-display-4">Match Predictions</h1>
       
       {/* Combined Parameters Card */}
-      <Card className="w-full">
+      <Card className="w-full border border-black dark:border-white">
         <CardHeader className="pb-3">
           <div className="flex flex-col items-center space-y-4">
             <CardTitle>Match Parameters</CardTitle>

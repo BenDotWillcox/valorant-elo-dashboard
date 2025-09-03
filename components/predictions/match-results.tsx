@@ -22,7 +22,7 @@ export function MatchResults({
   matchProbability 
 }: MatchResultsProps) {
   return (
-    <Card>
+    <Card className="border border-black dark:border-white">
       <CardHeader>
         <CardTitle>Match Results</CardTitle>
       </CardHeader>

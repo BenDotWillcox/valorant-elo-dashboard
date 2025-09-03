@@ -184,7 +184,7 @@ export default function MapStatsPage() {
               />
               <Label htmlFor="upcoming-tournament-only">{UPCOMING_TOURNAMENT_NAME} Teams Only</Label>
             </div>
-            <Card className="p-4 space-y-2 max-h-[400px] overflow-y-auto">
+            <Card className="p-4 space-y-2 max-h-[400px] overflow-y-auto border border-black dark:border-white">
               <h3 className="font-semibold text-lg mb-2">Teams (Drag to Chart)</h3>
               {filteredTeams.map(team => (
                   <DraggableTeamComponent key={team.id} team={team} />
@@ -220,7 +220,7 @@ function ChartDropZoneComponent({
   return (
     <Card 
       ref={setNodeRef}
-      className={`p-4 relative ${isOver ? 'ring-2 ring-primary' : ''}`}
+      className={`p-4 relative ${isOver ? 'ring-2 ring-primary' : ''} border border-black dark:border-white`}
     >
       {/* Display dropped team logos */}
       {teams.length > 0 && (

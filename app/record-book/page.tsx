@@ -244,7 +244,7 @@ export default function HallOfFamePage() {
               <span className="text-xl font-medium">{streak.team_name}</span>
             </div>
 
-            <div className="text-lg text-muted-foreground mb-1">{streak.map_name}</div>
+            <div className="text-lg font-bold mb-2">{streak.map_name}</div>
             <div className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
               {streak.streak_length} Maps
               {streak.is_active && <Badge variant="destructive">Active</Badge>}

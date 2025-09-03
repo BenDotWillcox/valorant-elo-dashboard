@@ -55,8 +55,12 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 lg:p-12 bg-gray-50 dark:bg-gray-900">
       <div className="text-center mb-12">
         <Logo className="text-4xl md:text-5xl lg:text-6xl mb-4" />
-        <p className="text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Explore in-depth statistics, predictions, and rankings from Valorant&apos;s VCT.
+        <p className="text-lg md:text-xl lg:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Explore in-depth statistics, predictions, and rankings for Valorant&apos;s VCT league. 
+        </p>
+        <br />
+        <p className="text-lg md:text-xl lg:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+         Using our custom Valorant Elo rating system we are able to get an accurate picture of each team&apos;s strength at the map level.
         </p>
       </div>
 

@@ -16,6 +16,10 @@ export async function getAllMatches(): Promise<Match[]> {
   return await db.select().from(matchesTable);
 }
 
+export async function getMatchesByEvent(eventName: string): Promise<Match[]> {
+  return await db.select().from(matchesTable).where(eq(matchesTable.event_name, eventName));
+}
+
 // UPDATE
 export async function updateMatch(id: number, data: Partial<NewMatch>): Promise<Match[]> {
   return await db.update(matchesTable).set(data).where(eq(matchesTable.id, id)).returning();
@@ -25,6 +29,11 @@ export async function updateMatch(id: number, data: Partial<NewMatch>): Promise<
 export async function deleteMatch(id: number): Promise<Match[]> {
   return await db.delete(matchesTable).where(eq(matchesTable.id, id)).returning();
 }
+
+
+
+
+
 
 
 

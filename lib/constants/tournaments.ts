@@ -70,3 +70,55 @@ export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
   'T1',
   'DRX'
 ];
+
+export const VCT_CHAMPIONS_2025_TEAMS = [
+  // Group A
+  { name: "Paper Rex", slug: "PRX", group: "A" },
+  { name: "XLG Esports", slug: "XLG", group: "A" },
+  { name: "GiantX", slug: "GX", group: "A" },
+  { name: "Sentinels", slug: "SEN", group: "A" },
+
+  // Group B
+  { name: "Bilibili Gaming", slug: "BILI", group: "B" },
+  { name: "MIBR", slug: "MIBR", group: "B" },
+  { name: "Rex Regum Qeon", slug: "RRQ", group: "B" },
+  { name: "Fnatic", slug: "FNC", group: "B" },
+
+  // Group C
+  { name: "Team Liquid", slug: "TL", group: "C" },
+  { name: "DRX", slug: "DRX", group: "C" },
+  { name: "NRG", slug: "NRG", group: "C" },
+  { name: "EDward Gaming", slug: "EDG", group: "C" },
+  
+  // Group D
+  { name: "G2 Esports", slug: "G2", group: "D" },
+  { name: "Team Heretics", slug: "TH", group: "D" },
+  { name: "DRG", slug: "DRG", group: "D" },
+  { name: "T1", slug: "T1", group: "D" },
+];
+
+export const VCT_CHAMPIONS_2025_GROUPS = {
+  A: ["PRX", "XLG", "GX", "SEN"],
+  B: ["BILI", "MIBR", "RRQ", "FNC"],
+  C: ["TL", "DRX", "NRG", "EDG"],
+  D: ["G2", "TH", "DRG", "T1"],
+};
+
+export const VCT_CHAMPIONS_2025_GROUP_MATCHUPS = {
+    A: {
+        initial1: { team1: 'PRX', team2: 'XLG' },
+        initial2: { team1: 'GX', team2: 'SEN' }
+    },
+    B: {
+        initial1: { team1: 'BILI', team2: 'MIBR' },
+        initial2: { team1: 'RRQ', team2: 'FNC' }
+    },
+    C: {
+        initial1: { team1: 'TL', team2: 'DRX' },
+        initial2: { team1: 'NRG', team2: 'EDG' }
+    },
+    D: {
+        initial1: { team1: 'G2', team2: 'TH' },
+        initial2: { team1: 'DRG', team2: 'T1' }
+    }
+};

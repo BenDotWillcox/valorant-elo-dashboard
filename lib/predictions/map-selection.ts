@@ -1,4 +1,4 @@
-interface MapProbabilities {
+export interface MapProbabilities {
   [key: string]: {
     probability: number;
     map: string;

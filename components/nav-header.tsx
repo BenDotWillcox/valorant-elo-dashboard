@@ -49,6 +49,12 @@ const navItems: NavItem[] = [
       "radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(147,51,234,0.06) 50%, rgba(126,34,206,0) 100%)",
   },
   {
+    name: "Simulations",
+    href: "/simulations",
+    gradient:
+      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+  {
     name: "Record Book",
     href: "/record-book",
     gradient:
@@ -57,13 +63,6 @@ const navItems: NavItem[] = [
   {
     name: "Pick/Ban",
     href: "/pick-ban",
-    isComingSoon: true,
-    gradient:
-      "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
-  },
-  {
-    name: "Simulations",
-    href: "/simulations",
     isComingSoon: true,
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",

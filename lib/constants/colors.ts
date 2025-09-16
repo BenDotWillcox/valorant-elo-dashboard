@@ -50,6 +50,25 @@ export const TEAM_COLORS = {
     'BOOM Esports': '#8a1616', // Red
 }
 
+export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
+  'PRX': TEAM_COLORS['Paper Rex'],
+  'XLG': TEAM_COLORS['Xi Lai Gaming'],
+  'GX': TEAM_COLORS['GIANTX'],
+  'SEN': TEAM_COLORS['Sentinels'],
+  'BILI': TEAM_COLORS['Bilibili'],
+  'MIBR': TEAM_COLORS['MIBR'],
+  'RRQ': TEAM_COLORS['Rex Regum Qeon'],
+  'FNC': TEAM_COLORS['Fnatic'],
+  'TL': TEAM_COLORS['Team Liquid'],
+  'DRX': TEAM_COLORS['DRX'],
+  'NRG': TEAM_COLORS['NRG Esports'],
+  'EDG': TEAM_COLORS['EDward Gaming'],
+  'G2': TEAM_COLORS['G2 Esports'],
+  'TH': TEAM_COLORS['Team Heretics'],
+  'T1': TEAM_COLORS['T1'],
+  'DRG': TEAM_COLORS['Dragon Ranger Gaming'],
+};
+
 export const MAP_COLORS = {
   'Abyss': 'hsl(var(--foreground))',
   'Ascent': '#1f77b4', // Blue

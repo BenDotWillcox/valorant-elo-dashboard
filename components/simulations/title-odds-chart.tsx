@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { TEAM_LOGOS } from '@/lib/constants/images';
 import Image from 'next/image';
 import { TEAM_SLUG_TO_COLOR } from '@/lib/constants/colors';
+import { TooltipProps } from 'recharts';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface SimulationResult {
   team: string;
@@ -13,23 +15,34 @@ interface SimulationResult {
 
 interface TitleOddsChartProps {
   data: SimulationResult[];
-  numSimulations: number;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
     if (active && payload && payload.length) {
+      const value = payload[0].value;
       return (
         <div className="bg-gray-800 text-white p-2 rounded border border-gray-600">
           <p className="font-bold">{label}</p>
-          <p>Championship Odds: {payload[0].value.toFixed(2)}%</p>
+          <p>Championship Odds: {typeof value === 'number' ? value.toFixed(2) : value}%</p>
         </div>
       );
     }
     return null;
 };
 
-const CustomYAxisTick = (props: any) => {
+interface CustomYAxisTickProps {
+    x?: number;
+    y?: number;
+    payload?: {
+        value: string;
+    };
+}
+
+const CustomYAxisTick = (props: CustomYAxisTickProps) => {
     const { x, y, payload } = props;
+
+    if (!x || !y || !payload) return null;
+
     const teamSlug = payload.value;
     const logoSrc = TEAM_LOGOS[teamSlug as keyof typeof TEAM_LOGOS];
 
@@ -51,7 +64,7 @@ const CustomYAxisTick = (props: any) => {
     );
 };
 
-export function TitleOddsChart({ data, numSimulations }: TitleOddsChartProps) {
+export function TitleOddsChart({ data }: TitleOddsChartProps) {
   const sortedData = [...data].sort((a, b) => b.championships - a.championships);
 
   return (

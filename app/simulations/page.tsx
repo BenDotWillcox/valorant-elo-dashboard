@@ -102,7 +102,7 @@ export default function SimulationsPage() {
                     <CardTitle>Championship Odds</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <TitleOddsChart data={results} numSimulations={numSimulations} />
+                    <TitleOddsChart data={results} />
                 </CardContent>
             </Card>
 

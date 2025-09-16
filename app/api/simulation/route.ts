@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const results = await runMonteCarloSimulation(numSimulations, eventName);
+    const results = await runMonteCarloSimulation(numSimulations);
     return NextResponse.json({
       results,
       numSimulations,
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const results = await runMonteCarloSimulation(numSimulations, "VCT Champions 2025"); // Default event
+    const results = await runMonteCarloSimulation(numSimulations); // Default event
     return NextResponse.json({
       results,
       numSimulations,

@@ -18,18 +18,24 @@ interface SimulationResult {
   top8: number;
 }
 
+interface EloRating {
+  teamSlug: string;
+  mapName: string;
+  rating: string;
+}
+
 export default function SimulationsPage() {
   const [results, setResults] = useState<SimulationResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [numSimulations, setNumSimulations] = useState(0);
-  const [eloData, setEloData] = useState<Record<string, any> | null>(null);
+  const [eloData, setEloData] = useState<Record<string, Record<string, number>> | null>(null);
 
   useEffect(() => {
     fetch('/api/current-elo')
         .then(res => res.json())
         .then(data => {
-            const eloByTeam: Record<string, any> = {};
-            data.forEach((item: any) => {
+            const eloByTeam: Record<string, Record<string, number>> = {};
+            data.forEach((item: EloRating) => {
                 if (!eloByTeam[ item.teamSlug]) {
                     eloByTeam[item.teamSlug] = {};
                 }

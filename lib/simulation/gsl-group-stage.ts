@@ -1,4 +1,4 @@
-import { Match, TournamentBracket } from "./tournament-bracket";
+import { TournamentBracket } from "./tournament-bracket";
 import { simulateMatch } from "./simulation";
 
 type EloData = Record<string, Record<string, number>>;

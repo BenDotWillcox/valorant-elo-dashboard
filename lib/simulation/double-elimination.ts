@@ -1,4 +1,4 @@
-import { Match, TournamentBracket } from "./tournament-bracket";
+import { TournamentBracket } from "./tournament-bracket";
 import { simulateMatch } from "./simulation";
 
 type EloData = Record<string, Record<string, number>>;
@@ -42,10 +42,10 @@ export function simulateDoubleEliminationBracket(
     "LB-R3M1": { team1: "winner-LB-R2M1", team2: "winner-LB-R2M2", winner: null, round: 3, matchNumber: 1, id: "LB-R3M1", type: "BO3" },
 
     // Lower Bracket Final
-    "LB-FINAL": { team1: "loser-UB-FINAL", team2: "winner-LB-R3M1", winner: null, round: 4, matchNumber: 1, id: "LB-FINAL", type: "BO3" },
+    "LB-FINAL": { team1: "loser-UB-FINAL", team2: "winner-LB-R3M1", winner: null, round: 4, matchNumber: 1, id: "LB-FINAL", type: "BO5" },
 
     // Grand Final
-    "GRAND-FINAL": { team1: "winner-UB-FINAL", team2: "winner-LB-FINAL", winner: null, round: 5, matchNumber: 1, id: "GRAND-FINAL", type: "BO5" },
+    "GRAND-FINAL": { team1: "winner-UB-FINAL", team2: "winner-LB-FINAL", winner: null, round: 5, matchNumber: 1, id: "GRAND-FINAL", type: "BO5_ADV" },
   };
 
   const resolveTeam = (

@@ -1,5 +1,3 @@
-import { TournamentBracket } from "../tournament-bracket";
-
 export const VCT_CHAMPIONS_2025_SEEDING = {
   "groupA-seed1": "PRX",
   "groupA-seed4": "XLG",

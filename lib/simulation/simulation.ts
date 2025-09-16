@@ -148,17 +148,6 @@ export async function runMonteCarloSimulation(
     return acc;
   }, {} as Record<number, string>);
 
-  const completedWinners = completedMatches.reduce((acc, match) => {
-    if (!match.team1_id || !match.team2_id) return acc;
-    const team1Slug = teamIdToSlug[match.team1_id];
-    const team2Slug = teamIdToSlug[match.team2_id];
-    const winnerSlug =
-      match.team1_score! > match.team2_score! ? team1Slug : team2Slug;
-
-    const key = [team1Slug, team2Slug].sort().join("-");
-    acc[key] = winnerSlug;
-    return acc;
-  }, {} as Record<string, string>);
 
   const results = allTeams.reduce((acc, teamSlug) => {
     acc[teamSlug] = {

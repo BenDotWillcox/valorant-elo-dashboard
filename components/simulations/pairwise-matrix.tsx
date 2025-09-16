@@ -42,7 +42,7 @@ function getOptimalMapSelection(
     return { selectedMaps };
 }
 
-function calculateBo3MatchWinProb(team1Slug: string, team2Slug: string, eloData: any): number {
+function calculateBo3MatchWinProb(team1Slug: string, team2Slug: string, eloData: Record<string, Record<string, number>>): number {
     if (!eloData || !eloData[team1Slug] || !eloData[team2Slug]) return 0.5;
 
     const team1Elo = eloData[team1Slug];
@@ -78,9 +78,14 @@ const getColorStyle = (prob: number) => {
 
 // --- Component ---
 
+interface SimulationResult {
+    team: string;
+    teamName: string;
+}
+  
 interface PairwiseMatrixProps {
-    data: any[];
-    eloData: any;
+    data: SimulationResult[];
+    eloData: Record<string, Record<string, number>> | null;
 }
 
 export function PairwiseMatrix({ data, eloData }: PairwiseMatrixProps) {

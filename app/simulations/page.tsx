@@ -27,7 +27,7 @@ interface EloRating {
 export default function SimulationsPage() {
   const [results, setResults] = useState<SimulationResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [numSimulations, setNumSimulations] = useState(0);
+  const [setNumSimulations] = useState(0);
   const [eloData, setEloData] = useState<Record<string, Record<string, number>> | null>(null);
 
   useEffect(() => {
@@ -58,7 +58,6 @@ export default function SimulationsPage() {
       const data = await res.json();
       if (res.ok) {
         setResults(data.results || []);
-        setNumSimulations(data.numSimulations);
       } else {
         console.error("Simulation API Error:", data.error || 'Unknown error');
         setResults([]);

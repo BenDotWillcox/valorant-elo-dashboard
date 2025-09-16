@@ -139,11 +139,6 @@ export async function runMonteCarloSimulation(
     return acc;
   }, new Set<number>());
 
-  const teams = await db
-    .select()
-    .from(teamsTable)
-    .where(inArray(teamsTable.id, Array.from(teamIds)));
-
 
   const results = allTeams.reduce((acc, teamSlug) => {
     acc[teamSlug] = {

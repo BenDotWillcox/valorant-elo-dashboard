@@ -7,7 +7,6 @@ import {
 import { calculateWinProbability } from "../predictions/calculations";
 import { simulateFullTournament } from "@/lib/simulation/tournament-simulation";
 import { VCT_CHAMPIONS_2025_TEAMS } from "@/lib/constants/tournaments";
-import { getMatchesByEvent } from "@/db/queries/matches-queries";
 
 
 export async function getSimulationData() {
@@ -125,17 +124,10 @@ export function simulateMatch(
 
 export async function runMonteCarloSimulation(
   numSimulations: number = 10000,
-  eventName: string
 ) {
   const eloData = await getSimulationData();
   const allTeams = VCT_CHAMPIONS_2025_TEAMS.map((t) => t.slug);
 
-  const completedMatches = await getMatchesByEvent(eventName);
-  const teamIds = completedMatches.reduce((acc, match) => {
-    if (match.team1_id) acc.add(match.team1_id);
-    if (match.team2_id) acc.add(match.team2_id);
-    return acc;
-  }, new Set<number>());
 
 
   const results = allTeams.reduce((acc, teamSlug) => {

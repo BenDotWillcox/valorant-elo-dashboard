@@ -27,7 +27,6 @@ interface EloRating {
 export default function SimulationsPage() {
   const [results, setResults] = useState<SimulationResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [setNumSimulations] = useState(0);
   const [eloData, setEloData] = useState<Record<string, Record<string, number>> | null>(null);
 
   useEffect(() => {

@@ -8,9 +8,7 @@ import { calculateWinProbability } from "../predictions/calculations";
 import { simulateFullTournament } from "@/lib/simulation/tournament-simulation";
 import { VCT_CHAMPIONS_2025_TEAMS } from "@/lib/constants/tournaments";
 import { getMatchesByEvent } from "@/db/queries/matches-queries";
-import { teamsTable } from "@/db/schema/teams-schema";
-import { db } from "@/db/db";
-import { inArray } from "drizzle-orm";
+
 
 export async function getSimulationData() {
   const maps = MAP_POOL.active;

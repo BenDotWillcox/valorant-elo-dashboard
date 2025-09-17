@@ -1,0 +1,102 @@
+.event-brackets-container {
+  color: #fff;
+}
+
+.bracket-container {
+  display: flex;
+  gap: 50px; /* Space between columns */
+}
+
+.bracket-container.mod-lower {
+  margin-top: 30px;
+}
+
+.bracket-col {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+}
+
+.bracket-col.mod-center {
+  justify-content: center;
+}
+
+.bracket-col-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #4a5568;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  color: #a0aec0;
+}
+
+.bracket-row {
+  position: relative;
+}
+
+.bracket-row.mod-1 {
+  margin-bottom: 80px; /* Spacing for connectors */
+}
+
+.bracket-item {
+  background-color: #2d3748;
+  border-radius: 4px;
+  position: relative;
+}
+
+.bracket-item-team {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.bracket-item-team.mod-first {
+  border-bottom: 1px solid #4a5568;
+}
+
+.bracket-item-team.mod-winner .bracket-team-name {
+  font-weight: bold;
+  color: #48bb78; /* green for winner */
+}
+
+.bracket-item-team.mod-winner {
+  background-color: rgba(72, 187, 120, 0.1);
+}
+
+.bracket-team-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.bracket-team-name {
+  flex-grow: 1;
+}
+
+.bracket-item-line {
+  position: absolute;
+  width: 25px; /* Half of column gap */
+  border-color: #4a5568;
+  border-style: solid;
+  right: -25px; /* Connects into the gap */
+}
+
+.bracket-item-line.mod-straight {
+  top: 50%;
+  border-width: 2px 0 0 0;
+}
+
+.bracket-item-line.mod-down {
+  top: 50%;
+  height: calc(50% + 40px); /* Half match + half row gap */
+  border-width: 0 2px 2px 0;
+  border-bottom-right-radius: 8px;
+}
+
+.bracket-item-line.mod-up {
+  bottom: 50%;
+  height: calc(50% + 40px); /* Half match + half row gap */
+  border-width: 2px 2px 0 0;
+  border-top-right-radius: 8px;
+}

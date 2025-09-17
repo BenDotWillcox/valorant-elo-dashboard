@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TitleOddsChart } from '@/components/simulations/title-odds-chart';
 import { RoundReachHeatmap } from '@/components/simulations/round-reach-heatmap';
 import { PairwiseMatrix } from '@/components/simulations/pairwise-matrix';
+import { GSLGroupBracket } from '@/components/simulations/gsl-group-bracket';
+import { VCT_CHAMPIONS_2025_SEEDING } from '@/lib/simulation/tournament-formats/vct-champions-2025';
 
 interface SimulationResult {
   team: string;
@@ -27,7 +29,20 @@ interface EloRating {
 export default function SimulationsPage() {
   const [results, setResults] = useState<SimulationResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [numSimulations, setNumSimulations] = useState(0);
   const [eloData, setEloData] = useState<Record<string, Record<string, number>> | null>(null);
+  const [activeStage, setActiveStage] = useState('groups');
+  const [activeGroup, setActiveGroup] = useState('groupA');
+  const [completedWinners, setCompletedWinners] = useState<Record<string, string>>({
+    'groupA-M1': 'PRX',
+    'groupA-M2': 'GX',
+    'groupB-M1': 'MIBR',
+    'groupB-M2': 'FNC',
+    'groupC-M1': 'DRX',
+    'groupC-M2': 'NRG',
+    'groupD-M1': 'TH',
+    'groupD-M2': 'T1'
+  });
 
   useEffect(() => {
     fetch('/api/current-elo')
@@ -52,17 +67,8 @@ export default function SimulationsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          completedWinners: {
-            'groupA-M1': 'PRX',
-            'groupA-M2': 'GX',
-            'groupB-M1': 'MIBR',
-            'groupB-M2': 'FNC',
-            'groupC-M1': 'DRX',
-            'groupC-M2': 'NRG',
-            'groupD-M1': 'TH',
-            'groupD-M2': 'T1'
-          }
+        body: JSON.stringify({ 
+          completedWinners
         }),
       });
       const data = await res.json();
@@ -101,6 +107,35 @@ export default function SimulationsPage() {
               {loading ? 'Running Simulation...' : 'Run Fresh Simulation'}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="w-full border border-black dark:border-white">
+        <CardHeader>
+            <div className="flex border-b border-gray-700">
+                <button onClick={() => setActiveStage('groups')} className={`px-4 py-2 ${activeStage === 'groups' ? 'border-b-2 border-green-500' : ''}`}>Group Stage</button>
+                <button onClick={() => setActiveStage('playoffs')} className={`px-4 py-2 ${activeStage === 'playoffs' ? 'border-b-2 border-green-500' : ''}`}>Playoffs</button>
+            </div>
+            {activeStage === 'groups' && (
+                <div className="flex justify-center pt-4">
+                    <button onClick={() => setActiveGroup('groupA')} className={`px-3 py-1 ${activeGroup === 'groupA' ? 'bg-gray-700 rounded' : ''}`}>Group A</button>
+                    <button onClick={() => setActiveGroup('groupB')} className={`px-3 py-1 ${activeGroup === 'groupB' ? 'bg-gray-700 rounded' : ''}`}>Group B</button>
+                    <button onClick={() => setActiveGroup('groupC')} className={`px-3 py-1 ${activeGroup === 'groupC' ? 'bg-gray-700 rounded' : ''}`}>Group C</button>
+                    <button onClick={() => setActiveGroup('groupD')} className={`px-3 py-1 ${activeGroup === 'groupD' ? 'bg-gray-700 rounded' : ''}`}>Group D</button>
+                </div>
+            )}
+        </CardHeader>
+        <CardContent>
+            {activeStage === 'groups' && (
+                <GSLGroupBracket 
+                    groupName={activeGroup}
+                    seeding={VCT_CHAMPIONS_2025_SEEDING}
+                    completedWinners={completedWinners}
+                />
+            )}
+            {activeStage === 'playoffs' && (
+                <div className="text-center p-8">Playoff bracket display is not yet implemented.</div>
+            )}
         </CardContent>
       </Card>
       

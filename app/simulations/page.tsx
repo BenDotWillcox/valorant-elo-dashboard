@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TitleOddsChart } from '@/components/simulations/title-odds-chart';
@@ -45,6 +45,7 @@ export default function SimulationsPage() {
     'groupA-WM': 'PRX',
     'groupC-WM': 'NRG'
   });
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/current-elo')
@@ -60,6 +61,12 @@ export default function SimulationsPage() {
             setEloData(eloByTeam);
         });
   }, []);
+
+  useEffect(() => {
+    if (results.length > 0 && resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [results]);
 
   const runSimulation = async () => {
     setLoading(true);
@@ -142,36 +149,38 @@ export default function SimulationsPage() {
         </CardContent>
       </Card>
       
-      {results.length > 0 && (
-        <>
-            <Card className="w-full border border-black dark:border-white">
+      <div ref={resultsRef}>
+        {results.length > 0 && (
+            <>
+                <Card className="w-full border border-black dark:border-white">
+                    <CardHeader>
+                        <CardTitle>Championship Odds</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <TitleOddsChart data={results} />
+                    </CardContent>
+                </Card>
+
+                <Card className="w-full border border-black dark:border-white">
                 <CardHeader>
-                    <CardTitle>Championship Odds</CardTitle>
+                    <CardTitle>Round Reach Probabilities</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <TitleOddsChart data={results} />
+                    <RoundReachHeatmap data={results} />
                 </CardContent>
-            </Card>
+                </Card>
 
-            <Card className="w-full border border-black dark:border-white">
-            <CardHeader>
-                <CardTitle>Round Reach Probabilities</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <RoundReachHeatmap data={results} />
-            </CardContent>
-            </Card>
-
-            <Card className="w-full border border-black dark:border-white">
-                <CardHeader>
-                    <CardTitle>Pairwise Win Probabilities (Bo3)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <PairwiseMatrix data={results} eloData={eloData} />
-                </CardContent>
-            </Card>
-        </>
-      )}
+                <Card className="w-full border border-black dark:border-white">
+                    <CardHeader>
+                        <CardTitle>Pairwise Win Probabilities (Bo3)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <PairwiseMatrix data={results} eloData={eloData} />
+                    </CardContent>
+                </Card>
+            </>
+        )}
+      </div>
     </div>
   );
 } 

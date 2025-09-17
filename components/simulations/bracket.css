@@ -33,10 +33,15 @@
 
 .bracket-row {
   position: relative;
+  margin-bottom: 80px;
 }
 
-.bracket-row.mod-1 {
-  margin-bottom: 80px; /* Spacing for connectors */
+.bracket-row:last-child {
+  margin-bottom: 0;
+}
+
+.bracket-row.mod-spacing {
+  margin-bottom: 100px; /* Extra spacing for playoff groups */
 }
 
 .bracket-item {

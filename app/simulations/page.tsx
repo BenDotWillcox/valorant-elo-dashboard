@@ -8,6 +8,7 @@ import { RoundReachHeatmap } from '@/components/simulations/round-reach-heatmap'
 import { PairwiseMatrix } from '@/components/simulations/pairwise-matrix';
 import { GSLGroupBracket } from '@/components/simulations/gsl-group-bracket';
 import { VCT_CHAMPIONS_2025_SEEDING } from '@/lib/simulation/tournament-formats/vct-champions-2025';
+import { PlayoffBracket } from '@/components/simulations/playoff-bracket';
 
 interface SimulationResult {
   team: string;
@@ -40,7 +41,8 @@ export default function SimulationsPage() {
     'groupC-M1': 'DRX',
     'groupC-M2': 'NRG',
     'groupD-M1': 'TH',
-    'groupD-M2': 'T1'
+    'groupD-M2': 'T1',
+    'groupA-WM': 'PRX',
   });
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function SimulationsPage() {
         <CardContent>
           <div className="flex flex-col items-center space-y-4">
             <p>
-              Run a Monte Carlo simulation of the upcoming VCT Champions 2025 tournament. 
+              Run a Monte Carlo simulation of the ongoing VCT Champions 2025 tournament. 
               This will simulate the tournament 10,000 times based on current map Elo ratings to predict the outcome.
               The simulation will automatically use the results of any matches that have already been completed.
             </p>
@@ -130,10 +132,11 @@ export default function SimulationsPage() {
                     groupName={activeGroup}
                     seeding={VCT_CHAMPIONS_2025_SEEDING}
                     completedWinners={completedWinners}
+                    eloData={eloData}
                 />
             )}
             {activeStage === 'playoffs' && (
-                <div className="text-center p-8">Playoff bracket display is not yet implemented.</div>
+                <PlayoffBracket />
             )}
         </CardContent>
       </Card>

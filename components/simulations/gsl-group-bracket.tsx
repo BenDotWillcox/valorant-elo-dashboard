@@ -4,11 +4,13 @@ import React from 'react';
 import { TEAM_LOGOS } from '@/lib/constants/images';
 import Image from 'next/image';
 import './bracket.css';
+import { calculateBo3MatchWinProb } from '@/lib/predictions/client-match-simulation';
 
 interface BracketProps {
   groupName: string;
   seeding: Record<string, string>;
   completedWinners: Record<string, string>;
+  eloData: Record<string, Record<string, number>> | null;
 }
 
 const TeamDisplay = ({ slug }: { slug: string | null }) => {
@@ -22,7 +24,7 @@ const TeamDisplay = ({ slug }: { slug: string | null }) => {
     );
 };
 
-export function GSLGroupBracket({ groupName, seeding, completedWinners }: BracketProps) {
+export function GSLGroupBracket({ groupName, seeding, completedWinners, eloData }: BracketProps) {
     const resolveTeam = (placeholder: string | null): string | null => {
         if (!placeholder) return null;
         if (placeholder.includes("seed")) return seeding[placeholder] ?? null;
@@ -66,33 +68,64 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
         'DM': { team1: resolveTeam('loser-WM'), team2: resolveTeam('winner-EM'), winner: resolveTeam('winner-DM') }
     };
 
+    const calculateProb = (team1: string | null, team2: string | null) => {
+        if (!team1 || !team2 || !eloData) return { prob1: 0.5, prob2: 0.5 };
+        const prob1 = calculateBo3MatchWinProb(team1, team2, eloData);
+        return { prob1, prob2: 1 - prob1 };
+    }
+
+    const matchesWithProbs = {
+        M1: { ...matches.M1, probs: calculateProb(matches.M1.team1, matches.M1.team2) },
+        M2: { ...matches.M2, probs: calculateProb(matches.M2.team1, matches.M2.team2) },
+        WM: { ...matches.WM, probs: calculateProb(matches.WM.team1, matches.WM.team2) },
+        EM: { ...matches.EM, probs: calculateProb(matches.EM.team1, matches.EM.team2) },
+        DM: { ...matches.DM, probs: calculateProb(matches.DM.team1, matches.DM.team2) },
+    };
+
+    const MatchItem = ({ team1, team2, winner, probs, line }: { team1: string | null, team2: string | null, winner: string | null, probs: { prob1: number, prob2: number }, line?: 'up' | 'down' | 'straight' }) => {
+        const prob1Text = `${(probs.prob1 * 100).toFixed(0)}%`;
+        const prob2Text = `${(probs.prob2 * 100).toFixed(0)}%`;
+        
+        const team1BackgroundStyle = !winner && team1 && team2 ? {
+            background: `linear-gradient(to right, rgba(72, 187, 120, 0.2) ${prob1Text}, transparent ${prob1Text})`
+        } : {};
+
+        const team2BackgroundStyle = !winner && team1 && team2 ? {
+            background: `linear-gradient(to right, rgba(72, 187, 120, 0.2) ${prob2Text}, transparent ${prob2Text})`
+        } : {};
+
+        return (
+            <div className="bracket-item">
+                <div 
+                    className={`bracket-item-team mod-first ${winner && winner === team1 ? 'mod-winner' : ''}`}
+                    style={team1BackgroundStyle}
+                >
+                    <TeamDisplay slug={team1} />
+                    {!winner && team1 && team2 && <span className="bracket-team-percentage">{prob1Text}</span>}
+                </div>
+                <div 
+                    className={`bracket-item-team ${winner && winner === team2 ? 'mod-winner' : ''}`}
+                    style={team2BackgroundStyle}
+                >
+                    <TeamDisplay slug={team2} />
+                    {!winner && team1 && team2 && <span className="bracket-team-percentage">{prob2Text}</span>}
+                </div>
+                {line && <div className={`bracket-item-line mod-${line}`}></div>}
+            </div>
+        )
+    };
+
     return (
         <div className="event-brackets-container">
           <div className="bracket-container mod-upper">
             {/* Column 1: Opening */}
             <div className="bracket-col">
               <div className="bracket-col-label">Opening</div>
-              <div className="bracket-row mod-1">
-                <div className="bracket-item">
-                  <div className={`bracket-item-team mod-first ${matches.M1.winner === matches.M1.team1 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.M1.team1} />
-                  </div>
-                  <div className={`bracket-item-team ${matches.M1.winner === matches.M1.team2 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.M1.team2} />
-                  </div>
-                  <div className="bracket-item-line mod-down"></div>
-                </div>
+              <div className="bracket-row">
+                <MatchItem team1={matchesWithProbs.M1.team1} team2={matchesWithProbs.M1.team2} winner={matchesWithProbs.M1.winner} probs={matchesWithProbs.M1.probs} line="down" />
               </div>
-              <div className="bracket-row mod-2">
-                <div className="bracket-item">
-                  <div className={`bracket-item-team mod-first ${matches.M2.winner === matches.M2.team1 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.M2.team1} />
-                  </div>
-                  <div className={`bracket-item-team ${matches.M2.winner === matches.M2.team2 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.M2.team2} />
-                  </div>
-                  <div className="bracket-item-line mod-up"></div>
-                </div>
+              <div className="bracket-row">
+                <MatchItem team1={matchesWithProbs.M2.team1} team2={matchesWithProbs.M2.team2} winner={matchesWithProbs.M2.winner} probs={matchesWithProbs.M2.probs} line="up" />
               </div>
             </div>
     
@@ -100,15 +133,7 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
             <div className="bracket-col mod-center">
               <div className="bracket-col-label">Winner&apos;s</div>
               <div className="bracket-row">
-                <div className="bracket-item">
-                  <div className={`bracket-item-team mod-first ${matches.WM.winner && matches.WM.winner === matches.WM.team1 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.WM.team1} />
-                  </div>
-                  <div className={`bracket-item-team ${matches.WM.winner && matches.WM.winner === matches.WM.team2 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.WM.team2} />
-                  </div>
-                  <div className="bracket-item-line mod-straight"></div>
-                </div>
+                <MatchItem team1={matchesWithProbs.WM.team1} team2={matchesWithProbs.WM.team2} winner={matchesWithProbs.WM.winner} probs={matchesWithProbs.WM.probs} line="straight" />
               </div>
             </div>
     
@@ -117,8 +142,8 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
               <div className="bracket-col-label">Qualified</div>
               <div className="bracket-row">
                 <div className="bracket-item">
-                  <div className={`bracket-item-team ${matches.WM.winner ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.WM.winner} />
+                  <div className={`bracket-item-team ${matchesWithProbs.WM.winner ? 'mod-winner' : ''}`}>
+                    <TeamDisplay slug={matchesWithProbs.WM.winner} />
                   </div>
                 </div>
               </div>
@@ -130,15 +155,7 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
             <div className="bracket-col mod-center">
               <div className="bracket-col-label">Elimination</div>
               <div className="bracket-row">
-                <div className="bracket-item">
-                  <div className={`bracket-item-team mod-first ${matches.EM.winner && matches.EM.winner === matches.EM.team1 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.EM.team1} />
-                  </div>
-                  <div className={`bracket-item-team ${matches.EM.winner && matches.EM.winner === matches.EM.team2 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.EM.team2} />
-                  </div>
-                  <div className="bracket-item-line mod-straight"></div>
-                </div>
+                <MatchItem team1={matchesWithProbs.EM.team1} team2={matchesWithProbs.EM.team2} winner={matchesWithProbs.EM.winner} probs={matchesWithProbs.EM.probs} line="straight" />
               </div>
             </div>
     
@@ -146,15 +163,7 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
             <div className="bracket-col mod-center">
               <div className="bracket-col-label">Decider</div>
               <div className="bracket-row">
-                <div className="bracket-item">
-                  <div className={`bracket-item-team mod-first ${matches.DM.winner && matches.DM.winner === matches.DM.team1 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.DM.team1} />
-                  </div>
-                  <div className={`bracket-item-team ${matches.DM.winner && matches.DM.winner === matches.DM.team2 ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.DM.team2} />
-                  </div>
-                  <div className="bracket-item-line mod-straight"></div>
-                </div>
+                <MatchItem team1={matchesWithProbs.DM.team1} team2={matchesWithProbs.DM.team2} winner={matchesWithProbs.DM.winner} probs={matchesWithProbs.DM.probs} line="straight" />
               </div>
             </div>
     
@@ -163,8 +172,8 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
               <div className="bracket-col-label">Qualified</div>
               <div className="bracket-row">
                 <div className="bracket-item">
-                  <div className={`bracket-item-team ${matches.DM.winner ? 'mod-winner' : ''}`}>
-                    <TeamDisplay slug={matches.DM.winner} />
+                  <div className={`bracket-item-team ${matchesWithProbs.DM.winner ? 'mod-winner' : ''}`}>
+                    <TeamDisplay slug={matchesWithProbs.DM.winner} />
                   </div>
                 </div>
               </div>

@@ -98,7 +98,7 @@ export function GSLGroupBracket({ groupName, seeding, completedWinners }: Bracke
     
             {/* Column 2: Winner's */}
             <div className="bracket-col mod-center">
-              <div className="bracket-col-label">Winner's</div>
+              <div className="bracket-col-label">Winner&apos;s</div>
               <div className="bracket-row">
                 <div className="bracket-item">
                   <div className={`bracket-item-team mod-first ${matches.WM.winner && matches.WM.winner === matches.WM.team1 ? 'mod-winner' : ''}`}>

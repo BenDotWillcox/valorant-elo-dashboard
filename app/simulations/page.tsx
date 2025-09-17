@@ -29,11 +29,10 @@ interface EloRating {
 export default function SimulationsPage() {
   const [results, setResults] = useState<SimulationResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [numSimulations, setNumSimulations] = useState(0);
   const [eloData, setEloData] = useState<Record<string, Record<string, number>> | null>(null);
   const [activeStage, setActiveStage] = useState('groups');
   const [activeGroup, setActiveGroup] = useState('groupA');
-  const [completedWinners, setCompletedWinners] = useState<Record<string, string>>({
+  const [completedWinners] = useState<Record<string, string>>({
     'groupA-M1': 'PRX',
     'groupA-M2': 'GX',
     'groupB-M1': 'MIBR',

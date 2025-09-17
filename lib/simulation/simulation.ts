@@ -7,8 +7,7 @@ import {
 import { calculateWinProbability } from "../predictions/calculations";
 import { simulateFullTournament } from "@/lib/simulation/tournament-simulation";
 import { VCT_CHAMPIONS_2025_TEAMS } from "@/lib/constants/tournaments";
-import { db } from "@/db/db";
-import { inArray } from "drizzle-orm";
+
 
 
 export async function getSimulationData() {

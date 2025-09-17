@@ -7,7 +7,8 @@ type Seeding = Record<string, string>;
 export function simulateGSLGroup(
   groupName: string,
   groupSeeding: Seeding,
-  eloData: EloData
+  eloData: EloData,
+  completedWinners?: Record<string, string>
 ): { winner: string; runnerUp: string } {
   const bracket: TournamentBracket = {
     [`${groupName}-M1`]: {
@@ -93,12 +94,16 @@ export function simulateGSLGroup(
       const team2Slug = resolveTeam(match.team2);
 
       if (team1Slug && team2Slug) {
-        match.winner = simulateMatch(
-          team1Slug,
-          team2Slug,
-          match.type,
-          eloData
-        ).winner;
+        if (completedWinners && completedWinners[matchId]) {
+          match.winner = completedWinners[matchId];
+        } else {
+          match.winner = simulateMatch(
+            team1Slug,
+            team2Slug,
+            match.type,
+            eloData
+          ).winner;
+        }
         changedInIteration = true;
       }
     }

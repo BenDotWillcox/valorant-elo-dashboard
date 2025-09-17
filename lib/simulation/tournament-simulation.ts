@@ -4,11 +4,11 @@ import { VCT_CHAMPIONS_2025_SEEDING } from "./tournament-formats/vct-champions-2
 
 type EloData = Record<string, Record<string, number>>;
 
-export function simulateFullTournament(eloData: EloData) {
-  const groupA_results = simulateGSLGroup("groupA", VCT_CHAMPIONS_2025_SEEDING, eloData);
-  const groupB_results = simulateGSLGroup("groupB", VCT_CHAMPIONS_2025_SEEDING, eloData);
-  const groupC_results = simulateGSLGroup("groupC", VCT_CHAMPIONS_2025_SEEDING, eloData);
-  const groupD_results = simulateGSLGroup("groupD", VCT_CHAMPIONS_2025_SEEDING, eloData);
+export function simulateFullTournament(eloData: EloData, completedWinners?: Record<string, string>) {
+  const groupA_results = simulateGSLGroup("groupA", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
+  const groupB_results = simulateGSLGroup("groupB", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
+  const groupC_results = simulateGSLGroup("groupC", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
+  const groupD_results = simulateGSLGroup("groupD", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
 
   const qualifiedTeams = {
     groupA_winner: groupA_results.winner,

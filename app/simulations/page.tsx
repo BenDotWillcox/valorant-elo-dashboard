@@ -52,7 +52,18 @@ export default function SimulationsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ eventName: 'VCT Champions 2025' }),
+        body: JSON.stringify({
+          completedWinners: {
+            'groupA-M1': 'PRX',
+            'groupA-M2': 'GX',
+            'groupB-M1': 'MIBR',
+            'groupB-M2': 'FNC',
+            'groupC-M1': 'DRX',
+            'groupC-M2': 'NRG',
+            'groupD-M1': 'TH',
+            'groupD-M2': 'T1'
+          }
+        }),
       });
       const data = await res.json();
       if (res.ok) {

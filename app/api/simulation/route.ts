@@ -17,16 +17,9 @@ export async function POST(request: Request) {
     }
     
     const body = await request.json();
-    const eventName = body.eventName;
+    const completedWinners = body.completedWinners;
 
-    if (!eventName) {
-      return NextResponse.json(
-        { error: "Event name is required" },
-        { status: 400 }
-      );
-    }
-
-    const results = await runMonteCarloSimulation(numSimulations);
+    const results = await runMonteCarloSimulation(numSimulations, completedWinners);
     return NextResponse.json({
       results,
       numSimulations,

@@ -7,6 +7,8 @@ import {
 import { calculateWinProbability } from "../predictions/calculations";
 import { simulateFullTournament } from "@/lib/simulation/tournament-simulation";
 import { VCT_CHAMPIONS_2025_TEAMS } from "@/lib/constants/tournaments";
+import { db } from "@/db/db";
+import { inArray } from "drizzle-orm";
 
 
 export async function getSimulationData() {
@@ -124,11 +126,24 @@ export function simulateMatch(
 
 export async function runMonteCarloSimulation(
   numSimulations: number = 10000,
+  completedWinners?: Record<string, string>
 ) {
   const eloData = await getSimulationData();
   const allTeams = VCT_CHAMPIONS_2025_TEAMS.map((t) => t.slug);
+  const maps = MAP_POOL.active;
 
+  const teamsWithIncompleteElo = allTeams.filter(team => {
+    if (!eloData[team]) {
+        return true;
+    }
+    const teamMapRatings = Object.keys(eloData[team]);
+    const hasAnyMapRating = maps.some(map => teamMapRatings.includes(map) && eloData[team][map]);
+    return !hasAnyMapRating;
+  });
 
+  if (teamsWithIncompleteElo.length > 0) {
+    console.warn(`Warning: Map-specific Elo data is missing for the following teams: ${teamsWithIncompleteElo.join(', ')}. Matches will default to 50/50 odds.`);
+  }
 
   const results = allTeams.reduce((acc, teamSlug) => {
     acc[teamSlug] = {
@@ -143,7 +158,7 @@ export async function runMonteCarloSimulation(
   }, {} as Record<string, { championships: number; finalist: number; top4: number; top8: number; top3: number; top6: number; }>);
 
   for (let i = 0; i < numSimulations; i++) {
-    const tournamentResults = simulateFullTournament(eloData);
+    const tournamentResults = simulateFullTournament(eloData, completedWinners);
 
     if (tournamentResults.winner) {
       results[tournamentResults.winner].championships++;

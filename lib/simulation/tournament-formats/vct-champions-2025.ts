@@ -15,7 +15,7 @@ export const VCT_CHAMPIONS_2025_SEEDING = {
   "groupC-seed3": "EDG",
 
   "groupD-seed1": "G2",
-  "groupD-seed2": "TH",
-  "groupD-seed3": "DRG",
-  "groupD-seed4": "T1",
+  "groupD-seed4": "TH",
+  "groupD-seed2": "DRG",
+  "groupD-seed3": "T1",
 };

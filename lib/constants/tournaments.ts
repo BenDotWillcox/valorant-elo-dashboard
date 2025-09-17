@@ -43,11 +43,11 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: EMEA Stage 1": { id: 2380, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 1": { id: 2379, region: "Pacific", status: "completed" },
     "Valorant Masters Toronto 2025": { id: 2282, region: "International", status: "completed" },
-    "VCT 2025: China Stage 2": { id: 2499, region: "China", status: "ongoing" },
-    "VCT 2025: Americas Stage 2": { id: 2501, region: "Americas", status: "ongoing" },
-    "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "ongoing" },
-    "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "ongoing" },
-    "Valorant Champions 2025": { id: 2283, region: "International", status: "upcoming" },
+    "VCT 2025: China Stage 2": { id: 2499, region: "China", status: "completed" },
+    "VCT 2025: Americas Stage 2": { id: 2501, region: "Americas", status: "completed" },
+    "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "completed" },
+    "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "completed" },
+    "Valorant Champions 2025": { id: 2283, region: "International", status: "ongoing" },
   };
 
 export const UPCOMING_TOURNAMENT_NAME = "Valorant Champions 2025";

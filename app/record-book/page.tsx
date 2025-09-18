@@ -45,8 +45,8 @@ export default function HallOfFamePage() {
   const [worstMaps, setWorstMaps] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapPopularity, setMapPopularity] = useState([]);
-  const [selectedStartDate] = useState(subDays(new Date(), 30));
-  const [selectedEndDate] = useState(new Date());
+  const [selectedStartDate, setSelectedStartDate] = useState(subDays(new Date(), 30));
+  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
 
 
   useEffect(() => {
@@ -280,8 +280,13 @@ export default function HallOfFamePage() {
 
         {/* Map Stats Section */}
         <div className="md:col-span-2 xl:col-span-3">
-          <MapPopularityChart data={mapPopularity} onDateChange={() => {
-            // This is a placeholder for the actual fetch logic
+          <MapPopularityChart data={mapPopularity} onDateChange={(range) => {
+            if (range?.from) {
+              setSelectedStartDate(range.from);
+            }
+            if (range?.to) {
+              setSelectedEndDate(range.to);
+            }
           }} />
         </div>
 

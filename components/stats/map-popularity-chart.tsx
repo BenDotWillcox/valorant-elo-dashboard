@@ -7,15 +7,16 @@ import { MAP_COLORS } from "@/lib/constants/colors";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DateRange } from "react-day-picker";
 
 interface MapPopularityProps {
-  onDateChange: (startDate: Date, endDate: Date) => void;
+  onDateChange: (range?: DateRange) => void;
   data: {
     date: string;
     mapName: string;
@@ -39,24 +40,14 @@ interface TooltipProps {
 }
 
 export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [startDate, setStartDate] = useState<Date>(subDays(endDate, 30));
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
 
-  const handleStartDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      setStartDate(newDate);
-      setEndDate(addDays(newDate, 30));
-      onDateChange(newDate, addDays(newDate, 30));
-    }
-  };
-
-  const handleEndDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      setEndDate(newDate);
-      setStartDate(subDays(newDate, 30));
-      onDateChange(subDays(newDate, 30), newDate);
-    }
-  };
+  useEffect(() => {
+    onDateChange(date);
+  }, [date, onDateChange]);
 
   // Update the reduce function
   const transformedData = data.reduce((acc: Record<string, TransformedData>, curr) => {
@@ -88,39 +79,42 @@ export function MapPopularityChart({ data, onDateChange }: MapPopularityProps) {
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
         <div className="flex items-center">
           <h2 className="text-lg font-semibold whitespace-nowrap">Map Play Percentage</h2>
-          <InfoTooltip content="Shows the percentage of matches played on each map over a 30-day rolling window. Use the date picker to explore different time periods." />
+          <InfoTooltip content="Shows the percentage of matches played on each map over a given rolling window. Use the date picker to explore different time periods." />
         </div>
         <div className="flex gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal")}>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={cn(
+                  "w-[240px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(startDate, "MMM d, yyyy")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={handleStartDateChange}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <span className="self-center">→</span>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal")}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(endDate, "MMM d, yyyy")}
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
               <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={handleEndDateChange}
                 initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
               />
             </PopoverContent>
           </Popover>

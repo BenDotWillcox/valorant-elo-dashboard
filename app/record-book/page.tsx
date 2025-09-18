@@ -43,6 +43,8 @@ export default function HallOfFamePage() {
   const [perfectGames, setPerfectGames] = useState([]);
   const [greatestTeams, setGreatestTeams] = useState<Team[]>([]);
   const [worstTeams, setWorstTeams] = useState<Team[]>([]);
+  const [topMaps, setTopMaps] = useState<Team[]>([]);
+  const [worstMaps, setWorstMaps] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapPopularity, setMapPopularity] = useState([]);
   const [selectedStartDate] = useState(subDays(new Date(), 30));
@@ -59,13 +61,15 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/worst-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams]) => {
+    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
       setUpsets(ups);
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);
       setPerfectGames(perfect);
       setGreatestTeams(greatest);
       setWorstTeams(worstTeams);
+      setTopMaps(topMaps);
+      setWorstMaps(worstMaps);
       setLoading(false);
     });
   }, []);
@@ -94,7 +98,7 @@ export default function HallOfFamePage() {
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-auto">
-        <StatCarousel title="Strongest Maps" tooltip="Teams that achieved the highest Elo rating on a map across all seasons" data={greatestTeams} renderContent={(team) => {
+        <StatCarousel title="Strongest Maps" tooltip="Teams that achieved the highest Elo rating on a map across all seasons" data={topMaps} renderContent={(team) => {
           const ratingNumber = Number(team.rating);
           const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayPeakDate = 'Unknown date';
@@ -187,7 +191,7 @@ export default function HallOfFamePage() {
           </div>
         </div>
 
-        <StatCarousel title="Weakest Maps" tooltip="Teams that hit the lowest Elo rating on a map across all seasons" data={worstTeams} renderContent={(team) => {
+        <StatCarousel title="Weakest Maps" tooltip="Teams that hit the lowest Elo rating on a map across all seasons" data={worstMaps} renderContent={(team) => {
           const ratingNumber = Number(team.rating);
           const displayRating = !isNaN(ratingNumber) ? Math.round(ratingNumber) : 'N/A';
           let displayLowestDate = 'Unknown date';

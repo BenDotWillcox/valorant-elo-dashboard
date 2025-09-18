@@ -41,8 +41,6 @@ export default function HallOfFamePage() {
   const [winStreaks, setWinStreaks] = useState<Streak[]>([]);
   const [loseStreaks, setLoseStreaks] = useState<Streak[]>([]);
   const [perfectGames, setPerfectGames] = useState([]);
-  const [greatestTeams, setGreatestTeams] = useState<Team[]>([]);
-  const [worstTeams, setWorstTeams] = useState<Team[]>([]);
   const [topMaps, setTopMaps] = useState<Team[]>([]);
   const [worstMaps, setWorstMaps] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,17 +55,13 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/win-streaks').then(res => res.json()),
       fetch('/api/hall-of-fame/lose-streaks').then(res => res.json()),
       fetch('/api/hall-of-fame/perfect-games').then(res => res.json()),
-      fetch('/api/hall-of-fame/greatest-teams').then(res => res.json()),
-      fetch('/api/hall-of-fame/worst-teams').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([ups, streaks, loseStreaks, perfect, greatest, worstTeams, topMaps, worstMaps]) => {
+    ]).then(([ups, streaks, loseStreaks, perfect, topMaps, worstMaps]) => {
       setUpsets(ups);
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);
       setPerfectGames(perfect);
-      setGreatestTeams(greatest);
-      setWorstTeams(worstTeams);
       setTopMaps(topMaps);
       setWorstMaps(worstMaps);
       setLoading(false);

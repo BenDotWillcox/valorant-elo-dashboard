@@ -1,7 +1,7 @@
 'use client';
 
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
-import { format, subDays, addDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { MAP_COLORS } from "@/lib/constants/colors";
 import { Calendar } from "@/components/ui/calendar";

@@ -43,7 +43,9 @@ export default function SimulationsPage() {
     'groupD-M1': 'TH',
     'groupD-M2': 'T1',
     'groupA-WM': 'PRX',
-    'groupC-WM': 'NRG'
+    'groupC-WM': 'NRG',
+    'groupB-WM': 'FNC',
+    'groupD-WM': 'TH'
   });
   const resultsRef = useRef<HTMLDivElement>(null);
 

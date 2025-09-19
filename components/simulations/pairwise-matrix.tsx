@@ -2,14 +2,9 @@
 
 import { TEAM_LOGOS } from '@/lib/constants/images';
 import Image from 'next/image';
-import { MAP_POOL } from "@/lib/constants/maps";
 import { calculateBo3MatchWinProb } from '@/lib/predictions/client-match-simulation';
 
 // --- Client-side Prediction Logic ---
-
-interface MapProbabilities {
-    [key: string]: { probability: number; map: string; };
-}
 
 const getColorStyle = (prob: number) => {
     const p = prob / 100;

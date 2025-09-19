@@ -45,7 +45,9 @@ export default function SimulationsPage() {
     'groupA-WM': 'PRX',
     'groupC-WM': 'NRG',
     'groupB-WM': 'FNC',
-    'groupD-WM': 'TH'
+    'groupD-WM': 'TH',
+    'groupA-EM': 'XLG',
+    'groupC-EM': 'TL'
   });
   const resultsRef = useRef<HTMLDivElement>(null);
 

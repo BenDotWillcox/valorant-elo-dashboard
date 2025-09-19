@@ -138,7 +138,7 @@ export async function resetEloSystem() {
 }
 
 async function insertSeasonResetRatings(resetDate: Date) {
-  const teams = await db.select().from(teamsTable);
+  const teams = await db.select().from(teamsTable).where(eq(teamsTable.is_active, true));
   const year = resetDate.getFullYear();
   const mapNames = MAP_AVAILABILITY[year] || [];
 

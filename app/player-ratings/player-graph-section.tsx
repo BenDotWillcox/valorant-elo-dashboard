@@ -6,6 +6,8 @@ import { PlayerVpmChart } from "./player-vpm-chart";
 import { getPlayerKfData } from "@/actions/players-actions";
 import { getPlayerByIgn } from "@/actions/players-actions";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { getSeasonsAction } from "@/actions/seasons-actions";
+import { Season } from "@/db/schema/seasons-schema";
 
 export type PlayerKfData = {
   gameNum: number;
@@ -29,9 +31,16 @@ export function PlayerGraphSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
   const [xAxis, setXAxis] = useState<"games" | "date">("games");
+  const [seasons, setSeasons] = useState<Season[]>([]);
 
   useEffect(() => {
-    const fetchDefaultPlayer = async () => {
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      const seasonsRes = await getSeasonsAction();
+      if (seasonsRes.status === "success" && Array.isArray(seasonsRes.data)) {
+        setSeasons(seasonsRes.data);
+      }
+
       const defaultPlayer = await getPlayerByIgn("Zekken");
       if (defaultPlayer) {
         setSelectedPlayers([defaultPlayer]);
@@ -41,7 +50,7 @@ export function PlayerGraphSection() {
       setIsLoading(false);
     };
 
-    fetchDefaultPlayer();
+    fetchInitialData();
   }, []);
 
   const handlePlayerAdded = async (player: Player) => {
@@ -102,6 +111,7 @@ export function PlayerGraphSection() {
             players={selectedPlayers}
             data={playersData}
             xAxis={xAxis}
+            seasons={seasons}
           />
         ) : (
           <p>Select a player to see their performance graph.</p>

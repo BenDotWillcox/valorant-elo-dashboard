@@ -12,6 +12,8 @@ import {
 } from "recharts";
 import { PlayerKfData } from "./player-graph-section";
 import { format } from "date-fns";
+import { Season } from "@/db/schema/seasons-schema";
+import { useMemo } from "react";
 
 type Player = {
   id: number;
@@ -26,6 +28,7 @@ type PlayerVpmChartProps = {
   players: Player[];
   data: { [playerId: number]: PlayerKfData[] };
   xAxis: "games" | "date";
+  seasons: Season[];
 };
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE"];
@@ -49,23 +52,86 @@ const getGameTicks = (maxGames: number) => {
   return ticks;
 };
 
-const dateTicks = [
-  new Date("2023-02-14").getTime(),
-  new Date("2024-02-17").getTime(),
-  new Date("2025-01-11").getTime(),
-];
-
 export function PlayerVpmChart({
   players,
   data,
   xAxis,
+  seasons,
 }: PlayerVpmChartProps) {
+  const {
+    compressedTicks,
+    tickLabelMap,
+    totalSeasonDuration,
+    compressDate,
+  } = useMemo(() => {
+    if (!seasons || seasons.length === 0 || xAxis === "games") {
+      return {
+        compressedTicks: [],
+        tickLabelMap: new Map(),
+        totalSeasonDuration: 0,
+        compressDate: () => null,
+      };
+    }
+
+    const sortedSeasons = [...seasons].sort(
+      (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    );
+
+    let cumulativeDuration = 0;
+    const seasonMap = sortedSeasons.map((season) => {
+      const startDate = new Date(season.start_date);
+      const endDate = season.end_date
+        ? new Date(season.end_date)
+        : new Date();
+      const duration = endDate.getTime() - startDate.getTime();
+      const seasonInfo = {
+        startDate,
+        endDate,
+        duration,
+        cumulativeOffset: cumulativeDuration,
+      };
+      cumulativeDuration += duration;
+      return seasonInfo;
+    });
+
+    const totalSeasonDuration = cumulativeDuration;
+
+    const compressedTicks = seasonMap.map((s) => s.cumulativeOffset);
+    const tickLabelMap = new Map<number, string>();
+    seasonMap.forEach((s) => {
+      tickLabelMap.set(s.cumulativeOffset, format(s.startDate, "MMM yyyy"));
+    });
+
+    const compressDate = (date: Date): number | null => {
+      if (!date) return null;
+      const time = date.getTime();
+
+      for (const season of seasonMap) {
+        if (
+          time >= season.startDate.getTime() &&
+          time <= season.endDate.getTime()
+        ) {
+          const timeIntoSeason = time - season.startDate.getTime();
+          return season.cumulativeOffset + timeIntoSeason;
+        }
+      }
+      return null;
+    };
+
+    return {
+      compressedTicks,
+      tickLabelMap,
+      totalSeasonDuration,
+      compressDate,
+    };
+  }, [seasons, xAxis]);
+
   const allData = players.flatMap((p) => data[p.id] || []);
 
   const xDomain: [string | number, string | number] =
     xAxis === "games"
       ? [0, "dataMax"]
-      : [dateTicks[0], dateTicks[dateTicks.length - 1]];
+      : [0, totalSeasonDuration];
 
   const gameTicks =
     xAxis === "games"
@@ -88,20 +154,24 @@ export function PlayerVpmChart({
 
   const yDomain: [number, number] = [minSmoothMean, maxSmoothMean];
 
-  const processedData = players.reduce((acc, player) => {
-    let playerData = data[player.id] || [];
+  const processedData = useMemo(() => {
+    return players.reduce((acc, player) => {
+      let playerData = data[player.id] || [];
 
-    if (xAxis === "date") {
-      playerData = playerData.filter((d) => d.gameDate);
-    }
-
-    const mappedData = playerData.map((d) => ({
-      ...d,
-      gameDate: d.gameDate ? new Date(d.gameDate).getTime() : null,
-    }));
-    acc[player.id] = mappedData;
-    return acc;
-  }, {} as { [playerId: number]: ProcessedPlayerKfData[] });
+      if (xAxis === "date") {
+        const mappedData = playerData
+          .map((d) => ({
+            ...d,
+            gameDate: d.gameDate ? compressDate(new Date(d.gameDate)) : null,
+          }))
+          .filter((d) => d.gameDate !== null);
+        acc[player.id] = mappedData;
+      } else {
+        acc[player.id] = playerData.map((d) => ({ ...d, gameDate: null }));
+      }
+      return acc;
+    }, {} as { [playerId: number]: any[] });
+  }, [players, data, xAxis, compressDate]);
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -118,10 +188,10 @@ export function PlayerVpmChart({
           type="number"
           dataKey={xAxis === "games" ? "gameNum" : "gameDate"}
           domain={xDomain}
-          ticks={xAxis === "games" ? gameTicks : dateTicks}
+          ticks={xAxis === "games" ? gameTicks : compressedTicks}
           tickFormatter={(tick) => {
             if (xAxis === "date") {
-              return format(new Date(tick), "yyyy-MM-dd");
+              return tickLabelMap.get(tick as number) ?? "";
             }
             return tick;
           }}
@@ -129,7 +199,9 @@ export function PlayerVpmChart({
         >
           <Label
             value={
-              xAxis === "games" ? "Career Game Number" : "Date"
+              xAxis === "games"
+                ? "Career Game Number"
+                : "Date (Compressed Timeline)"
             }
             offset={-15}
             position="insideBottom"

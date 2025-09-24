@@ -374,7 +374,7 @@ export async function processVPM() {
     }
 
     // Upsert vpm_player_map
-    for (const chunk of chunked(rowsToInsert, 500)) {
+    for (const chunk of Array.from(chunked(rowsToInsert, 500))) {
       await db
         .insert(vpmPlayerMapTable)
         .values(chunk)
@@ -439,7 +439,7 @@ async function updateKalmanForPlayers(playerIds: number[], modelVersion: string,
 
   // Recompute and upsert
   type PlayerSeriesPoint = { date: Date; y: number; totalRounds: number; matchId: number; mapId: number; };
-  for (const [pid, series] of byPlayer.entries()) {
+  for (const [pid, series] of Array.from(byPlayer.entries())) {
     if (series.length === 0) continue;
     // Kalman
     const { filt, smooth } = runKalman1D(series, kfParams);
@@ -464,7 +464,7 @@ async function updateKalmanForPlayers(playerIds: number[], modelVersion: string,
       updated_at: new Date(),
     }));
 
-    for (const chunk of chunked(kfRows, 500)) {
+    for (const chunk of Array.from(chunked(kfRows, 500))) {
       await db
         .insert(vpmPlayerKfTable)
         .values(chunk)
@@ -522,7 +522,7 @@ async function upsertLatest(modelVersion: string) {
     updated_at: new Date(),
   }));
 
-  for (const chunk of chunked(rows, 500)) {
+  for (const chunk of Array.from(chunked(rows, 500))) {
     await db.insert(vpmPlayerLatestTable).values(chunk).onConflictDoUpdate({
       target: [vpmPlayerLatestTable.player_id],
       set: {

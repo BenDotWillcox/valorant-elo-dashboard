@@ -148,7 +148,7 @@ export function PlayerVpmChart({
 
     return Object.entries(tournaments)
       .filter(
-        ([_name, t]) =>
+        ([, t]) =>
           t.region === "International" && t.start_date && t.end_date
       )
       .map(([name, t]) => {

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { getPlayerRatings } from "@/actions/vpm-actions";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -56,7 +55,7 @@ export function PlayerRatingsTable() {
   }, [minMaps]);
 
   const sortedData = useMemo(() => {
-    let sortableData = [...data];
+    const sortableData = [...data];
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
         const aValue = a[sortConfig.key];

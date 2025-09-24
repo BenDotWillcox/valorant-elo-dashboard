@@ -156,7 +156,7 @@ export function PlayerVpmChart({
 
   const processedData = useMemo(() => {
     return players.reduce((acc, player) => {
-      let playerData = data[player.id] || [];
+      const playerData = data[player.id] || [];
 
       if (xAxis === "date") {
         const mappedData = playerData
@@ -170,7 +170,7 @@ export function PlayerVpmChart({
         acc[player.id] = playerData.map((d) => ({ ...d, gameDate: null }));
       }
       return acc;
-    }, {} as { [playerId: number]: any[] });
+    }, {} as { [playerId: number]: ProcessedPlayerKfData[] });
   }, [players, data, xAxis, compressDate]);
 
   return (

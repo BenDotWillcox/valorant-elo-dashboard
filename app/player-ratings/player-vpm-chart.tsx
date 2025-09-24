@@ -9,11 +9,26 @@ import {
   Scatter,
   ComposedChart,
   Label,
+  ReferenceArea,
 } from "recharts";
 import { PlayerKfData } from "./player-graph-section";
 import { format } from "date-fns";
 import { Season } from "@/db/schema/seasons-schema";
 import { useMemo } from "react";
+import { tournaments } from "@/lib/constants/tournaments";
+
+const getTournamentColor = (name: string): string => {
+  if (name.includes("LOCK//IN")) return "rgba(75, 192, 192, 0.2)";
+  if (name.includes("Masters")) return "rgba(153, 102, 255, 0.2)";
+  if (name.includes("Champions")) return "rgba(255, 99, 132, 0.2)";
+  return "rgba(128, 128, 128, 0.1)";
+};
+
+const legendItems = [
+  { name: "LOCK//IN", color: "rgba(75, 192, 192, 0.2)" },
+  { name: "Masters", color: "rgba(153, 102, 255, 0.2)" },
+  { name: "Champions", color: "rgba(255, 99, 132, 0.2)" },
+];
 
 type Player = {
   id: number;
@@ -126,6 +141,29 @@ export function PlayerVpmChart({
     };
   }, [seasons, xAxis]);
 
+  const internationalTournamentAreas = useMemo(() => {
+    if (xAxis !== "date") {
+      return [];
+    }
+
+    return Object.entries(tournaments)
+      .filter(
+        ([_name, t]) =>
+          t.region === "International" && t.start_date && t.end_date
+      )
+      .map(([name, t]) => {
+        const x1 = compressDate(t.start_date!);
+        const x2 = compressDate(t.end_date!);
+        return {
+          x1,
+          x2,
+          name,
+          color: getTournamentColor(name),
+        };
+      })
+      .filter((area) => area.x1 !== null && area.x2 !== null);
+  }, [xAxis, compressDate]);
+
   const allData = players.flatMap((p) => data[p.id] || []);
 
   const xDomain: [string | number, string | number] =
@@ -174,70 +212,106 @@ export function PlayerVpmChart({
   }, [players, data, xAxis, compressDate]);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <ComposedChart
-        margin={{
-          top: 20,
-          right: 30,
-          left: 30,
-          bottom: 20,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          type="number"
-          dataKey={xAxis === "games" ? "gameNum" : "gameDate"}
-          domain={xDomain}
-          ticks={xAxis === "games" ? gameTicks : compressedTicks}
-          tickFormatter={(tick) => {
-            if (xAxis === "date") {
-              return tickLabelMap.get(tick as number) ?? "";
-            }
-            return tick;
+    <>
+      <ResponsiveContainer width="100%" height={400}>
+        <ComposedChart
+          margin={{
+            top: 20,
+            right: 30,
+            left: 30,
+            bottom: 20,
           }}
-          allowDecimals={false}
         >
-          <Label
-            value={
-              xAxis === "games"
-                ? "Career Game Number"
-                : "Date (Compressed Timeline)"
-            }
-            offset={-15}
-            position="insideBottom"
-          />
-        </XAxis>
-        <YAxis domain={yDomain} allowDataOverflow={true}>
-          <Label
-            value="VPM (per 24 rounds)"
-            angle={-90}
-            position="insideLeft"
-            style={{ textAnchor: "middle" }}
-          />
-        </YAxis>
-        {players.map((player, index) => (
-          <Scatter
-            key={`${player.id}-scatter`}
-            data={processedData[player.id]}
-            dataKey="y"
-            fill={COLORS[index % COLORS.length]}
-            fillOpacity={0.3}
-            name={player.ign}
-          />
-        ))}
-        {players.map((player, index) => (
-          <Line
-            key={`${player.id}-line`}
-            data={processedData[player.id]}
-            type="monotone"
-            dataKey="smoothMean"
-            stroke={COLORS[index % COLORS.length]}
-            strokeWidth={2}
-            dot={false}
-            name={player.ign}
-          />
-        ))}
-      </ComposedChart>
-    </ResponsiveContainer>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            type="number"
+            dataKey={xAxis === "games" ? "gameNum" : "gameDate"}
+            domain={xDomain}
+            ticks={xAxis === "games" ? gameTicks : compressedTicks}
+            tickFormatter={(tick) => {
+              if (xAxis === "date") {
+                return tickLabelMap.get(tick as number) ?? "";
+              }
+              return tick;
+            }}
+            allowDecimals={false}
+          >
+            <Label
+              value={
+                xAxis === "games"
+                  ? "Career Game Number"
+                  : "Date (Compressed Timeline)"
+              }
+              offset={-15}
+              position="insideBottom"
+            />
+          </XAxis>
+          <YAxis domain={yDomain} allowDataOverflow={true}>
+            <Label
+              value="VPM (per 24 rounds)"
+              angle={-90}
+              position="insideLeft"
+              style={{ textAnchor: "middle" }}
+            />
+          </YAxis>
+          {internationalTournamentAreas.map((area, i) => (
+            <ReferenceArea
+              key={i}
+              x1={area.x1!}
+              x2={area.x2!}
+              stroke="none"
+              fill={area.color}
+            />
+          ))}
+          {players.map((player, index) => (
+            <Scatter
+              key={`${player.id}-scatter`}
+              data={processedData[player.id]}
+              dataKey="y"
+              fill={COLORS[index % COLORS.length]}
+              fillOpacity={0.3}
+              name={player.ign}
+            />
+          ))}
+          {players.map((player, index) => (
+            <Line
+              key={`${player.id}-line`}
+              data={processedData[player.id]}
+              type="monotone"
+              dataKey="smoothMean"
+              stroke={COLORS[index % COLORS.length]}
+              strokeWidth={2}
+              dot={false}
+              name={player.ign}
+            />
+          ))}
+        </ComposedChart>
+      </ResponsiveContainer>
+      {xAxis === "date" && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginTop: "10px",
+          }}
+        >
+          {legendItems.map((item) => (
+            <div key={item.name} style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: item.color,
+                  marginRight: "8px",
+                  border: "1px solid rgba(128,128,128,0.5)",
+                }}
+              />
+              <span>{item.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }

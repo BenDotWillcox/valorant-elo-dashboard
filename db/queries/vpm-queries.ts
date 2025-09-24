@@ -21,7 +21,7 @@ import {
   playersTable,
   teamsTable,
 } from "@/db/schema";
-import { eq, and, desc, gte, isNotNull, lte, asc } from "drizzle-orm";
+import { eq, and, desc, gte, isNotNull, lte, asc, sql } from "drizzle-orm";
 
 // VPM Player State
 export async function createVpmPlayerState(

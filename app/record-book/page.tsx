@@ -34,7 +34,13 @@ interface Streak {
   is_active: boolean;
 }
 
-
+interface TopPlayer {
+  ign: string;
+  teamName: string | null;
+  teamLogo: string | null;
+  vpm: number;
+  mapsPlayed: number;
+}
 
 export default function HallOfFamePage() {
   const [upsets, setUpsets] = useState([]);
@@ -43,6 +49,7 @@ export default function HallOfFamePage() {
   const [perfectGames, setPerfectGames] = useState([]);
   const [topMaps, setTopMaps] = useState<Team[]>([]);
   const [worstMaps, setWorstMaps] = useState<Team[]>([]);
+  const [topPlayers, setTopPlayers] = useState<TopPlayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapPopularity, setMapPopularity] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState(subDays(new Date(), 30));
@@ -57,13 +64,15 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/perfect-games').then(res => res.json()),
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
-    ]).then(([ups, streaks, loseStreaks, perfect, topMaps, worstMaps]) => {
+      fetch('/api/hall-of-fame/top-players').then(res => res.json()),
+    ]).then(([ups, streaks, loseStreaks, perfect, topMaps, worstMaps, players]) => {
       setUpsets(ups);
       setWinStreaks(streaks);
       setLoseStreaks(loseStreaks);
       setPerfectGames(perfect);
       setTopMaps(topMaps);
       setWorstMaps(worstMaps);
+      setTopPlayers(players);
       setLoading(false);
     });
   }, []);
@@ -253,30 +262,46 @@ export default function HallOfFamePage() {
           </div>
         )} />
 
-        <div className="relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Current Top Players</h3>
-          </div>
-          <div className="p-6 pt-0 relative blur-sm pointer-events-none">
-            <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-4">As of Today</div>
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="relative w-8 h-8 rounded-full bg-muted" />
-                <span className="text-xl font-medium">Another Player</span>
+        <StatCarousel
+          title="Current Top Players"
+          tooltip="Top players by VPM (Valorant Plus Minus) with at least 50 maps played"
+          data={topPlayers}
+          renderContent={(player) => (
+            <div className="text-center"> 
+              <div className="text-sm text-muted-foreground mb-4">
+                {player.mapsPlayed} Maps Played
               </div>
-              <div className="text-lg font-bold mb-2">Reyna</div>
-              <div className="text-sm text-muted-foreground mb-1">Current Rating</div>
-              <div className="text-3xl font-bold mb-1">1.9</div>
-              <div className="text-sm text-muted-foreground">Top 5 Player</div>
+
+              <div className="flex items-center justify-center gap-2 mb-4">
+                {player.teamLogo && (
+                  <div className="relative w-8 h-8">
+                    <Image
+                      src={
+                        TEAM_LOGOS[
+                          player.teamName as keyof typeof TEAM_LOGOS
+                        ] || player.teamLogo
+                      }
+                      alt={player.teamName || player.ign}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                <span className="text-xl font-medium">{player.ign}</span>
+              </div>
+
+              <div className="text-lg font-bold mb-2">
+                {player.teamName || 'Free Agent'}
+              </div>
+              <div className="text-sm text-muted-foreground mb-1">
+                +/- Valorant Plus Minus
+              </div>
+              <div className="text-3xl font-bold mb-1">
+                {player.vpm > 0 ? '+' : ''}{player.vpm.toFixed(3)}
+              </div>
             </div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center bg-background/20">
-            <div className="text-center bg-secondary/80 p-4 rounded-lg">
-              <h4 className="font-bold text-lg">Player Ratings</h4>
-              <p className="text-muted-foreground">Coming Soon</p>
-            </div>
-          </div>
-        </div>
+          )}
+        />
 
         {/* Map Stats Section */}
         <div className="md:col-span-2 xl:col-span-3">

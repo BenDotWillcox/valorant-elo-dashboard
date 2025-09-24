@@ -1,35 +1,35 @@
 // tournaments.ts
 export type TournamentStatus = 'upcoming' | 'ongoing' | 'completed';
 
-export const tournaments: Record<string, { id: number; region: string; status: TournamentStatus }> = {
+export const tournaments: Record<string, { id: number; region: string; status: TournamentStatus; start_date?: Date; end_date?: Date }> = {
 
     // VCT 2023
-    "LOCK//IN São Paulo": { id: 1188, region: "International", status: "completed" },
+    "LOCK//IN São Paulo": { id: 1188, region: "International", status: "completed", start_date: new Date("2023-02-13"), end_date: new Date("2023-03-06") },
     "Champions Tour 2023: Pacific League": { id: 1191, region: "Pacific", status: "completed" },
     "Champions Tour 2023: EMEA League": { id: 1190, region: "EMEA", status: "completed" },
     "Champions Tour 2023: Americas League": { id: 1189, region: "Americas", status: "completed" },
-    "Champions Tour 2023: Masters Tokyo": { id: 1494, region: "International", status: "completed" },
+    "Champions Tour 2023: Masters Tokyo": { id: 1494, region: "International", status: "completed", start_date: new Date("2023-06-10"), end_date: new Date("2023-06-26") },
     "Champions Tour 2023: Pacific Last Chance Qualifier": { id: 1660, region: "Pacific", status: "completed" },
     "Champions Tour 2023: EMEA Last Chance Qualifier": { id: 1659, region: "EMEA", status: "completed" },
     "Champions Tour 2023: Americas Last Chance Qualifier": { id: 1658, region: "Americas", status: "completed" },
-    "Valorant Champions 2023": { id: 1657, region: "International", status: "completed" },
+    "Valorant Champions 2023": { id: 1657, region: "International", status: "completed", start_date: new Date("2023-08-06"), end_date: new Date("2023-08-26") },
 
     // VCT 2024
     "Champions Tour 2024: Americas Kickoff": { id: 1923, region: "Americas", status: "completed" },
     "Champions Tour 2024: EMEA Kickoff": { id: 1925, region: "EMEA", status: "completed" },
     "Champions Tour 2024: Pacific Kickoff": { id: 1924, region: "Pacific", status: "completed" },
     "Champions Tour 2024: China Kickoff": { id: 1926, region: "China", status: "completed" },
-    "Champions Tour 2024: Masters Madrid": { id: 1921, region: "International", status: "completed" },
+    "Champions Tour 2024: Masters Madrid": { id: 1921, region: "International", status: "completed", start_date: new Date("2024-03-14"), end_date: new Date("2024-03-25") },
     "Champions Tour 2024: Americas Stage 1": { id: 2004, region: "Americas", status: "completed" },
     "Champions Tour 2024: EMEA Stage 1": { id: 1998, region: "EMEA", status: "completed" },
     "Champions Tour 2024: Pacific Stage 1": { id: 2002, region: "Pacific", status: "completed" },
     "Champions Tour 2024: China Stage 1": { id: 2006, region: "China", status: "completed" },
-    "Champions Tour 2024: Masters Shanghai": { id: 1999, region: "International", status: "completed" },
+    "Champions Tour 2024: Masters Shanghai": { id: 1999, region: "International", status: "completed", start_date: new Date("2024-05-23"), end_date: new Date("2024-06-10") },
     "Champions Tour 2024: Americas Stage 2": { id: 2095, region: "Americas", status: "completed" },
     "Champions Tour 2024: EMEA Stage 2": { id: 2094, region: "EMEA", status: "completed" },
     "Champions Tour 2024: Pacific Stage 2": { id: 2005, region: "Pacific", status: "completed" },
     "Champions Tour 2024: China Stage 2": { id: 2096, region: "China", status: "completed" },
-    "Valorant Champions 2024": { id: 2097, region: "International", status: "completed" },
+    "Valorant Champions 2024": { id: 2097, region: "International", status: "completed", start_date: new Date("2024-08-01"), end_date: new Date("2024-08-26") },
 
 
     // Official VCT 2025 tournaments and their VLR event IDs
@@ -37,17 +37,17 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: EMEA Kickoff":    { id: 2276, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Kickoff": { id: 2277, region: "Pacific", status: "completed" },
     "VCT 2025: China Kickoff": { id: 2275, region: "China", status: "completed" },
-    "Valorant Masters Bangkok 2025": { id: 2281, region: "International", status: "completed" },
+    "Valorant Masters Bangkok 2025": { id: 2281, region: "International", status: "completed", start_date: new Date("2025-02-20"), end_date: new Date("2025-03-03") },
     "VCT 2025: China Stage 1": { id: 2359, region: "China", status: "completed" },
     "VCT 2025: Americas Stage 1": { id: 2347, region: "Americas", status: "completed" },
     "VCT 2025: EMEA Stage 1": { id: 2380, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 1": { id: 2379, region: "Pacific", status: "completed" },
-    "Valorant Masters Toronto 2025": { id: 2282, region: "International", status: "completed" },
+    "Valorant Masters Toronto 2025": { id: 2282, region: "International", status: "completed", start_date: new Date("2025-06-07"), end_date: new Date("2025-06-23") },
     "VCT 2025: China Stage 2": { id: 2499, region: "China", status: "completed" },
     "VCT 2025: Americas Stage 2": { id: 2501, region: "Americas", status: "completed" },
     "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "completed" },
-    "Valorant Champions 2025": { id: 2283, region: "International", status: "ongoing" },
+    "Valorant Champions 2025": { id: 2283, region: "International", status: "ongoing", start_date: new Date("2025-09-12"), end_date: new Date("2025-10-06") },
   };
 
 export const UPCOMING_TOURNAMENT_NAME = "Valorant Champions 2025";

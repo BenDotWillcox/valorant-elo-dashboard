@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useMemo } from "react";
 import Image from "next/image";
 import { getPlayerRatings } from "@/actions/vpm-actions";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type PlayerRating = {
   rank: number;
@@ -27,6 +29,10 @@ export function PlayerRatingsTable() {
   const [data, setData] = useState<PlayerRating[]>([]);
   const [vpmRange, setVpmRange] = useState({ min: 0, max: 0 });
   const [isPending, startTransition] = useTransition();
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof PlayerRating;
+    direction: "asc" | "desc";
+  }>({ key: "vpm", direction: "desc" });
 
   useEffect(() => {
     startTransition(async () => {
@@ -41,13 +47,46 @@ export function PlayerRatingsTable() {
         setVpmRange({ min: 0, max: 0 });
       }
 
-      const rankedRatings = ratings.map((row, index) => ({
+      const initialData = ratings.map((row) => ({
         ...row,
-        rank: index + 1,
+        rank: 0, // Rank will be assigned after sorting
       }));
-      setData(rankedRatings);
+      setData(initialData);
     });
   }, [minMaps]);
+
+  const sortedData = useMemo(() => {
+    let sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue === null || bValue === null) {
+          if (aValue === null && bValue === null) return 0;
+          return aValue === null ? 1 : -1;
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    // Re-rank after sorting
+    return sortableData.map((item, index) => ({ ...item, rank: index + 1 }));
+  }, [data, sortConfig]);
+
+  const requestSort = (key: keyof PlayerRating) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handleMinMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
@@ -56,11 +95,11 @@ export function PlayerRatingsTable() {
 
   const getVpmColor = (vpm: number | null): string => {
     if (vpm === null || vpmRange.min === vpmRange.max) {
-      return "inherit";
+      return "hsl(0, 0%, 50%)"; // A neutral gray
     }
     const percentage = (vpm - vpmRange.min) / (vpmRange.max - vpmRange.min);
     const hue = percentage * 120; // 0=red, 60=yellow, 120=green
-    return `hsl(${hue}, 80%, 45%)`;
+    return `hsl(${hue}, 70%, 35%)`;
   };
 
   const formatVpm = (vpm: number | null): string => {
@@ -87,14 +126,19 @@ export function PlayerRatingsTable() {
           className="w-full"
         />
       </div>
-      <div className="border rounded-lg h-[700px] overflow-y-auto relative">
-        <Table>
-          <TableHeader className="sticky top-0 bg-white dark:bg-gray-950">
+      <div className="border rounded-lg h-[700px] overflow-y-auto">
+        <table className="w-full caption-bottom text-sm relative">
+          <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow>
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Player</TableHead>
               <TableHead>Team</TableHead>
-              <TableHead>Current VPM</TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => requestSort("vpm")}>
+                  Current VPM
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
               <TableHead>Career Maps</TableHead>
             </TableRow>
           </TableHeader>
@@ -106,8 +150,8 @@ export function PlayerRatingsTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((player) => (
-                <TableRow key={player.rank}>
+              sortedData.map((player) => (
+                <TableRow key={player.ign}>
                   <TableCell>{player.rank}</TableCell>
                   <TableCell>{player.ign}</TableCell>
                   <TableCell>
@@ -124,7 +168,12 @@ export function PlayerRatingsTable() {
                       {player.teamName}
                     </div>
                   </TableCell>
-                  <TableCell style={{ color: getVpmColor(player.vpm) }}>
+                  <TableCell
+                    style={{
+                      backgroundColor: getVpmColor(player.vpm),
+                    }}
+                    className="text-white font-medium"
+                  >
                     {formatVpm(player.vpm)}
                   </TableCell>
                   <TableCell>{player.mapsPlayed}</TableCell>
@@ -132,7 +181,7 @@ export function PlayerRatingsTable() {
               ))
             )}
           </TableBody>
-        </Table>
+        </table>
       </div>
     </div>
   );

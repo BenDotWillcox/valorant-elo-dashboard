@@ -14,6 +14,7 @@
     "scrape:new": "tsx scripts/scrape_new_maps.ts",
     "db:init-seasons": "tsx --require dotenv/config scripts/init-seasons.ts",
     "elo:process": "tsx --require dotenv/config scripts/process-elo.ts",
+    "vpm:process": "tsx --require dotenv/config scripts/process-vpm.ts",
     "analysis:pick-ban": "tsx --require dotenv/config scripts/process-pick-ban-analysis.ts"
   },
   "dependencies": {
@@ -72,6 +73,7 @@
     "react-hook-form": "^7.54.2",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.1",
+    "simple-statistics": "^7.8.8",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",

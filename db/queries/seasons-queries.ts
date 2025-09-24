@@ -12,8 +12,17 @@ export async function getSeasonById(id: number): Promise<Season[]> {
   return await db.select().from(seasonsTable).where(eq(seasonsTable.id, id));
 }
 
-export async function getActiveSeason(): Promise<Season[]> {
-    return await db.select().from(seasonsTable).where(eq(seasonsTable.is_active, true));
+export async function getActiveSeason() {
+  const season = await db
+    .select({
+      startDate: seasonsTable.start_date,
+      endDate: seasonsTable.end_date,
+    })
+    .from(seasonsTable)
+    .where(eq(seasonsTable.is_active, true))
+    .limit(1);
+
+  return season[0] || null;
 }
 
 export async function getAllSeasons(): Promise<Season[]> {

@@ -20,7 +20,6 @@ import {
   updateVpmModelMeta,
   deleteVpmModelMeta,
   getPlayerRatingsList,
-  getVpmPlayerRatings,
 } from "@/db/queries/vpm-queries";
 import { getActiveSeason } from "@/db/queries/seasons-queries";
 import {

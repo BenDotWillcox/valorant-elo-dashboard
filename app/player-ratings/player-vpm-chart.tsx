@@ -18,6 +18,10 @@ type Player = {
   ign: string;
 };
 
+type ProcessedPlayerKfData = Omit<PlayerKfData, "gameDate"> & {
+  gameDate: number | null;
+};
+
 type PlayerVpmChartProps = {
   players: Player[];
   data: { [playerId: number]: PlayerKfData[] };
@@ -97,7 +101,7 @@ export function PlayerVpmChart({
     }));
     acc[player.id] = mappedData;
     return acc;
-  }, {} as { [playerId: number]: any[] });
+  }, {} as { [playerId: number]: ProcessedPlayerKfData[] });
 
   return (
     <ResponsiveContainer width="100%" height={400}>

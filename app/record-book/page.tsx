@@ -42,6 +42,14 @@ interface TopPlayer {
   mapsPlayed: number;
 }
 
+interface PeakPlayer {
+  ign: string;
+  teamName: string | null;
+  teamLogo: string | null;
+  peakVpm: number;
+  gameDate: string;
+}
+
 export default function HallOfFamePage() {
   const [upsets, setUpsets] = useState([]);
   const [winStreaks, setWinStreaks] = useState<Streak[]>([]);
@@ -50,6 +58,7 @@ export default function HallOfFamePage() {
   const [topMaps, setTopMaps] = useState<Team[]>([]);
   const [worstMaps, setWorstMaps] = useState<Team[]>([]);
   const [topPlayers, setTopPlayers] = useState<TopPlayer[]>([]);
+  const [peakPlayers, setPeakPlayers] = useState<PeakPlayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapPopularity, setMapPopularity] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState(subDays(new Date(), 30));
@@ -65,16 +74,29 @@ export default function HallOfFamePage() {
       fetch('/api/hall-of-fame/top-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/worst-maps').then(res => res.json()),
       fetch('/api/hall-of-fame/top-players').then(res => res.json()),
-    ]).then(([ups, streaks, loseStreaks, perfect, topMaps, worstMaps, players]) => {
-      setUpsets(ups);
-      setWinStreaks(streaks);
-      setLoseStreaks(loseStreaks);
-      setPerfectGames(perfect);
-      setTopMaps(topMaps);
-      setWorstMaps(worstMaps);
-      setTopPlayers(players);
-      setLoading(false);
-    });
+      fetch('/api/hall-of-fame/peak-player-ratings').then(res => res.json()),
+    ]).then(
+      ([
+        ups,
+        streaks,
+        loseStreaks,
+        perfect,
+        topMaps,
+        worstMaps,
+        players,
+        peakPlayers,
+      ]) => {
+        setUpsets(ups);
+        setWinStreaks(streaks);
+        setLoseStreaks(loseStreaks);
+        setPerfectGames(perfect);
+        setTopMaps(topMaps);
+        setWorstMaps(worstMaps);
+        setTopPlayers(players);
+        setPeakPlayers(peakPlayers);
+        setLoading(false);
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -169,30 +191,47 @@ export default function HallOfFamePage() {
           </div>
         )} />
         
-        <div className="relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Peak Player Rating</h3>
-          </div>
-          <div className="p-6 pt-0 relative blur-sm pointer-events-none">
+        <StatCarousel
+          title="Peak Player Rating"
+          tooltip="Highest VPM achieved in a single match by players with at least 50 maps played"
+          data={peakPlayers}
+          renderContent={(player) => (
             <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-4">Season 2024</div>
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="relative w-8 h-8 rounded-full bg-muted" />
-                <span className="text-xl font-medium">Player Name</span>
+              <div className="text-sm text-muted-foreground mb-4">
+                {format(new Date(player.gameDate), 'MMMM d, yyyy')}
               </div>
-              <div className="text-lg font-bold mb-2">Jett</div>
-              <div className="text-sm text-muted-foreground mb-1">Peak Rating</div>
-              <div className="text-3xl font-bold mb-1">2.2</div>
-              <div className="text-sm text-muted-foreground">August 15, 2024</div>
+
+              <div className="flex items-center justify-center gap-2 mb-4">
+                {player.teamLogo && (
+                  <div className="relative w-8 h-8">
+                    <Image
+                      src={
+                        TEAM_LOGOS[
+                          player.teamName as keyof typeof TEAM_LOGOS
+                        ] || player.teamLogo
+                      }
+                      alt={player.teamName || player.ign}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                <span className="text-xl font-medium">{player.ign}</span>
+              </div>
+
+              <div className="text-lg font-bold mb-2">
+                {player.teamName || 'Free Agent'}
+              </div>
+              <div className="text-sm text-muted-foreground mb-1">
+                Peak VPM
+              </div>
+              <div className="text-3xl font-bold mb-1">
+                {player.peakVpm > 0 ? '+' : ''}
+                {player.peakVpm.toFixed(3)}
+              </div>
             </div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center bg-background/20">
-            <div className="text-center bg-secondary/80 p-4 rounded-lg">
-              <h4 className="font-bold text-lg">Player Ratings</h4>
-              <p className="text-muted-foreground">Coming Soon</p>
-            </div>
-          </div>
-        </div>
+          )}
+        />
 
         <StatCarousel title="Weakest Maps" tooltip="Teams that hit the lowest Elo rating on a map across all seasons" data={worstMaps} renderContent={(team) => {
           const ratingNumber = Number(team.rating);
@@ -264,7 +303,7 @@ export default function HallOfFamePage() {
 
         <StatCarousel
           title="Current Top Players"
-          tooltip="Top players by VPM (Valorant Plus Minus) with at least 50 maps played"
+          tooltip="Top players by VPM (Valorant Plus Minus) The average round margin added per 24 rounds. Players must have played at least 50 maps to be included."
           data={topPlayers}
           renderContent={(player) => (
             <div className="text-center"> 

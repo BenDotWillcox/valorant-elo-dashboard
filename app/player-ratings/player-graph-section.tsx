@@ -5,8 +5,8 @@ import { PlayerSearch } from "./player-search";
 import { PlayerVpmChart } from "./player-vpm-chart";
 import { getPlayerKfData } from "@/actions/players-actions";
 import { getPlayerByIgn } from "@/actions/players-actions";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { getSeasonsAction } from "@/actions/seasons-actions";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Season } from "@/db/schema/seasons-schema";
 
 export type PlayerKfData = {

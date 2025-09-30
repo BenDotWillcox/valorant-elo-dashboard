@@ -10,7 +10,7 @@ export async function getSeasonsAction(): Promise<ActionState> {
   noStore();
   try {
     const seasons = await db.select().from(seasonsTable).orderBy(asc(seasonsTable.id));
-    return { status: "success", data: seasons };
+    return { status: "success", data: seasons, message: "Successfully retrieved seasons" };
   } catch (error) {
     console.error("Error getting seasons:", error);
     return { status: "error", message: "Failed to get seasons" };

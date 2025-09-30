@@ -51,7 +51,8 @@ function VetoStatsChart({ title, data }: { title: string; data: VetoStat[] }) {
                         <XAxis type="number" hide />
                         <YAxis type="category" dataKey="map_name" width={80} stroke="#888888" fontSize={12} tickLine={false} axisLine={false} interval={0} />
                         <Bar dataKey="percentage" radius={[4, 4, 0, 0]}>
-                            <LabelList 
+                            <LabelList
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 dataKey={(entry: any) => entry.count > 0 ? `${entry.count} (${entry.percentage.toFixed(1)}%)` : ''}
                                 position="right" 
                                 style={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
@@ -183,8 +184,8 @@ export default function PickBanPage() {
       <div className="flex flex-col items-center mb-8">
         <h1 className="text-4xl font-bold text-center">Pick/Ban Elo Efficiency</h1>
         <p className="text-center text-muted-foreground mt-2 max-w-2xl">
-          This page analyzes each team's pick/ban phase by comparing their choices to the optimal choices based on map Elo ratings.
-          "Average Elo Lost" represents how many Elo points a team loses, on average, compared to a perfect pick/ban sequence. A lower number is better.
+          This page analyzes each team&apos;s pick/ban phase by comparing their choices to the optimal choices based on map Elo ratings.
+          &quot;Average Elo Lost&quot; represents how many Elo points a team loses, on average, compared to a perfect pick/ban sequence. A lower number is better.
         </p>
         <div className="mt-4 w-full max-w-xs">
           <Select value={selectedEvent} onValueChange={setSelectedEvent}>

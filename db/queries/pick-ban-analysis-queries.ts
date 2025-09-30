@@ -4,7 +4,7 @@
 import "server-only";
 
 import { db } from "@/db/db";
-import { pickBanAnalysisTable } from "@/db/schema/pick-ban-analysis-schema";
+import { pickBanAnalysisTable } from "@/db/schema/match-pick-ban-analysis-schema";
 import { teamsTable } from "../schema/teams-schema";
 import { asc, desc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";

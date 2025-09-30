@@ -16,13 +16,11 @@ export const getPickBanAnalysis = async () => {
     .select({
       teamName: team.name,
       teamSlug: team.slug,
-      teamRegion: team.region,
-      averageEloLost: matchPickBanAnalysisTable.average_elo_lost,
-      matchesAnalyzed: matchPickBanAnalysisTable.matches_analyzed,
+      averageEloLost: matchPickBanAnalysisTable.elo_lost,
     })
     .from(matchPickBanAnalysisTable)
     .innerJoin(team, eq(matchPickBanAnalysisTable.team_id, team.id))
-    .orderBy(asc(matchPickBanAnalysisTable.average_elo_lost));
+    .orderBy(asc(matchPickBanAnalysisTable.elo_lost));
 
   return data;
 };

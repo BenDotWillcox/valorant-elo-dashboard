@@ -7,7 +7,7 @@ export * from "./matches-schema";
 export * from "./players-schema";
 export * from "./player-map-stats-schema";
 export * from "./match-vetoes-schema";
-export * from "./pick-ban-analysis-schema";
+export * from "./match-pick-ban-analysis-schema";
 export * from "./vpm-player-state-schema";
 export * from "./vpm-kf-state-schema";
 export * from "./vpm-player-map-schema";

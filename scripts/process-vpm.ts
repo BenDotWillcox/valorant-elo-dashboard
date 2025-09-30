@@ -15,7 +15,7 @@ import {
 } from "@/db/schema";
 
 
-import { and, eq, gt, sql, desc } from "drizzle-orm";
+import { and, eq, gt, sql, desc, inArray } from "drizzle-orm";
 
 // ---------- Config / constants ----------
 
@@ -410,21 +410,27 @@ export async function processVPM() {
 // ---------- Recompute KF for players ----------
 async function updateKalmanForPlayers(playerIds: number[], modelVersion: string, kfParams: typeof KF_DEFAULT) {
   // Pull player VPM observations (per-24) ordered by date
-  const rows = await db.execute<{
-    player_id: number;
-    map_id: number;
-    match_id: number;
-    game_date: string | null;
-    total_rounds: number | null;
-    y: number | null;
-  }>(sql`
-    SELECT v.player_id, v.map_id, v.match_id, v.game_date, v.total_rounds,
-           v.vpm_per24_raw as y
-    FROM ${vpmPlayerMapTable} v
-    WHERE v.player_id = ANY(${playerIds})
-      AND v.model_version = ${modelVersion}
-    ORDER BY v.player_id, v.game_date, v.map_id
-  `);
+  const rows = await db
+    .select({
+      player_id: vpmPlayerMapTable.player_id,
+      map_id: vpmPlayerMapTable.map_id,
+      match_id: vpmPlayerMapTable.match_id,
+      game_date: vpmPlayerMapTable.game_date,
+      total_rounds: vpmPlayerMapTable.total_rounds,
+      y: vpmPlayerMapTable.vpm_per24_raw,
+    })
+    .from(vpmPlayerMapTable)
+    .where(
+      and(
+        inArray(vpmPlayerMapTable.player_id, playerIds),
+        eq(vpmPlayerMapTable.model_version, modelVersion)
+      )
+    )
+    .orderBy(
+      vpmPlayerMapTable.player_id,
+      vpmPlayerMapTable.game_date,
+      vpmPlayerMapTable.map_id
+    );
 
   // Group by player
   const byPlayer = new Map<number, { date: Date; y: number; totalRounds: number; matchId: number; mapId: number; }[]>();

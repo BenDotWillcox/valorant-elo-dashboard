@@ -34,24 +34,7 @@ export default function SimulationsPage() {
   const [activeStage, setActiveStage] = useState('groups');
   const [activeGroup, setActiveGroup] = useState('groupA');
   const [completedWinners] = useState<Record<string, string>>({
-    'groupA-M1': 'PRX',
-    'groupA-M2': 'GX',
-    'groupB-M1': 'MIBR',
-    'groupB-M2': 'FNC',
-    'groupC-M1': 'DRX',
-    'groupC-M2': 'NRG',
-    'groupD-M1': 'TH',
-    'groupD-M2': 'T1',
-    'groupA-WM': 'PRX',
-    'groupC-WM': 'NRG',
-    'groupB-WM': 'FNC',
-    'groupD-WM': 'TH',
-    'groupA-EM': 'XLG',
-    'groupC-EM': 'TL',
-    'groupB-EM': 'RRQ',
-    'groupD-EM': 'G2',
-    'groupA-DM': 'GX',
-    'groupC-DM': 'DRX',
+
   });
   const resultsRef = useRef<HTMLDivElement>(null);
 

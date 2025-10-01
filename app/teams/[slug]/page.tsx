@@ -118,7 +118,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
                     {region} Region
                   </Badge>
                   <div className="h-1 w-1 rounded-full bg-muted-foreground/50"></div>
-                  <img src={`/images/trophies/${region}.png`} alt="region trophy" className="w-8 h-8" />
+                  <Image src={`/images/trophies/${region}.png`} alt="region trophy" width={32} height={32} className="w-8 h-8" />
                 </div>
               </div>
               
@@ -429,7 +429,6 @@ export default async function TeamPage({ params }: TeamPageProps) {
                     streaks={streaks}
                     lastComp={lastComp}
                     teamId={team.id}
-                    teamName={team.name}
                     teamSlug={team.slug || ''}
                   />
                 );

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -49,11 +49,10 @@ interface CollapsibleMapCardProps {
   streaks: MapStreak | undefined;
   lastComp: string[];
   teamId: number;
-  teamName: string;
   teamSlug: string;
 }
 
-export function CollapsibleMapCard({ map, index, streaks, lastComp, teamId, teamName, teamSlug }: CollapsibleMapCardProps) {
+export function CollapsibleMapCard({ map, index, streaks, lastComp, teamId, teamSlug }: CollapsibleMapCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<MapResult[]>([]);
   const [loading, setLoading] = useState(false);

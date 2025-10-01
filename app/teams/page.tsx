@@ -3,7 +3,7 @@ import { TEAM_REGIONS, getTeamRegion } from "@/lib/constants/regions";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function TeamsPage() {
   const teamsResult = await getTeamsAction();
@@ -34,7 +34,7 @@ export default async function TeamsPage() {
       </div>
 
       <div className="space-y-8">
-        {Object.entries(TEAM_REGIONS).map(([regionName, teamSlugs]) => {
+        {Object.entries(TEAM_REGIONS).map(([regionName]) => {
           const regionTeams = teamsByRegion[regionName] || [];
           
           return (

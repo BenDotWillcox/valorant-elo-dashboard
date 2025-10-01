@@ -196,7 +196,7 @@ function computePerRoundComponents(row: PMSRow | PriorRow, rounds: number) {
   const fk_att_rate = safeDiv(fk_att, rounds);
   const fk_win_rate = fk_att > 0 ? safeDiv(fk, fk_att) : NaN;
   const adr_pr = toNum((row as any).adr);
-  const kast01 = toNum((row as any).kast); // already 0..100 in your scrape; convert:
+  const kast01 = toNum((row as any).kast); // already 0..100 in your scrape; convert to 0..1:
   const kast01_unit = isFinite(kast01) ? kast01 / 100 : NaN;
 
   return { kpr, dpr, apr, fk_att_rate, fk_win_rate, adr_pr, kast01: kast01_unit } as Record<Component, number>;

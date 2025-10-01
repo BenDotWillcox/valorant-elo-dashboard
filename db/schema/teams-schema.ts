@@ -1,12 +1,12 @@
-import { pgTable, bigserial, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, bigserial, varchar, timestamp } from "drizzle-orm/pg-core";
 
 export const teamsTable = pgTable("teams", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  vlr_id: bigserial("vlr_id", { mode: "number" }),
+  vlr_slug: varchar("vlr_slug"),
   name: varchar("name").notNull(),
-  slug: varchar("slug"),
+  slug: varchar("slug").notNull(),
+  region: varchar("region"),
   logo_url: varchar("logo_url"),
-  is_active: boolean("is_active").default(true).notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });

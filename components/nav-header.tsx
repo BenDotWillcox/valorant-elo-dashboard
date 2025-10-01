@@ -70,9 +70,15 @@ const navItems: NavItem[] = [
   {
     name: "Pick/Ban",
     href: "/pick-ban",
-    isComingSoon: true,
     gradient:
       "radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
+  },
+
+  {
+    name: "Teams",
+    href: "/teams",
+    gradient:
+      "radial-gradient(circle, rgba(34,197,94,0.12) 0%, rgba(22,163,74,0.06) 50%, rgba(21,128,61,0) 100%)",
   },
 
 

@@ -14,3 +14,4 @@ export * from "./vpm-player-map-schema";
 export * from "./vpm-player-kf-schema";
 export * from "./vpm-player-latest-schema";
 export * from "./vpm-model-meta-schema";
+export * from "./tournament-winners-schema";

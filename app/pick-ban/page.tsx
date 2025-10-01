@@ -12,6 +12,7 @@ import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/
 import { Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import Image from "next/image";
 import { MAP_COLORS } from "@/lib/constants/colors";
+import { TEAM_LOGOS } from "@/lib/constants/images";
 import { getTeamPickBanHistoryAction, getMatchVetoAnalysisAction, getMatchEloDataAction } from "@/actions/pick-ban-analysis-actions";
 import { ChevronRight } from "lucide-react";
 import { calculateWinProbability, calculateBo3MatchProbability } from "@/lib/predictions/calculations";
@@ -44,7 +45,7 @@ type VetoStatsData = {
     opponentFirstBanRate: VetoStat[];
     opponentFirstPickRate: VetoStat[];
 };
-type Team = { id: number, name: string };
+type Team = { id: number, name: string, slug: string | null };
 
 type TeamHistoryData = {
   match_id: number;
@@ -163,7 +164,24 @@ function VetoAnalysisSection() {
             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <Select value={selectedTeam} onValueChange={setSelectedTeam}>
                     <SelectTrigger className="w-[250px]"><SelectValue placeholder="Select a Team" /></SelectTrigger>
-                    <SelectContent>{teams.map(t => <SelectItem key={t.id} value={t.id.toString()}>{t.name}</SelectItem>)}</SelectContent>
+                    <SelectContent>
+                        {teams.map(t => (
+                            <SelectItem key={t.id} value={t.id.toString()}>
+                                <div className="flex items-center gap-2">
+                                    {t.slug && TEAM_LOGOS[t.slug as keyof typeof TEAM_LOGOS] && (
+                                        <Image
+                                            src={TEAM_LOGOS[t.slug as keyof typeof TEAM_LOGOS]}
+                                            alt={t.name}
+                                            width={20}
+                                            height={20}
+                                            className="object-contain"
+                                        />
+                                    )}
+                                    <span>{t.name}</span>
+                                </div>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
                 </Select>
                 <Select value={selectedEvent} onValueChange={setSelectedEvent}>
                     <SelectTrigger className="w-[250px]"><SelectValue placeholder="Select an Event" /></SelectTrigger>

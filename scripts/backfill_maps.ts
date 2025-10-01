@@ -92,9 +92,9 @@ async function backfillCompletedMaps() {
 
         const getTeamData = async (slug: string) => {
           // Find the base team record first
-          let teamRecord: { id: number; name: string; slug: string; } | null = null;
+          let teamRecord: { id: number; name: string; slug: string | null; } | null = null;
           
-          const teamResult = await db.select({ id: teamsTable.id, name: teamsTable.name, slug: teamsTable.slug }).from(teamsTable).where(eq(teamsTable.vlr_slug, slug)).limit(1);
+          const teamResult = await db.select({ id: teamsTable.id, name: teamsTable.name, slug: teamsTable.slug }).from(teamsTable).where(eq(teamsTable.slug, slug)).limit(1);
           
           if (teamResult.length > 0) {
             teamRecord = teamResult[0];
@@ -193,12 +193,12 @@ async function backfillCompletedMaps() {
         const getTeamIdFromText = (text: string) => {
           const lowerText = text.toLowerCase();
           
-          const team1Identifiers = [team1Data.name, team1Data.slug, ...team1Data.aliases].map(s => s.toLowerCase());
+          const team1Identifiers = [team1Data.name, team1Data.slug, ...team1Data.aliases].filter((s): s is string => !!s).map(s => s.toLowerCase());
           for (const identifier of team1Identifiers) {
               if (lowerText.includes(identifier)) return team1Id;
           }
       
-          const team2Identifiers = [team2Data.name, team2Data.slug, ...team2Data.aliases].map(s => s.toLowerCase());
+          const team2Identifiers = [team2Data.name, team2Data.slug, ...team2Data.aliases].filter((s): s is string => !!s).map(s => s.toLowerCase());
           for (const identifier of team2Identifiers) {
               if (lowerText.includes(identifier)) return team2Id;
           }

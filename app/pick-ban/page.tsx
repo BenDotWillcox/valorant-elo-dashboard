@@ -405,7 +405,17 @@ export default function PickBanPage() {
   );
 }
 
-const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+type ChartDataPoint = {
+  step: string;
+  eloAdvantage: number;
+  eloSwing: number;
+  optimalChoice: string | null;
+  action: string;
+  winProbability: number;
+  winProbabilityDelta: number;
+};
+
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: ChartDataPoint }[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const eloAdvantage = data.eloAdvantage;
@@ -460,8 +470,9 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] 
   return null;
 };
 
-const CustomDot = (props: { cx?: number; cy?: number; payload?: any; r?: number }) => {
+const CustomDot = (props: { cx?: number; cy?: number; payload?: ChartDataPoint; r?: number }) => {
   const { cx, cy, payload, r = 6 } = props;
+  if (!payload) return null;
   const { eloSwing } = payload;
 
   let fill = "hsl(var(--primary))";

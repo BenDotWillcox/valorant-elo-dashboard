@@ -1,122 +1,136 @@
-import { db } from "@/db/db";
-import { matchesTable } from "@/db/schema/matches-schema";
-import { matchVetoesTable } from "@/db/schema/match-vetoes-schema";
-import { getEloRatingsAtTime } from "@/db/queries/elo-ratings-queries";
-import { matchPickBanAnalysisTable } from "@/db/schema/match-pick-ban-analysis-schema";
-import { notInArray, eq } from "drizzle-orm";
+import { db } from "../db/db";
+import { matchesTable } from "../db/schema/matches-schema";
+import { matchVetoesTable } from "../db/schema/match-vetoes-schema";
+import { matchVetoAnalysisTable } from "../db/schema/match-veto-analysis-schema";
+import { eq, sql, and, notInArray } from "drizzle-orm";
+import { getEloRatingsAtTime } from "../db/queries/elo-ratings-queries";
+
+type TeamMapElo = { team_id: number; map_name: string; elo: number };
+
+function findOptimalPick(teamElos: TeamMapElo[], opponentElos: TeamMapElo[], availableMaps: string[]): { map: string; advantage: number } {
+    let bestPick = '';
+    let maxAdvantage = -Infinity;
+
+    for (const map of availableMaps) {
+        const teamElo = teamElos.find(e => e.map_name === map)?.elo ?? 1000;
+        const opponentElo = opponentElos.find(e => e.map_name === map)?.elo ?? 1000;
+        const eloAdvantage = teamElo - opponentElo;
+        
+        if (eloAdvantage > maxAdvantage) {
+            maxAdvantage = eloAdvantage;
+            bestPick = map;
+        }
+    }
+    return { map: bestPick, advantage: maxAdvantage };
+}
+
+function findOptimalBan(teamElos: TeamMapElo[], opponentElos: TeamMapElo[], availableMaps: string[]): { map: string; advantage: number } {
+    let bestBan = '';
+    let minAdvantage = Infinity;
+
+    for (const map of availableMaps) {
+        const teamElo = teamElos.find(e => e.map_name === map)?.elo ?? 1000;
+        const opponentElo = opponentElos.find(e => e.map_name === map)?.elo ?? 1000;
+        const eloAdvantage = teamElo - opponentElo;
+
+        if (eloAdvantage < minAdvantage) {
+            minAdvantage = eloAdvantage;
+            bestBan = map;
+        }
+    }
+    return { map: bestBan, advantage: minAdvantage };
+}
+
 
 async function processPickBanAnalysis() {
   console.log("Starting pick/ban analysis processing...");
 
-  // 1. Get IDs of already processed matches
-  const processedMatchesQuery = await db.selectDistinct({ match_id: matchPickBanAnalysisTable.match_id }).from(matchPickBanAnalysisTable);
-  const processedMatchIds = processedMatchesQuery.map(m => m.match_id);
+  const processedMatchesQuery = await db.selectDistinct({ matchId: matchVetoAnalysisTable.matchId }).from(matchVetoAnalysisTable);
+  const processedMatchIds = processedMatchesQuery.map(m => m.matchId);
 
   console.log(`Found ${processedMatchIds.length} already processed matches. Skipping them.`);
 
-  // 2. Get all matches that are NOT in the processed set
-  const unprocessedMatches = processedMatchIds.length > 0
-    ? await db
-        .select()
-        .from(matchesTable)
-        .where(notInArray(matchesTable.id, processedMatchIds))
-    : await db.select().from(matchesTable);
+  const allMatches = await db.select().from(matchesTable).where(and(
+    sql`id IN (SELECT match_id FROM match_vetoes)`,
+    processedMatchIds.length > 0 ? notInArray(matchesTable.id, processedMatchIds) : undefined
+  ));
 
-  console.log(`Found ${unprocessedMatches.length} new matches to process.`);
+  console.log(`Found ${allMatches.length} new matches to process.`);
+  
+  for (const match of allMatches) {
+    const team1Id = match.team1_id;
+    const team2Id = match.team2_id;
 
-  for (const match of unprocessedMatches) {
-    if (!match.team1_id || !match.team2_id || !match.completed_at) {
-      continue;
-    }
+    if (!team1Id || !team2Id || !match.completed_at) continue;
 
-    const vetoes = await db
-      .select()
-      .from(matchVetoesTable)
-      .where(eq(matchVetoesTable.match_id, match.id))
-      .orderBy(matchVetoesTable.order_index);
+    const vetoes = await db.select().from(matchVetoesTable).where(eq(matchVetoesTable.match_id, match.id)).orderBy(matchVetoesTable.order_index);
+    if (vetoes.length === 0) continue;
 
-    if (vetoes.length < 7) { // Loosen constraint slightly for flexibility
-      continue;
-    }
+    const team1ElosData = await getEloRatingsAtTime(team1Id, match.completed_at);
+    const team2ElosData = await getEloRatingsAtTime(team2Id, match.completed_at);
 
-    const team1Elo = await getEloRatingsAtTime(match.team1_id, match.completed_at);
-    const team2Elo = await getEloRatingsAtTime(match.team2_id, match.completed_at);
+    const team1Elos = team1ElosData.map(e => ({ team_id: team1Id, map_name: e.map_name, elo: parseFloat(e.elo_rating) }));
+    const team2Elos = team2ElosData.map(e => ({ team_id: team2Id, map_name: e.map_name, elo: parseFloat(e.elo_rating) }));
+    
+    let availableMaps = vetoes.map(v => v.map_name);
+    let team1CumulativeEloLost = 0;
+    let team2CumulativeEloLost = 0;
 
-    const team1EloMap = new Map(team1Elo.map((r) => [r.map_name, parseFloat(r.elo_rating)]));
-    const team2EloMap = new Map(team2Elo.map((r) => [r.map_name, parseFloat(r.elo_rating)]));
-
-    let team1EloLost = 0;
-    let team2EloLost = 0;
-
-    const availableMaps = new Set(vetoes.map((v) => v.map_name));
-
-    for (const veto of vetoes) {
-      // Any action that is not 'decider' MUST have a team_id to be analyzed.
-      // If it's a pick/ban with a null team, it's bad data, so we must skip it.
-      if (veto.action !== 'decider' && !veto.team_id) {
-        console.warn(`Skipping veto for Match ID ${match.id} due to missing team_id on a ${veto.action} action.`);
-        availableMaps.delete(veto.map_name);
-        continue;
-      }
+    for (let i = 0; i < vetoes.length; i++) {
+      const veto = vetoes[i];
+      if (!veto.team_id || veto.action === 'decider') continue;
       
-      if (veto.action === "decider") {
-        availableMaps.delete(veto.map_name);
-        continue;
+      const isTeam1 = veto.team_id === team1Id;
+      const actingTeamElos = isTeam1 ? team1Elos : team2Elos;
+      const opponentElos = isTeam1 ? team2Elos : team1Elos;
+      
+      let eloLost = 0;
+      let optimalChoice = '';
+
+      if (veto.action === 'pick') {
+        const optimal = findOptimalPick(actingTeamElos, opponentElos, availableMaps);
+        optimalChoice = optimal.map;
+        if (veto.map_name !== optimal.map) {
+            const actualPickElo = actingTeamElos.find(e => e.map_name === veto.map_name)?.elo ?? 1000;
+            const opponentActualPickElo = opponentElos.find(e => e.map_name === veto.map_name)?.elo ?? 1000;
+            const actualAdvantage = actualPickElo - opponentActualPickElo;
+            eloLost = optimal.advantage - actualAdvantage;
+        }
+      } else if (veto.action === 'ban') {
+        const optimal = findOptimalBan(actingTeamElos, opponentElos, availableMaps);
+        optimalChoice = optimal.map;
+        if (veto.map_name !== optimal.map) {
+            const actualBanElo = actingTeamElos.find(e => e.map_name === veto.map_name)?.elo ?? 1000;
+            const opponentActualBanElo = opponentElos.find(e => e.map_name === veto.map_name)?.elo ?? 1000;
+            const actualAdvantage = actualBanElo - opponentActualBanElo;
+            eloLost = actualAdvantage - optimal.advantage;
+        }
       }
 
-      const actingTeamId = veto.team_id!;
-      const opponentTeamId = actingTeamId === match.team1_id ? match.team2_id : match.team1_id;
+      if (isTeam1) {
+        team1CumulativeEloLost += eloLost;
+      } else {
+        team2CumulativeEloLost += eloLost;
+      }
 
-      const actingTeamEloMap = actingTeamId === match.team1_id ? team1EloMap : team2EloMap;
-      const opponentTeamEloMap = opponentTeamId === match.team1_id ? team1EloMap : team2EloMap;
-
-      const mapOptions = Array.from(availableMaps).map((map) => {
-        const actingElo = actingTeamEloMap.get(map) ?? 1500;
-        const opponentElo = opponentTeamEloMap.get(map) ?? 1500;
-        return {
-          map_name: map,
-          elo_advantage: actingElo - opponentElo,
-        };
+      await db.insert(matchVetoAnalysisTable).values({
+        matchId: match.id,
+        teamId: veto.team_id,
+        vetoOrder: i + 1,
+        action: veto.action as 'pick' | 'ban',
+        mapName: veto.map_name,
+        eloLost: eloLost,
+        cumulativeEloLost: isTeam1 ? team1CumulativeEloLost : team2CumulativeEloLost,
+        optimalChoice: optimalChoice,
+        availableMaps: [...availableMaps],
       });
-
-      if (veto.action === "ban") {
-        mapOptions.sort((a, b) => a.elo_advantage - b.elo_advantage);
-        const optimalBan = mapOptions[0];
-        const actualBanAdvantage = mapOptions.find((m) => m.map_name === veto.map_name)?.elo_advantage ?? 0;
-        const eloLost = actualBanAdvantage - optimalBan.elo_advantage;
-        if (actingTeamId === match.team1_id) {
-          team1EloLost += eloLost;
-        } else {
-          team2EloLost += eloLost;
-        }
-      } else if (veto.action === "pick") {
-        mapOptions.sort((a, b) => b.elo_advantage - a.elo_advantage);
-        const optimalPick = mapOptions[0];
-        const actualPickAdvantage = mapOptions.find((m) => m.map_name === veto.map_name)?.elo_advantage ?? 0;
-        const eloLost = optimalPick.elo_advantage - actualPickAdvantage;
-        if (actingTeamId === match.team1_id) {
-          team1EloLost += eloLost;
-        } else {
-          team2EloLost += eloLost;
-        }
-      }
-
-      availableMaps.delete(veto.map_name);
+      
+      availableMaps = availableMaps.filter(map => map !== veto.map_name);
     }
-
-    console.log(`Match ${match.id}: Team 1 Elo Lost: ${team1EloLost.toFixed(2)}, Team 2 Elo Lost: ${team2EloLost.toFixed(2)}`);
-
-    // Insert the analysis for both teams for the current match
-    await db.insert(matchPickBanAnalysisTable).values([
-        { match_id: match.id, team_id: match.team1_id, elo_lost: team1EloLost },
-        { match_id: match.id, team_id: match.team2_id, elo_lost: team2EloLost },
-    ]);
+    console.log(`Match ${match.id}: Team 1 Elo Lost: ${team1CumulativeEloLost.toFixed(2)}, Team 2 Elo Lost: ${team2CumulativeEloLost.toFixed(2)}`);
   }
 
-  console.log("Finished pick/ban analysis processing.");
+  console.log("Successfully processed pick/ban analysis for all matches.");
 }
 
-processPickBanAnalysis().catch((err) => {
-  console.error("Error processing pick/ban analysis:", err);
-  process.exit(1);
-});
+processPickBanAnalysis().catch(console.error);

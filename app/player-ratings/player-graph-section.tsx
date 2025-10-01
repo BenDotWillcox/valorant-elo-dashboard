@@ -43,9 +43,9 @@ export function PlayerGraphSection() {
 
       const defaultPlayer = await getPlayerByIgn("Zekken");
       if (defaultPlayer) {
-        setSelectedPlayers([defaultPlayer]);
-        const data = await getPlayerKfData(defaultPlayer.id);
-        setPlayersData({ [defaultPlayer.id]: data });
+        setSelectedPlayers([defaultPlayer as Player]);
+        const data = await getPlayerKfData(defaultPlayer.id as number);
+        setPlayersData({ [defaultPlayer.id as number]: data as PlayerKfData[] });
       }
       setIsLoading(false);
     };
@@ -57,7 +57,7 @@ export function PlayerGraphSection() {
     if (selectedPlayers.length >= 5) return;
     setSelectedPlayers((prev) => [...prev, player]);
     const data = await getPlayerKfData(player.id);
-    setPlayersData((prev) => ({ ...prev, [player.id]: data }));
+    setPlayersData((prev) => ({ ...prev, [player.id]: data as PlayerKfData[] }));
   };
 
   const handlePlayerRemoved = (playerId: number) => {

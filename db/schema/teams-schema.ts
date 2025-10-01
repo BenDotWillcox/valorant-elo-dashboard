@@ -2,10 +2,9 @@ import { pgTable, bigserial, varchar, timestamp, boolean } from "drizzle-orm/pg-
 
 export const teamsTable = pgTable("teams", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  slug: varchar("slug").notNull().unique(),
-  vlr_slug: varchar("vlr_slug"),
+  vlr_id: bigserial("vlr_id", { mode: "number" }),
   name: varchar("name").notNull(),
-  region: varchar("region"),
+  slug: varchar("slug"),
   logo_url: varchar("logo_url"),
   is_active: boolean("is_active").default(true).notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),

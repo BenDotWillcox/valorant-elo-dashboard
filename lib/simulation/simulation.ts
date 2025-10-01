@@ -26,10 +26,12 @@ export async function getSimulationData() {
   const flattenedRankings = allRankings.flat();
 
   const eloDataByTeam = flattenedRankings.reduce((acc, ranking) => {
-    if (!acc[ranking.teamSlug]) {
-      acc[ranking.teamSlug] = {};
+    if (ranking.teamSlug) {
+      if (!acc[ranking.teamSlug]) {
+        acc[ranking.teamSlug] = {};
+      }
+      acc[ranking.teamSlug][ranking.mapName] = parseFloat(ranking.rating);
     }
-    acc[ranking.teamSlug][ranking.mapName] = parseFloat(ranking.rating);
     return acc;
   }, {} as Record<string, Record<string, number>>);
 

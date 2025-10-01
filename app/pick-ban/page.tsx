@@ -405,7 +405,7 @@ export default function PickBanPage() {
   );
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const eloAdvantage = data.eloAdvantage;
@@ -460,7 +460,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-const CustomDot = (props: any) => {
+const CustomDot = (props: { cx?: number; cy?: number; payload?: any; r?: number }) => {
   const { cx, cy, payload, r = 6 } = props;
   const { eloSwing } = payload;
 
@@ -512,10 +512,6 @@ function findOptimalBan(teamElos: TeamMapElo[], opponentElos: TeamMapElo[], avai
     return { map: bestBan, advantage: minAdvantage };
 }
 
-const eloToWinProbability = (eloAdvantage: number) => {
-    return 1 / (1 + Math.pow(10, -eloAdvantage / 400));
-}
-
 function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, vetoData: VetoAnalysisStep[], matchEloData: MatchEloData | null }) {
   if (!matchEloData) return <p>Missing Elo data.</p>;
 
@@ -527,7 +523,7 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
 
   const simulateVeto = (stepsTaken: VetoAnalysisStep[]) => {
     let availableMaps = [...initialAvailableMaps];
-    let pickedMaps: string[] = [];
+    const pickedMaps: string[] = [];
     
     stepsTaken.forEach(step => {
         if (step.action === 'pick' && !pickedMaps.includes(step.mapName)) {

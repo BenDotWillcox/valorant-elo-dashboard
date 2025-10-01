@@ -66,10 +66,11 @@ export async function getPickBanAnalysisAction(
         matches_analyzed: sql<number>`COUNT(subquery.match_id)`.as("matches_analyzed"),
         team_name: teamsTable.name,
         team_logo: teamsTable.logo_url,
+        team_slug: teamsTable.slug,
       })
       .from(subquery)
       .leftJoin(teamsTable, eq(subquery.team_id, teamsTable.id))
-      .groupBy(subquery.team_id, teamsTable.name, teamsTable.logo_url)
+      .groupBy(subquery.team_id, teamsTable.name, teamsTable.logo_url, teamsTable.slug)
       .orderBy(sql`average_elo_lost ASC`);
 
     const data = await query;

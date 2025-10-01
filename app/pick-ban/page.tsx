@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import Image from "next/image";
+import Link from "next/link";
 import { MAP_COLORS } from "@/lib/constants/colors";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import { getTeamPickBanHistoryAction, getMatchVetoAnalysisAction, getMatchEloDataAction } from "@/actions/pick-ban-analysis-actions";
@@ -21,6 +22,7 @@ type PickBanAnalysisData = {
   team_id: number;
   team_name: string;
   team_logo: string | null;
+  team_slug: string | null;
   average_elo_lost: number;
   matches_analyzed: number;
 };
@@ -334,7 +336,17 @@ export default function PickBanPage() {
                           className="mr-2"
                         />
                       )}
-                      {row.team_name}
+                      {row.team_slug ? (
+                        <Link 
+                          href={`/teams/${row.team_slug}`}
+                          className="hover:text-primary transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {row.team_name}
+                        </Link>
+                      ) : (
+                        row.team_name
+                      )}
                     </TableCell>
                     <TableCell className="text-right">{row.average_elo_lost.toFixed(0)}</TableCell>
                     <TableCell className="text-right">{row.matches_analyzed}</TableCell>

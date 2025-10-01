@@ -5,6 +5,7 @@ import { TeamMapData } from '@/types/elo';
 import { MAP_POOL } from '@/lib/constants/maps';
 import { MAP_IMAGES } from "@/lib/constants/images";
 import Image from "next/image";
+import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import { cn } from "@/lib/utils";
@@ -102,9 +103,12 @@ export default function RankingsPage() {
                               className="object-contain"
                             />
                           </div>
-                          <span className="font-medium truncate">
+                          <Link 
+                            href={`/teams/${team.teamSlug}`}
+                            className="font-medium truncate hover:text-primary transition-colors"
+                          >
                             {team.teamName}
-                          </span>
+                          </Link>
                         </div>
                         <span className="text-black dark:text-white flex-shrink-0">
                           {Math.round(Number(team.rating))}

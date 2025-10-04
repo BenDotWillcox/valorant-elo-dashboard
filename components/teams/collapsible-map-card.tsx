@@ -116,7 +116,7 @@ export function CollapsibleMapCard({ map, index, streaks, lastComp, teamId, team
               {/* Last Played Composition */}
               <div className="flex-1 min-w-0">
                 <div className="text-xs text-muted-foreground font-medium mb-2">LAST PLAYED COMP</div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   {lastComp.length > 0 ? (
                     lastComp.map((agent, agentIndex) => {
                       const agentImage = getAgentImage(agent);

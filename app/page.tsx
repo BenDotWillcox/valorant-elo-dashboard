@@ -10,7 +10,7 @@ const features = [
     title: "Math",
     description:
       "Deep dive into the mathematical models, algorithms, and statistical methods powering our analytics platform.",
-    video: "/videos/Simulations.mp4", // Placeholder - you can create a video for this too
+    video: "/videos/Math.mp4",
     link: "/math-blog",
     icon: BookOpen,
     color: "from-slate-600 to-slate-700",

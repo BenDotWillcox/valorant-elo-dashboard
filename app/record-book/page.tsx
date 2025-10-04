@@ -9,6 +9,7 @@ import { PerfectGamesScroll } from '@/components/stats/perfect-games-scroll';
 import { UpsetCarousel } from '@/components/stats/upset-carousel';
 import { MapPopularityChart } from '@/components/stats/map-popularity-chart';
 import { Badge } from '@/components/ui/badge';
+import { RecordBookSkeleton } from "@/components/skeletons/record-book-skeleton";
 
 interface Team {
   season_year: number;
@@ -114,7 +115,7 @@ export default function HallOfFamePage() {
     fetchData();
   }, [selectedStartDate, selectedEndDate]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <RecordBookSkeleton />;
 
   return (
     <div className="container mx-auto p-4">

@@ -198,7 +198,15 @@ function VetoAnalysisSection() {
                 </Select>
             </div>
 
-            {loading && <p>Loading stats...</p>}
+            {loading && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-64 bg-card rounded-lg border p-4">
+                            <div className="h-full bg-muted rounded" />
+                        </div>
+                    ))}
+                </div>
+            )}
             {stats && !loading && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <VetoStatsChart title="First Ban Rate" data={stats.firstBanRate} />
@@ -317,7 +325,24 @@ export default function PickBanPage() {
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="rounded-md border bg-card animate-pulse">
+          <div className="p-4 border-b bg-muted/50">
+            <div className="grid grid-cols-5 gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-4 bg-muted rounded" />
+              ))}
+            </div>
+          </div>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="p-4 border-b last:border-b-0">
+              <div className="grid grid-cols-5 gap-4">
+                {[1, 2, 3, 4, 5].map((j) => (
+                  <div key={j} className="h-4 bg-muted rounded" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="rounded-md border">
           <Table>
@@ -370,7 +395,18 @@ export default function PickBanPage() {
                   {expandedTeam === row.team_id && (
                     <TableRow>
                       <TableCell colSpan={4}>
-                        {historyLoading ? <p>Loading history...</p> : (
+                        {historyLoading ? (
+                          <Card className="animate-pulse">
+                            <CardHeader>
+                              <div className="h-6 bg-muted rounded w-1/2" />
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                              {[1, 2, 3].map((i) => (
+                                <div key={i} className="h-16 bg-muted rounded" />
+                              ))}
+                            </CardContent>
+                          </Card>
+                        ) : (
                           <Card>
                             <CardHeader>
                               <CardTitle>Match History for {row.team_name}</CardTitle>
@@ -414,7 +450,16 @@ export default function PickBanPage() {
                                       {expandedMatch === match.match_id && (
                                         <TableRow>
                                           <TableCell colSpan={4}>
-                                            {vetoAnalysisLoading ? <p>Loading analysis...</p> : (
+                                            {vetoAnalysisLoading ? (
+                                              <div className="p-4 animate-pulse">
+                                                <div className="h-64 bg-muted rounded mb-4" />
+                                                <div className="space-y-2">
+                                                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                                                    <div key={i} className="h-12 bg-muted rounded" />
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            ) : (
                                               <VetoProcessChart 
                                                 teamId={expandedTeam!} 
                                                 vetoData={vetoAnalysis} 

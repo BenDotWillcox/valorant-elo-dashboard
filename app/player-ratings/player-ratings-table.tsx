@@ -143,11 +143,17 @@ export function PlayerRatingsTable() {
           </TableHeader>
           <TableBody>
             {isPending ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
+              <>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                  <TableRow key={i} className="animate-pulse">
+                    <TableCell><div className="h-4 bg-muted rounded w-8" /></TableCell>
+                    <TableCell><div className="h-4 bg-muted rounded w-24" /></TableCell>
+                    <TableCell><div className="h-4 bg-muted rounded w-32" /></TableCell>
+                    <TableCell><div className="h-4 bg-muted rounded w-16" /></TableCell>
+                    <TableCell><div className="h-4 bg-muted rounded w-12" /></TableCell>
+                  </TableRow>
+                ))}
+              </>
             ) : (
               sortedData.map((player) => (
                 <TableRow key={player.ign}>

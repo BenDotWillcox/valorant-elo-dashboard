@@ -125,46 +125,33 @@ export async function getBiggestVariances() {
 }
 
 export async function getBiggestUpsets() {
-  return await db
-    .select({
-      winner_team_id: mapsTable.winner_team_id,
-      winner_name: teamsTable.name,
-      winner_slug: teamsTable.slug,
-      winner_logo: teamsTable.logo_url,
-      winner_elo: sql<number>`(SELECT rating FROM elo_ratings 
-        WHERE team_id = ${mapsTable.winner_team_id} 
-        AND map_played_id = ${mapsTable.id})`,
-      loser_team_id: mapsTable.loser_team_id,
-      loser_name: sql<string>`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
-      loser_slug: sql<string>`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
-      loser_logo: sql<string>`(SELECT logo_url FROM teams WHERE id = maps.loser_team_id)`,
-      loser_elo: sql<number>`(SELECT rating FROM elo_ratings 
-        WHERE team_id = ${mapsTable.loser_team_id} 
-        AND map_played_id = ${mapsTable.id})`,
-      map_name: mapsTable.map_name,
-      winner_score: mapsTable.winner_rounds,
-      loser_score: mapsTable.loser_rounds,
-      match_date: mapsTable.completed_at,
-    })
-    .from(mapsTable)
-    .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
-    .where(sql`
-      (SELECT rating FROM elo_ratings 
-       WHERE team_id = ${mapsTable.loser_team_id} 
-       AND map_played_id = ${mapsTable.id}) >
-      (SELECT rating FROM elo_ratings 
-       WHERE team_id = ${mapsTable.winner_team_id} 
-       AND map_played_id = ${mapsTable.id})
-    `)
-    .orderBy(desc(sql`
-      ABS((SELECT rating FROM elo_ratings 
-          WHERE team_id = ${mapsTable.loser_team_id} 
-          AND map_played_id = ${mapsTable.id}) -
-          (SELECT rating FROM elo_ratings 
-          WHERE team_id = ${mapsTable.winner_team_id} 
-          AND map_played_id = ${mapsTable.id}))
-    `))
-    .limit(10);
+  // Use raw SQL for better performance - eliminates subqueries
+  const result = await db.execute(sql`
+    SELECT 
+      m.winner_team_id,
+      wt.name as winner_name,
+      wt.slug as winner_slug,
+      wt.logo_url as winner_logo,
+      we.rating as winner_elo,
+      m.loser_team_id,
+      lt.name as loser_name,
+      lt.slug as loser_slug,
+      lt.logo_url as loser_logo,
+      le.rating as loser_elo,
+      m.map_name,
+      m.winner_rounds as winner_score,
+      m.loser_rounds as loser_score,
+      m.completed_at as match_date
+    FROM maps m
+    INNER JOIN teams wt ON m.winner_team_id = wt.id
+    INNER JOIN teams lt ON m.loser_team_id = lt.id
+    INNER JOIN elo_ratings we ON we.team_id = m.winner_team_id AND we.map_played_id = m.id
+    INNER JOIN elo_ratings le ON le.team_id = m.loser_team_id AND le.map_played_id = m.id
+    WHERE le.rating > we.rating
+    ORDER BY ABS(le.rating - we.rating) DESC
+    LIMIT 10
+  `);
+  return result as any;
 }
 
 export async function getLongestWinStreaks(limit = 10) {
@@ -257,25 +244,25 @@ export async function getLongestWinStreaks(limit = 10) {
 }
 
 export async function getPerfectGames() {
-  return await db
-    .select({
-      winnerTeamId: mapsTable.winner_team_id,
-      winner_name: teamsTable.name,
-      winner_slug: teamsTable.slug,
-      winner_logo: teamsTable.logo_url,
-      loser_team_id: mapsTable.loser_team_id,
-      loser_name: sql`(SELECT name FROM teams WHERE id = maps.loser_team_id)`,
-      loser_slug: sql`(SELECT slug FROM teams WHERE id = maps.loser_team_id)`,
-      map_name: mapsTable.map_name,
-      match_date: mapsTable.completed_at,
-    })
-    .from(mapsTable)
-    .innerJoin(teamsTable, eq(mapsTable.winner_team_id, teamsTable.id))
-    .where(and(
-      eq(mapsTable.winner_rounds, 13),
-      eq(mapsTable.loser_rounds, 0)
-    ))
-    .orderBy(mapsTable.completed_at);
+  // Use raw SQL for cleaner joins
+  const result = await db.execute(sql`
+    SELECT 
+      m.winner_team_id as "winnerTeamId",
+      wt.name as winner_name,
+      wt.slug as winner_slug,
+      wt.logo_url as winner_logo,
+      m.loser_team_id,
+      lt.name as loser_name,
+      lt.slug as loser_slug,
+      m.map_name,
+      m.completed_at as match_date
+    FROM maps m
+    INNER JOIN teams wt ON m.winner_team_id = wt.id
+    INNER JOIN teams lt ON m.loser_team_id = lt.id
+    WHERE m.winner_rounds = 13 AND m.loser_rounds = 0
+    ORDER BY m.completed_at
+  `);
+  return result as any;
 }
 
 export async function getGreatestTeams(limit = 10) {

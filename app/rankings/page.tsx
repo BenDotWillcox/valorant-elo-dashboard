@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from "@/lib/constants/tournaments";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { RankingsSkeleton } from "@/components/skeletons/rankings-skeleton";
 
 export default function RankingsPage() {
   const [mapRankings, setMapRankings] = useState<Record<string, TeamMapData[]>>({});
@@ -41,7 +42,7 @@ export default function RankingsPage() {
     return filtered;
   }, [mapRankings, showUpcomingTournamentOnly]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <RankingsSkeleton />;
 
   const sortedMaps = [...MAP_POOL.active.sort(), ...MAP_POOL.inactive.sort()];
 

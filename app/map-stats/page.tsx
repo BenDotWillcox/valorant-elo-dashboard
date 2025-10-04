@@ -12,6 +12,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { DndContext, DragEndEvent, useDraggable, useDroppable, DragOverlay, Active } from '@dnd-kit/core';
 import Image from 'next/image';
 import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from "@/lib/constants/tournaments";
+import { MapStatsSkeleton } from "@/components/skeletons/map-stats-skeleton";
 
 
 interface TeamItem {
@@ -106,7 +107,7 @@ export default function MapStatsPage() {
   
   const activeDragItem = activeId ? allTeams.find(team => team.id === activeId) : null;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <MapStatsSkeleton />;
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>

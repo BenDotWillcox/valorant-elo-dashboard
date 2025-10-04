@@ -236,12 +236,9 @@ export default function HistoryPage() {
               Elo Rating History
             </h1>
             <h2 className="text-lg font-semibold text-center mb-4 text-muted-foreground">{chartDescription}</h2>
-            <EloHistoryChart
-              data={data}
-              viewType={viewType}
-              selectedTeams={selectedTeams}
-              selectedMaps={selectedMaps}
-            />
+            <div className="bg-card rounded-lg border p-6 animate-pulse">
+              <div className="h-96 bg-muted rounded" />
+            </div>
           </div>
         </div>
       </div>

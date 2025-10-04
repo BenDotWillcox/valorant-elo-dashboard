@@ -110,7 +110,9 @@ export function PlayerGraphSection() {
           </ToggleGroup>
         </div>
         {isLoading ? (
-          <p>Loading chart...</p>
+          <div className="h-96 bg-card rounded-lg border p-4 animate-pulse">
+            <div className="h-full bg-muted rounded" />
+          </div>
         ) : selectedPlayers.length > 0 ? (
           <PlayerVpmChart
             players={selectedPlayers}

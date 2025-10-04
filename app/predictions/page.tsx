@@ -14,6 +14,7 @@ import { TEAM_LOGOS } from "@/lib/constants/images";
 import Image from "next/image";
 import { UPCOMING_TOURNAMENT_NAME, UPCOMING_TOURNAMENT_QUALIFIED_TEAMS } from '@/lib/constants/tournaments';
 import { Label } from '@/components/ui/label';
+import { PredictionsSkeleton } from "@/components/skeletons/predictions-skeleton";
 
 interface TeamElo {
   teamId: number;
@@ -166,7 +167,7 @@ export default function PredictionsPage() {
     }
   }, [team1, team2, matchType, autoMapSelection, eloData]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <PredictionsSkeleton />;
 
   return (
     <div className="container mx-auto p-4 space-y-8">

@@ -155,7 +155,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
                   <div>
                     <h3 className="text-2xl font-bold mb-2">Recent Roster</h3>
                     <p className="text-muted-foreground text-sm">
-                      5 most recently played players with their VPM ratings
+                      5 most recently played players with their VPM ratings and their most played agent this season.
                     </p>
                   </div>
                   

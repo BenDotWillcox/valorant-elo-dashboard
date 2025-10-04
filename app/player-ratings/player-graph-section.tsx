@@ -36,12 +36,17 @@ export function PlayerGraphSection() {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
-      const seasonsRes = await getSeasonsAction();
+      
+      // Parallelize initial data fetches
+      const [seasonsRes, defaultPlayer] = await Promise.all([
+        getSeasonsAction(),
+        getPlayerByIgn("Zekken"),
+      ]);
+      
       if (seasonsRes.status === "success" && Array.isArray(seasonsRes.data)) {
         setSeasons(seasonsRes.data);
       }
 
-      const defaultPlayer = await getPlayerByIgn("Zekken");
       if (defaultPlayer) {
         setSelectedPlayers([defaultPlayer as Player]);
         const data = await getPlayerKfData(defaultPlayer.id as number);

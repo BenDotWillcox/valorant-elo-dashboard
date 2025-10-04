@@ -10,7 +10,7 @@ import { vpmPlayerLatestTable } from "@/db/schema/vpm-player-latest-schema";
 import { playerMapStatsTable } from "@/db/schema/player-map-stats-schema";
 import { tournamentWinnersTable } from "@/db/schema/tournament-winners-schema";
 import { ActionState } from "@/types/actions/action-types";
-import { asc, eq, sql, or, and, isNotNull, sum, count, gte, desc, max } from "drizzle-orm";
+import { asc, eq, sql, or, and, isNotNull, sum, count, gte, desc, max, inArray } from "drizzle-orm";
 import { db } from "@/db/db";
 
 export async function getTeamsAction(): Promise<ActionState> {
@@ -170,90 +170,115 @@ export async function getTeamRecentRosterAction(teamId: number): Promise<ActionS
       return { status: "error", message: "Invalid team ID" };
     }
 
-    // Get the 5 most recently played players for this team with their VPM data
-    const recentPlayers = await db
-      .select({
-        player_id: playersTable.id,
-        ign: playersTable.ign,
-        name: playersTable.name,
-        vpm: vpmPlayerLatestTable.current_vpm_per24,
-        last_game_date: vpmPlayerLatestTable.last_game_date,
-        last_game_num: vpmPlayerLatestTable.last_game_num,
-      })
-      .from(playersTable)
-      .innerJoin(vpmPlayerLatestTable, eq(playersTable.id, vpmPlayerLatestTable.player_id))
-      .where(
-        and(
-          eq(playersTable.team_id, teamId),
-          isNotNull(vpmPlayerLatestTable.current_vpm_per24)
+    // Parallelize initial queries
+    const [recentPlayersResult, activeSeasonResult] = await Promise.all([
+      // Get the 5 most recently played players for this team with their VPM data
+      db
+        .select({
+          player_id: playersTable.id,
+          ign: playersTable.ign,
+          name: playersTable.name,
+          vpm: vpmPlayerLatestTable.current_vpm_per24,
+          last_game_date: vpmPlayerLatestTable.last_game_date,
+          last_game_num: vpmPlayerLatestTable.last_game_num,
+        })
+        .from(playersTable)
+        .innerJoin(vpmPlayerLatestTable, eq(playersTable.id, vpmPlayerLatestTable.player_id))
+        .where(
+          and(
+            eq(playersTable.team_id, teamId),
+            isNotNull(vpmPlayerLatestTable.current_vpm_per24)
+          )
         )
-      )
-      .orderBy(desc(vpmPlayerLatestTable.last_game_date))
-      .limit(5);
+        .orderBy(desc(vpmPlayerLatestTable.last_game_date))
+        .limit(5),
+      
+      // Get active season start date
+      db
+        .select({ start_date: seasonsTable.start_date })
+        .from(seasonsTable)
+        .where(eq(seasonsTable.is_active, true))
+        .limit(1),
+    ]);
 
-    // Get active season start date for filtering agent usage
-    const activeSeason = await db
-      .select({ start_date: seasonsTable.start_date })
-      .from(seasonsTable)
-      .where(eq(seasonsTable.is_active, true))
-      .limit(1);
-
-    if (activeSeason.length === 0) {
+    if (activeSeasonResult.length === 0) {
       return { status: "error", message: "No active season found" };
     }
 
-    const seasonStartDate = activeSeason[0].start_date;
+    if (recentPlayersResult.length === 0) {
+      return { status: "success", message: "No players found", data: [] };
+    }
 
-    // For each player, get their most played agent from current season and team games
-    const playersWithAgents = await Promise.all(
-      recentPlayers.map(async (player) => {
-        // Get agent usage count for this player from current season only
-        const agentUsage = await db
-          .select({
-            agent: playerMapStatsTable.agent,
-            count: count().as("usage_count")
-          })
-          .from(playerMapStatsTable)
-          .innerJoin(mapsTable, eq(playerMapStatsTable.map_id, mapsTable.id))
-          .where(
-            and(
-              eq(playerMapStatsTable.player_id, player.player_id),
-              gte(mapsTable.completed_at, seasonStartDate)
+    const seasonStartDate = activeSeasonResult[0].start_date;
+    const playerIds = recentPlayersResult.map(p => p.player_id);
+
+    // Fetch all agent usage and team games in 2 bulk queries instead of N+1
+    const [agentUsageResults, teamGamesResults] = await Promise.all([
+      // Get most played agent for all players in one query
+      db
+        .select({
+          player_id: playerMapStatsTable.player_id,
+          agent: playerMapStatsTable.agent,
+          usage_count: count().as("usage_count")
+        })
+        .from(playerMapStatsTable)
+        .innerJoin(mapsTable, eq(playerMapStatsTable.map_id, mapsTable.id))
+        .where(
+          and(
+            inArray(playerMapStatsTable.player_id, playerIds),
+            gte(mapsTable.completed_at, seasonStartDate)
+          )
+        )
+        .groupBy(playerMapStatsTable.player_id, playerMapStatsTable.agent)
+        .orderBy(desc(count())),
+      
+      // Get team games for all players in one query
+      db
+        .select({
+          player_id: playerMapStatsTable.player_id,
+          total_games: count().as("team_games")
+        })
+        .from(playerMapStatsTable)
+        .innerJoin(mapsTable, eq(playerMapStatsTable.map_id, mapsTable.id))
+        .where(
+          and(
+            inArray(playerMapStatsTable.player_id, playerIds),
+            or(
+              eq(mapsTable.winner_team_id, teamId),
+              eq(mapsTable.loser_team_id, teamId)
             )
           )
-          .groupBy(playerMapStatsTable.agent)
-          .orderBy(desc(count()))
-          .limit(1);
+        )
+        .groupBy(playerMapStatsTable.player_id),
+    ]);
 
-        // Get total games played with current team (both wins and losses)
-        const teamGames = await db
-          .select({
-            total_games: count().as("team_games")
-          })
-          .from(playerMapStatsTable)
-          .innerJoin(mapsTable, eq(playerMapStatsTable.map_id, mapsTable.id))
-          .where(
-            and(
-              eq(playerMapStatsTable.player_id, player.player_id),
-              or(
-                eq(mapsTable.winner_team_id, teamId),
-                eq(mapsTable.loser_team_id, teamId)
-              )
-            )
-          );
+    // Create lookup maps for O(1) access
+    const agentByPlayerId = new Map<number, string>();
+    agentUsageResults.forEach(result => {
+      // Only store the first (most used) agent for each player
+      if (!agentByPlayerId.has(result.player_id)) {
+        agentByPlayerId.set(result.player_id, result.agent);
+      }
+    });
 
-        const teamGamesCount = teamGames.length > 0 ? Number(teamGames[0].total_games) : 0;
+    const teamGamesByPlayerId = new Map<number, number>();
+    teamGamesResults.forEach(result => {
+      teamGamesByPlayerId.set(result.player_id, Number(result.total_games));
+    });
 
-        const mostPlayedAgent = agentUsage.length > 0 ? agentUsage[0].agent : 'Unknown';
-        console.log(`Player ${player.ign} most played agent (current season): "${mostPlayedAgent}"`);
-        
-        return {
-          ...player,
-          most_played_agent: mostPlayedAgent,
-          team_games: teamGamesCount
-        };
-      })
-    );
+    // Combine all data
+    const playersWithAgents = recentPlayersResult.map(player => {
+      const mostPlayedAgent = agentByPlayerId.get(player.player_id) || 'Unknown';
+      const teamGamesCount = teamGamesByPlayerId.get(player.player_id) || 0;
+      
+      console.log(`Player ${player.ign} most played agent (current season): "${mostPlayedAgent}"`);
+      
+      return {
+        ...player,
+        most_played_agent: mostPlayedAgent,
+        team_games: teamGamesCount
+      };
+    });
 
     return { status: "success", message: "Team roster retrieved successfully", data: playersWithAgents };
   } catch (error) {
@@ -371,7 +396,22 @@ export async function getTeamMapStreaksAction(teamId: number): Promise<ActionSta
       return { status: "error", message: "Invalid team ID" };
     }
 
-    // Get all maps for this team ordered by date
+    // Get active season start date to limit the query scope
+    const currentSeason = await db
+      .select({ start_date: seasonsTable.start_date })
+      .from(seasonsTable)
+      .where(eq(seasonsTable.is_active, true))
+      .limit(1);
+
+    let seasonStartDate: Date;
+    if (currentSeason.length === 0) {
+      console.warn("No active season found, using all-time data");
+      seasonStartDate = new Date('2020-01-01');
+    } else {
+      seasonStartDate = currentSeason[0].start_date;
+    }
+
+    // Get maps for this team in current season only, ordered by date
     const teamMaps = await db
       .select({
         map_name: mapsTable.map_name,
@@ -381,9 +421,13 @@ export async function getTeamMapStreaksAction(teamId: number): Promise<ActionSta
       })
       .from(mapsTable)
       .where(
-        or(
-          eq(mapsTable.winner_team_id, teamId),
-          eq(mapsTable.loser_team_id, teamId)
+        and(
+          or(
+            eq(mapsTable.winner_team_id, teamId),
+            eq(mapsTable.loser_team_id, teamId)
+          ),
+          isNotNull(mapsTable.completed_at),
+          gte(mapsTable.completed_at, seasonStartDate)
         )
       )
       .orderBy(asc(mapsTable.completed_at));

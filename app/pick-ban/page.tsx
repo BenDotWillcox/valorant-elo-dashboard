@@ -144,17 +144,21 @@ function VetoAnalysisSection() {
 
         setLoading(true);
 
-        // Fetch event names for the selected team
-        getEventNamesAction(parseInt(selectedTeam)).then(res => res.status === 'success' && setEventNames(res.data as string[]));
-
-        // Fetch stats for the selection
+        // Parallelize both data fetches
         const filters = {
             teamId: parseInt(selectedTeam),
             eventName: selectedEvent === "all" ? undefined : selectedEvent,
         };
-        getVetoStatsAction(filters).then(res => {
-            if (res.status === 'success') {
-                setStats(res.data as VetoStatsData);
+
+        Promise.all([
+            getEventNamesAction(parseInt(selectedTeam)),
+            getVetoStatsAction(filters),
+        ]).then(([eventNamesRes, vetoStatsRes]) => {
+            if (eventNamesRes.status === 'success') {
+                setEventNames(eventNamesRes.data as string[]);
+            }
+            if (vetoStatsRes.status === 'success') {
+                setStats(vetoStatsRes.data as VetoStatsData);
             }
             setLoading(false);
         });
@@ -268,11 +272,16 @@ export default function PickBanPage() {
     } else {
       setExpandedMatch(matchId);
       setVetoAnalysisLoading(true);
-      const vetoResult = await getMatchVetoAnalysisAction(matchId);
+      
+      // Parallelize both data fetches
+      const [vetoResult, eloResult] = await Promise.all([
+        getMatchVetoAnalysisAction(matchId),
+        getMatchEloDataAction(matchId),
+      ]);
+      
       if (vetoResult.status === "success") {
         setVetoAnalysis(vetoResult.data as VetoAnalysisStep[]);
       }
-      const eloResult = await getMatchEloDataAction(matchId);
       if (eloResult.status === "success") {
         setMatchEloData(eloResult.data as MatchEloData);
       }

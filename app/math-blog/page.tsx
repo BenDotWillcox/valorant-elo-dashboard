@@ -88,7 +88,7 @@ export default function MathBlogPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold mb-3">Valomapped's Custom Elo Formula</h4>
+                <h4 className="font-semibold mb-3">Valomapped&apos;s Custom Elo Formula</h4>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <code className="text-sm">
                     expected_probability = 1 / (1 + 10^((opponent_rating - player_rating) / 1000))
@@ -144,7 +144,7 @@ export default function MathBlogPage() {
                 <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">Parameter Optimization: Grid Search Methodology</h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   For the following parameters, rather than arbitrarily selecting parameter values, I used a systematic grid search approach 
-                  to optimize the Elo system's predictive accuracy. This involved training multiple models with 
+                  to optimize the Elo system&apos;s predictive accuracy. This involved training multiple models with 
                   different combinations of parameters and evaluating their performance on unseen match data.
                 </p>
                 

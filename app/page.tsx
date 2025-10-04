@@ -123,10 +123,10 @@ export default function Home() {
                 Valorant ELO Dashboard
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                Explore in-depth statistics, predictions, and rankings for Valorant's VCT league using our custom Elo rating system.
+                Explore in-depth statistics, predictions, and rankings for Valorant&apos;s VCT league using our custom Elo rating system.
               </p>
               <p className="text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto mt-4">
-                Get an accurate picture of each team's strength at the map level with data-driven insights.
+                Get an accurate picture of each team&apos;s strength at the map level with data-driven insights.
               </p>
             </div>
           </div>

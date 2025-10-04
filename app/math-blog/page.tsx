@@ -209,7 +209,7 @@ export default function MathBlogPage() {
                   In my case, my grid search settled on a K-factor of 74. This is substantially higher than what is used in traditional systems like chess Elo.
                   <br />
                   <br />
-                  My personal intuition for this is that because Valorant is a rapidly evolving game, unlike chess which hasn't been updated since the addition of castling, it is beneficial to update more quickly to additional data.
+                  My personal intuition for this is that because Valorant is a rapidly evolving game, unlike chess which hasn&apos;t been updated since the addition of castling, it is beneficial to update more quickly to additional data.
                   <br />
                   <br />
                 </p>
@@ -240,7 +240,7 @@ export default function MathBlogPage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Model K-Factor Updating Confidence</h5>
                   <br />
-                  I also experimented with a K-Factor updating confidence approach. This means the model would dynamically adjust the K-Factor based on the amount of time between matches. So the K-factor would start higher at the beginning of the season and gradually shrink as it got more data. The model starts updating more quickly while it has low confidence in the team's skill level and then updates more slowly as it gets more data. The K-Factor would then increase again after long breaks within the season as the teams have time to make changes.
+                  I also experimented with a K-Factor updating confidence approach. This means the model would dynamically adjust the K-Factor based on the amount of time between matches. So the K-factor would start higher at the beginning of the season and gradually shrink as it got more data. The model starts updating more quickly while it has low confidence in the team&apos;s skill level and then updates more slowly as it gets more data. The K-Factor would then increase again after long breaks within the season as the teams have time to make changes.
                   <br />
                   <br />
                   In testing though, this model did not perform as well as without this additional parameter confidence method.
@@ -256,7 +256,7 @@ export default function MathBlogPage() {
                   I plan on testing a regional Elo multiplier for each map in the future. This is because teams play so many of their matches regionally that the model is at risk of not fully accounting for differences in skill level between regions.
                   <br />
                   <br />
-                  Differences between regions are currently sorted out between teams competing internationally where teams from stronger regions will win more often and therefore "bring back" the gained Elo to the regional events.
+                  Differences between regions are currently sorted out between teams competing internationally where teams from stronger regions will win more often and therefore &quot;bring back&quot; the gained Elo to the regional events.
                   <br />
                   <br />
                   I however am not convinced this is sufficient to calibrate the regional differences fully. 
@@ -392,13 +392,13 @@ export default function MathBlogPage() {
               <div>
                 <h4 className="font-semibold mb-3">Zero-Sum Optimality</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  This algorithm assumes a perfectly zero-sum game. For any given map, Team A's win probability is exactly (1 - Team B's win probability). This creates a critical property: your worst map is always your opponent's best map, and vice versa.
+                  This algorithm assumes a perfectly zero-sum game. For any given map, Team A&apos;s win probability is exactly (1 - Team B&apos;s win probability). This creates a critical property: your worst map is always your opponent&apos;s best map, and vice versa.
                   <br />
                   <br />
                   This perfect opposition means the greedy algorithm (always ban worst, always pick best) 
                   is provably optimal. There is no strategic scenario where deviating from this strategy 
                   would improve your expected win probability. When you ban your worst map (say 30% win rate), 
-                  you're simultaneously banning your opponent's best map (their 70% win rate). Any other choice 
+                  you&apos;re simultaneously banning your opponent&apos;s best map (their 70% win rate). Any other choice 
                   would help your opponent more than it helps you.
                   <br />
                   <br />
@@ -407,12 +407,12 @@ export default function MathBlogPage() {
                   assumes rational play from both teams.
                   <br />
                   <br />
-                  A potential future addition would be to model each team's actual historical map choice patterns 
+                  A potential future addition would be to model each team&apos;s actual historical map choice patterns 
                   and provide an option to use predicted map selection based on past behavior, rather than assuming 
                   optimal selection.
                   <br />
                   <br />
-                  With a model for each team's actual historical map choice patterns, we could create a predicted map pool for a given matchup for a user to view. We could also create an optimal map selection algorithm for a given team to exploit predicted suboptimal map selection by the opponent.
+                  With a model for each team&apos;s actual historical map choice patterns, we could create a predicted map pool for a given matchup for a user to view. We could also create an optimal map selection algorithm for a given team to exploit predicted suboptimal map selection by the opponent.
                 </p>
               </div>
             </CardContent>
@@ -522,7 +522,7 @@ export default function MathBlogPage() {
             <CardHeader>
               <CardTitle className="text-2xl">6. Player Rating Modeling</CardTitle>
               <p className="text-gray-600 dark:text-gray-300">
-                The inspiration for my player rating systems comes as an attempt to create a Valorant version of the NBA's {""}
+                The inspiration for my player rating systems comes as an attempt to create a Valorant version of the NBA&apos;s {""}
                 <a 
                   href="https://apanalytics.shinyapps.io/DARKO/_w_40abdb2cb7f34fb4a4710727dacf07d4/#tab-7016-2" 
                   target="_blank" 
@@ -544,7 +544,7 @@ export default function MathBlogPage() {
                 <h4 className="font-semibold mb-3">Overview: VPM (Valorant Plus Minus)</h4>
                 <p className="text-gray-600 dark:text-gray-300">
                   VPM is a composite player rating metric that combines traditional box score statistics with 
-                  time-series modeling to estimate a player's true skill level in relation to rounds won or lost for their team compared to an average replacement player.
+                  time-series modeling to estimate a player&apos;s true skill level in relation to rounds won or lost for their team compared to an average replacement player.
                   <br />
                   <br />
                   The system processes every map a player has ever played and outputs a single number that 
@@ -730,7 +730,7 @@ export default function MathBlogPage() {
                   actual choices to optimal ones based on historical Elo ratings.
                   <br />
                   <br />
-                  This creates a "draft score" for each team, measuring how well they maximize their competitive 
+                  This creates a &quot;draft score&quot; for each team, measuring how well they maximize their competitive 
                   advantage during the veto phase. Teams that consistently make suboptimal picks/bans leave Elo 
                   rating on the table, reducing their match win probability.
                 </p>
@@ -782,7 +782,7 @@ export default function MathBlogPage() {
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">For each completed match:</p>
                   <ol className="list-decimal list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1 ml-2">
-                    <li>Retrieve both teams' Elo ratings for all maps at the time the match was played</li>
+                    <li>Retrieve both teams&apos; Elo ratings for all maps at the time the match was played</li>
                     <li>Replay the pick/ban phase step-by-step in chronological order</li>
                     <li>At each step, calculate what the optimal choice would have been from available maps</li>
                     <li>Compare the actual choice to the optimal choice</li>

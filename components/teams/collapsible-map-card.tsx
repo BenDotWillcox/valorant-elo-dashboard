@@ -128,6 +128,7 @@ export function CollapsibleMapCard({ map, index, streaks, lastComp, teamId, team
                               alt={agent}
                               fill
                               className="object-cover"
+                              loading="lazy"
                             />
                           ) : (
                             <div className="w-full h-full bg-muted/50 flex items-center justify-center">
@@ -229,6 +230,7 @@ export function CollapsibleMapCard({ map, index, streaks, lastComp, teamId, team
                           alt={result.opponent_team_name}
                           fill
                           className="object-contain rounded"
+                          loading="lazy"
                         />
                       </div>
                       

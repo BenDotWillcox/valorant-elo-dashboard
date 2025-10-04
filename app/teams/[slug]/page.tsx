@@ -66,7 +66,11 @@ interface MapStreak {
   current_streak_type: 'W' | 'L';
 }
 
+// Cache this page for 5 minutes
+export const revalidate = 300;
+
 export default async function TeamPage({ params }: TeamPageProps) {
+  // First, get team info
   const teamResult = await getTeamBySlugAction(params.slug);
   
   if (teamResult.status !== "success" || !teamResult.data) {
@@ -77,28 +81,21 @@ export default async function TeamPage({ params }: TeamPageProps) {
   const region = getTeamRegion(team.slug || '');
   const logoPath = team.slug ? TEAM_LOGOS[team.slug as keyof typeof TEAM_LOGOS] : null;
 
-  // Get team map statistics
-  const mapStatsResult = await getTeamMapStatsAction(team.id);
+  // Parallelize all dependent data fetches
+  const [mapStatsResult, rosterResult, historicalResult, tournamentResult, streaksResult, compsResult] = await Promise.all([
+    getTeamMapStatsAction(team.id),
+    getTeamRecentRosterAction(team.id),
+    getTeamHistoricalEloAction(team.id),
+    getTeamTournamentWinsAction(team.id),
+    getTeamMapStreaksAction(team.id),
+    getTeamLastPlayedCompsAction(team.id),
+  ]);
+
   const mapStats: MapStat[] = mapStatsResult.status === "success" && mapStatsResult.data ? mapStatsResult.data : [];
-
-  // Get team recent roster
-  const rosterResult = await getTeamRecentRosterAction(team.id);
   const roster: RosterPlayer[] = rosterResult.status === "success" && rosterResult.data ? rosterResult.data : [];
-
-  // Get historical ELO data
-  const historicalResult = await getTeamHistoricalEloAction(team.id);
   const historicalData: HistoricalData = historicalResult.status === "success" && historicalResult.data ? historicalResult.data : { best: null, worst: null };
-
-  // Get tournament wins data
-  const tournamentResult = await getTeamTournamentWinsAction(team.id);
   const tournamentWins: TournamentWins = tournamentResult.status === "success" && tournamentResult.data ? tournamentResult.data : { international_wins: 0, domestic_wins: 0, total_wins: 0, champions_wins: 0, masters_wins: 0, tournament_details: [] };
-
-  // Get map streaks data
-  const streaksResult = await getTeamMapStreaksAction(team.id);
   const mapStreaks: Record<string, MapStreak> = streaksResult.status === "success" && streaksResult.data ? streaksResult.data : {};
-
-  // Get last played compositions data
-  const compsResult = await getTeamLastPlayedCompsAction(team.id);
   const lastPlayedComps: Record<string, string[]> = compsResult.status === "success" && compsResult.data ? compsResult.data : {};
 
   return (
@@ -194,6 +191,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
                                   alt={player.most_played_agent}
                                   fill
                                   className="object-cover opacity-20"
+                                  loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -245,6 +243,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
                         alt={`${team.name} logo`}
                         fill
                         className="object-contain rounded-xl"
+                        priority
                       />
                     </div>
                   </div>
@@ -279,6 +278,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
                               alt={`${tournament.tournament_type} trophy`}
                               fill
                               className="object-contain transition-transform group-hover:scale-110"
+                              loading="lazy"
                             />
                           </div>
                           {/* Tooltip */}

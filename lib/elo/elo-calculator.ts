@@ -7,8 +7,8 @@ export interface MapEloConfig {
 
 export const DEFAULT_MAP_CONFIG: MapEloConfig = {
   initialRating: 1000,
-  ratingScale: 2000, // The divisor for Elo difference
-  kFactor: 74, // Max Elo change for a single match
+  ratingScale: 1000, // The divisor for Elo difference
+  kFactor: 74, // Form = Higher, Class = Lower
   marginScale: 1, // Scales the margin-of-victory bonus
 };
 

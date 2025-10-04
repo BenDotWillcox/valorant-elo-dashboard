@@ -25,6 +25,12 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
+    name: "Math",
+    href: "/math-blog",
+    gradient:
+      "radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(37,99,235,0.06) 50%, rgba(29,78,216,0) 100%)",
+  },
+  {
     name: "Rankings",
     href: "/rankings",
     gradient:

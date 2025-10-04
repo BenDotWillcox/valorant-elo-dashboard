@@ -16,6 +16,7 @@
     "db:init-seasons": "tsx --require dotenv/config scripts/init-seasons.ts",
     "process:vpm": "tsx scripts/process-vpm.ts",
     "process:elo": "tsx scripts/process-elo.ts",
+    "reset:elo": "tsx --require dotenv/config scripts/reset-elo.ts",
     "process:pick-ban-analysis": "tsx scripts/process-pick-ban-analysis.ts",
     "fix:null-vetoes": "tsx scripts/fix-null-vetoes.ts",
     "populate:tournament-winners": "tsx scripts/populate-tournament-winners.ts"

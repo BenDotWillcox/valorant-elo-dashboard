@@ -1,8 +1,8 @@
 import { db } from "../db/db";
-import { mapsTable } from "../db/schema/maps-schema";
+import { matchesTable } from "../db/schema/matches-schema";
 import { tournamentWinnersTable } from "../db/schema/tournament-winners-schema";
 import { tournaments } from "../lib/constants/tournaments";
-import { desc, eq, and, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 async function populateTournamentWinners() {
   console.log("Starting tournament winners population...");
@@ -27,19 +27,25 @@ async function populateTournamentWinners() {
       try {
         console.log(`Processing tournament: ${tournamentName}`);
 
-        // Get the last game played in this tournament (by completed_at time)
-        const lastGame = await db
+        // Get the last completed match for this tournament
+        const lastMatch = await db
           .select({
-            winner_team_id: mapsTable.winner_team_id,
-            completed_at: mapsTable.completed_at
+            team1_id: matchesTable.team1_id,
+            team2_id: matchesTable.team2_id,
+            team1_score: matchesTable.team1_score,
+            team2_score: matchesTable.team2_score,
+            completed_at: matchesTable.completed_at
           })
-          .from(mapsTable)
-          .where(eq(mapsTable.event_name, tournamentName))
-          .orderBy(desc(mapsTable.completed_at))
+          .from(matchesTable)
+          .where(eq(matchesTable.event_name, tournamentName))
+          .orderBy(desc(matchesTable.completed_at))
           .limit(1);
 
-        if (lastGame.length > 0) {
-          const winner = lastGame[0];
+        if (lastMatch.length > 0) {
+          const match = lastMatch[0];
+          const winner_team_id = match.team1_score > match.team2_score 
+            ? match.team1_id 
+            : match.team2_id;
           
           // Determine tournament type
           let tournamentType = 'Domestic';
@@ -58,13 +64,13 @@ async function populateTournamentWinners() {
           await db.insert(tournamentWinnersTable).values({
             tournament_name: tournamentName,
             tournament_id: tournament.id,
-            winner_team_id: winner.winner_team_id,
+            winner_team_id: winner_team_id,
             region: tournament.region,
             tournament_type: tournamentType,
-            completed_at: winner.completed_at || new Date(),
+            completed_at: match.completed_at || new Date(),
           });
 
-          console.log(`✓ ${tournamentName}: Team ID ${winner.winner_team_id} (${tournament.region})`);
+          console.log(`✓ ${tournamentName}: Team ID ${winner_team_id} (${tournament.region})`);
           processedCount++;
         } else {
           console.log(`⚠ No games found for tournament: ${tournamentName}`);

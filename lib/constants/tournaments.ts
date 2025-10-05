@@ -47,7 +47,7 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: Americas Stage 2": { id: 2501, region: "Americas", status: "completed" },
     "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "completed" },
-    "Valorant Champions 2025": { id: 2283, region: "International", status: "ongoing", start_date: new Date("2025-09-12"), end_date: new Date("2025-10-06") },
+    "Valorant Champions 2025": { id: 2283, region: "International", status: "completed", start_date: new Date("2025-09-12"), end_date: new Date("2025-10-06") },
   };
 
 export const UPCOMING_TOURNAMENT_NAME = "Valorant Champions 2025";

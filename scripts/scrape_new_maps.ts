@@ -12,7 +12,7 @@ import { matchesTable } from '@/db/schema/matches-schema';
 import { matchVetoesTable } from '@/db/schema/match-vetoes-schema';
 import { playersTable } from '@/db/schema/players-schema';
 import { playerMapStatsTable } from '@/db/schema/player-map-stats-schema';
-import { sql, and, eq } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 import type { NewMap } from '@/db/schema/maps-schema'; // at top
 import { MAP_POOL } from '@/lib/constants/maps';
 
@@ -173,7 +173,7 @@ async function scrapeRecentMaps() {
         // Find the base team record first
         let teamRecord: { id: number; name: string; slug: string | null; } | null = null;
         
-        const teamResult = await db.select({ id: teamsTable.id, name: teamsTable.name, slug: teamsTable.slug }).from(teamsTable).where(eq(teamsTable.slug, slug)).limit(1);
+        const teamResult = await db.select({ id: teamsTable.id, name: teamsTable.name, slug: teamsTable.vlr_slug }).from(teamsTable).where(eq(teamsTable.vlr_slug, slug)).limit(1);
         
         if (teamResult.length > 0) {
           teamRecord = teamResult[0];

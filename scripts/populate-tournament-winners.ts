@@ -43,6 +43,14 @@ async function populateTournamentWinners() {
 
         if (lastMatch.length > 0) {
           const match = lastMatch[0];
+          
+          // Check if scores are available
+          if (match.team1_score === null || match.team2_score === null) {
+            console.log(`⚠ Match scores not available for tournament: ${tournamentName}`);
+            errorCount++;
+            continue;
+          }
+          
           const winner_team_id = match.team1_score > match.team2_score 
             ? match.team1_id 
             : match.team2_id;

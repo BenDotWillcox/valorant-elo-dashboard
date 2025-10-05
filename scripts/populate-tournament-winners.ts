@@ -54,6 +54,13 @@ async function populateTournamentWinners() {
           const winner_team_id = match.team1_score > match.team2_score 
             ? match.team1_id 
             : match.team2_id;
+            
+          // Check if winner team ID is valid
+          if (winner_team_id === null) {
+            console.log(`⚠ Winner team ID is null for tournament: ${tournamentName}`);
+            errorCount++;
+            continue;
+          }
           
           // Determine tournament type
           let tournamentType = 'Domestic';

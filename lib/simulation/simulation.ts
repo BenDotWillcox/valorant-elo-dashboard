@@ -182,7 +182,7 @@ export async function runMonteCarloSimulation(
   }, {} as Record<string, { championships: number; finalist: number; top3: number; top4: number; top6: number; top8: number; top12: number; }>);
 
   for (let i = 0; i < numSimulations; i++) {
-    const tournamentResults = simulateFullTournament(eloData, completedWinners, tournamentSeeding, tournamentMapPool);
+    const tournamentResults = simulateFullTournament(eloData, completedWinners, tournamentSeeding, tournamentMapPool, config?.format);
 
     if (tournamentResults.winner) {
       results[tournamentResults.winner].championships++;

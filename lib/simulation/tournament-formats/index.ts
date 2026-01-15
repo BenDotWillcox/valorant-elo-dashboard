@@ -1,6 +1,9 @@
 // Tournament configuration registry for historical and live simulations
 
-export type TournamentFormat = "gsl-groups-double-elim";
+export type TournamentFormat = 
+  | "gsl-groups-double-elim"    // Champions format: 4 GSL groups → 8-team double elim
+  | "swiss-double-elim"          // Masters format: 4 auto-qualify + 8-team swiss → 8-team double elim
+  | "swiss-only";                // Swiss stage only
 
 export interface TournamentTeam {
   name: string;
@@ -35,10 +38,12 @@ export interface TournamentConfig {
 
 // Import tournament configs
 import { VCT_CHAMPIONS_2025_CONFIG } from "./vct-champions-2025";
+import { VCT_MASTERS_TORONTO_2025_CONFIG } from "./vct-masters-toronto-2025";
 
 // Registry of all available tournament configs
 export const tournamentRegistry: Record<string, TournamentConfig> = {
   "vct-champions-2025": VCT_CHAMPIONS_2025_CONFIG,
+  "vct-masters-toronto-2025": VCT_MASTERS_TORONTO_2025_CONFIG,
 };
 
 // Get list of available historical tournaments (those with actual results)

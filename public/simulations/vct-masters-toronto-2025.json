@@ -1,0 +1,170 @@
+{
+  "tournamentId": "vct-masters-toronto-2025",
+  "tournamentName": "Valorant Masters Toronto 2025",
+  "simulatedAt": "2026-01-15T21:41:39.317Z",
+  "eloSnapshotDate": "2025-06-07T00:00:00.000Z",
+  "numSimulations": 100000,
+  "results": [
+    {
+      "team": "G2",
+      "teamName": "G2",
+      "championships": 25.818,
+      "finalist": 41.748000000000005,
+      "top3": 54.052,
+      "top4": 65.571,
+      "top6": 84.84899999999999,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "XLG",
+      "teamName": "XLG",
+      "championships": 14.937000000000001,
+      "finalist": 29.876,
+      "top3": 43.443,
+      "top4": 55.952999999999996,
+      "top6": 79.758,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "FNC",
+      "teamName": "FNC",
+      "championships": 12.393,
+      "finalist": 25.871,
+      "top3": 39.31,
+      "top4": 52.14,
+      "top6": 77.171,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "RRQ",
+      "teamName": "RRQ",
+      "championships": 10.392999999999999,
+      "finalist": 23.262,
+      "top3": 36.714,
+      "top4": 49.463,
+      "top6": 76.036,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "TH",
+      "teamName": "TH",
+      "championships": 8.283999999999999,
+      "finalist": 16.253,
+      "top3": 23.812,
+      "top4": 32.023,
+      "top6": 46.67,
+      "top8": 60.873,
+      "top12": 60.873
+    },
+    {
+      "team": "BLG",
+      "teamName": "BLG",
+      "championships": 6.307,
+      "finalist": 12.601999999999999,
+      "top3": 18.922,
+      "top4": 25.076999999999998,
+      "top6": 37.666,
+      "top8": 50.198,
+      "top12": 50.198
+    },
+    {
+      "team": "GENG",
+      "teamName": "GENG",
+      "championships": 6.15,
+      "finalist": 12.974,
+      "top3": 19.949,
+      "top4": 27.039,
+      "top6": 41.092,
+      "top8": 55.226,
+      "top12": 55.226
+    },
+    {
+      "team": "SEN",
+      "teamName": "SEN",
+      "championships": 5.897,
+      "finalist": 12.441,
+      "top3": 19.585,
+      "top4": 26.931,
+      "top6": 41.851,
+      "top8": 57.855999999999995,
+      "top12": 57.855999999999995
+    },
+    {
+      "team": "MIBR",
+      "teamName": "MIBR",
+      "championships": 4.242,
+      "finalist": 9.51,
+      "top3": 15.368,
+      "top4": 21.843,
+      "top6": 35.327999999999996,
+      "top8": 50.17700000000001,
+      "top12": 50.17700000000001
+    },
+    {
+      "team": "PRX",
+      "teamName": "PRX",
+      "championships": 2.229,
+      "finalist": 6.043,
+      "top3": 11.065999999999999,
+      "top4": 16.491,
+      "top6": 28.897000000000002,
+      "top8": 44.268,
+      "top12": 44.268
+    },
+    {
+      "team": "TL",
+      "teamName": "TL",
+      "championships": 1.855,
+      "finalist": 5.147,
+      "top3": 9.714,
+      "top4": 15.036,
+      "top6": 27.778999999999996,
+      "top8": 44.661,
+      "top12": 44.661
+    },
+    {
+      "team": "WOL",
+      "teamName": "WOL",
+      "championships": 1.4949999999999999,
+      "finalist": 4.273,
+      "top3": 8.065,
+      "top4": 12.433,
+      "top6": 22.903000000000002,
+      "top8": 36.741,
+      "top12": 36.741
+    }
+  ],
+  "actualResults": {
+    "winner": "PRX",
+    "runnerUp": "FNC",
+    "thirdPlace": "WOL",
+    "top4": [
+      "PRX",
+      "FNC",
+      "WOL",
+      "G2"
+    ],
+    "top6": [
+      "PRX",
+      "FNC",
+      "WOL",
+      "G2",
+      "SEN",
+      "GENG"
+    ],
+    "top8": [
+      "PRX",
+      "FNC",
+      "WOL",
+      "G2",
+      "SEN",
+      "GENG",
+      "XLG",
+      "RRQ"
+    ]
+  }
+}

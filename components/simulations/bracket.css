@@ -105,3 +105,131 @@
   border-width: 2px 2px 0 0;
   border-top-right-radius: 8px;
 }
+
+/* Swiss Bracket Styles */
+.swiss-bracket-container {
+  display: flex;
+  gap: 40px;
+  color: #fff;
+}
+
+.swiss-rounds {
+  display: flex;
+  gap: 30px;
+}
+
+.swiss-round {
+  min-width: 240px;
+}
+
+.swiss-bracket-group {
+  margin-bottom: 20px;
+}
+
+.swiss-bracket-label {
+  font-size: 0.75em;
+  color: #718096;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.swiss-match-wrapper {
+  margin-bottom: 12px;
+}
+
+.swiss-match {
+  position: relative;
+}
+
+.swiss-match-type {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  font-size: 0.65em;
+  color: #718096;
+  background: #1a202c;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.swiss-team-record {
+  font-size: 0.8em;
+  color: #718096;
+  margin-left: 4px;
+}
+
+.bracket-item-team.mod-qualified {
+  border-left: 3px solid #48bb78;
+}
+
+.bracket-item-team.mod-eliminated {
+  border-left: 3px solid #f56565;
+  opacity: 0.6;
+}
+
+/* Swiss Standings */
+.swiss-standings {
+  min-width: 220px;
+  border-left: 1px solid #4a5568;
+  padding-left: 20px;
+}
+
+.swiss-standings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.swiss-standing-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #2d3748;
+  border-radius: 4px;
+}
+
+.swiss-standing-item.mod-qualified {
+  border-left: 3px solid #48bb78;
+  background-color: rgba(72, 187, 120, 0.1);
+}
+
+.swiss-standing-item.mod-eliminated {
+  border-left: 3px solid #f56565;
+  background-color: rgba(245, 101, 101, 0.1);
+  opacity: 0.7;
+}
+
+.swiss-standing-rank {
+  width: 24px;
+  font-weight: bold;
+  color: #a0aec0;
+}
+
+.swiss-record-badge {
+  font-size: 0.85em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #4a5568;
+  margin-left: auto;
+}
+
+.swiss-record-badge.mod-qualified {
+  background: rgba(72, 187, 120, 0.3);
+  color: #48bb78;
+}
+
+.swiss-record-badge.mod-eliminated {
+  background: rgba(245, 101, 101, 0.3);
+  color: #f56565;
+}
+
+.swiss-record-badge.mod-winning {
+  background: rgba(72, 187, 120, 0.15);
+  color: #68d391;
+}
+
+.swiss-record-badge.mod-losing {
+  background: rgba(245, 101, 101, 0.15);
+  color: #fc8181;
+}

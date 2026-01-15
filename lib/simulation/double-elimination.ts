@@ -14,7 +14,8 @@ export function simulateDoubleEliminationBracket(
     groupD_winner: string;
     groupD_runnerUp: string;
   },
-  eloData: EloData
+  eloData: EloData,
+  mapPool?: string[]
 ) {
   const bracket: TournamentBracket = {
     // Upper Bracket Round 1
@@ -85,7 +86,8 @@ export function simulateDoubleEliminationBracket(
           team1Slug,
           team2Slug,
           match.type,
-          eloData
+          eloData,
+          mapPool
         ).winner;
         changedInIteration = true;
       }

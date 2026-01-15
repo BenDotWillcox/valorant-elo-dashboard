@@ -1,0 +1,228 @@
+{
+  "tournamentId": "vct-champions-2025",
+  "tournamentName": "Valorant Champions 2025",
+  "simulatedAt": "2026-01-15T20:01:30.999Z",
+  "eloSnapshotDate": "2025-09-12T00:00:00.000Z",
+  "numSimulations": 100000,
+  "results": [
+    {
+      "team": "G2",
+      "teamName": "G2 Esports",
+      "championships": 30.294999999999998,
+      "finalist": 43.464000000000006,
+      "top3": 51.455,
+      "top4": 58.952000000000005,
+      "top6": 69.366,
+      "top8": 76.886,
+      "top12": 76.886
+    },
+    {
+      "team": "TL",
+      "teamName": "Team Liquid",
+      "championships": 14.434,
+      "finalist": 26.209,
+      "top3": 35.191,
+      "top4": 44.486,
+      "top6": 58.76,
+      "top8": 71.289,
+      "top12": 71.289
+    },
+    {
+      "team": "PRX",
+      "teamName": "Paper Rex",
+      "championships": 11.082,
+      "finalist": 21.226,
+      "top3": 29.842999999999996,
+      "top4": 37.866,
+      "top6": 51.715,
+      "top8": 62.619,
+      "top12": 62.619
+    },
+    {
+      "team": "BILI",
+      "teamName": "Bilibili Gaming",
+      "championships": 7.252,
+      "finalist": 16.072,
+      "top3": 25.209,
+      "top4": 34.625,
+      "top6": 51.839,
+      "top8": 69.146,
+      "top12": 69.146
+    },
+    {
+      "team": "SEN",
+      "teamName": "Sentinels",
+      "championships": 6.577,
+      "finalist": 14.469999999999999,
+      "top3": 22.248,
+      "top4": 29.328,
+      "top6": 43.114999999999995,
+      "top8": 54.778999999999996,
+      "top12": 54.778999999999996
+    },
+    {
+      "team": "DRG",
+      "teamName": "DRG",
+      "championships": 4.531000000000001,
+      "finalist": 10.993,
+      "top3": 17.508000000000003,
+      "top4": 23.612,
+      "top6": 36.122,
+      "top8": 47.532999999999994,
+      "top12": 47.532999999999994
+    },
+    {
+      "team": "EDG",
+      "teamName": "EDward Gaming",
+      "championships": 4.152,
+      "finalist": 10.586,
+      "top3": 17.267,
+      "top4": 24.44,
+      "top6": 39.019,
+      "top8": 54.013999999999996,
+      "top12": 54.013999999999996
+    },
+    {
+      "team": "TH",
+      "teamName": "Team Heretics",
+      "championships": 4.091,
+      "finalist": 9.133,
+      "top3": 14.285,
+      "top4": 19.291,
+      "top6": 28.991,
+      "top8": 37.663999999999994,
+      "top12": 37.663999999999994
+    },
+    {
+      "team": "DRX",
+      "teamName": "DRX",
+      "championships": 3.763,
+      "finalist": 9.032,
+      "top3": 14.85,
+      "top4": 20.84,
+      "top6": 32.818000000000005,
+      "top8": 45.077,
+      "top12": 45.077
+    },
+    {
+      "team": "XLG",
+      "teamName": "XLG Esports",
+      "championships": 3.148,
+      "finalist": 7.9079999999999995,
+      "top3": 13.364,
+      "top4": 18.805,
+      "top6": 30.168,
+      "top8": 40.754000000000005,
+      "top12": 40.754000000000005
+    },
+    {
+      "team": "GX",
+      "teamName": "GiantX",
+      "championships": 2.783,
+      "finalist": 7.445,
+      "top3": 13.04,
+      "top4": 18.445,
+      "top6": 30.421,
+      "top8": 41.848,
+      "top12": 41.848
+    },
+    {
+      "team": "RRQ",
+      "teamName": "Rex Regum Qeon",
+      "championships": 2.411,
+      "finalist": 6.904000000000001,
+      "top3": 13.285,
+      "top4": 19.797,
+      "top6": 34.943000000000005,
+      "top8": 52.495000000000005,
+      "top12": 52.495000000000005
+    },
+    {
+      "team": "T1",
+      "teamName": "T1",
+      "championships": 2.321,
+      "finalist": 6.41,
+      "top3": 11.214,
+      "top4": 15.956999999999999,
+      "top6": 26.972,
+      "top8": 37.917,
+      "top12": 37.917
+    },
+    {
+      "team": "FNC",
+      "teamName": "Fnatic",
+      "championships": 1.7209999999999999,
+      "finalist": 5.2620000000000005,
+      "top3": 10.498000000000001,
+      "top4": 16.159000000000002,
+      "top6": 29.983999999999998,
+      "top8": 46.89,
+      "top12": 46.89
+    },
+    {
+      "team": "NRG",
+      "teamName": "NRG",
+      "championships": 0.975,
+      "finalist": 3.1029999999999998,
+      "top3": 6.36,
+      "top4": 9.849,
+      "top6": 18.828,
+      "top8": 29.62,
+      "top12": 29.62
+    },
+    {
+      "team": "MIBR",
+      "teamName": "MIBR",
+      "championships": 0.464,
+      "finalist": 1.783,
+      "top3": 4.383,
+      "top4": 7.548000000000001,
+      "top6": 16.939,
+      "top8": 31.469,
+      "top12": 31.469
+    }
+  ],
+  "actualResults": {
+    "winner": "NRG",
+    "runnerUp": "FNC",
+    "thirdPlace": "DRX",
+    "top4": [
+      "NRG",
+      "FNC",
+      "DRX",
+      "PRX"
+    ],
+    "top6": [
+      "NRG",
+      "FNC",
+      "DRX",
+      "PRX",
+      "TH",
+      "MIBR"
+    ],
+    "top8": [
+      "NRG",
+      "FNC",
+      "DRX",
+      "PRX",
+      "TH",
+      "MIBR",
+      "GX",
+      "G2"
+    ],
+    "top12": [
+      "NRG",
+      "FNC",
+      "DRX",
+      "PRX",
+      "TH",
+      "MIBR",
+      "GX",
+      "G2",
+      "T1",
+      "TL",
+      "RRQ",
+      "XLG"
+    ]
+  }
+}

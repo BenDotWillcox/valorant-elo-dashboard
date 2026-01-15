@@ -8,7 +8,8 @@ export function simulateGSLGroup(
   groupName: string,
   groupSeeding: Seeding,
   eloData: EloData,
-  completedWinners?: Record<string, string>
+  completedWinners?: Record<string, string>,
+  mapPool?: string[]
 ): { winner: string; runnerUp: string } {
   const bracket: TournamentBracket = {
     [`${groupName}-M1`]: {
@@ -101,7 +102,8 @@ export function simulateGSLGroup(
             team1Slug,
             team2Slug,
             match.type,
-            eloData
+            eloData,
+            mapPool
           ).winner;
         }
         changedInIteration = true;

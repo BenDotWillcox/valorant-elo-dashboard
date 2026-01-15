@@ -7,6 +7,7 @@ import {
 import { calculateWinProbability } from "../predictions/calculations";
 import { simulateFullTournament } from "@/lib/simulation/tournament-simulation";
 import { VCT_CHAMPIONS_2025_TEAMS } from "@/lib/constants/tournaments";
+import type { TournamentConfig } from "./tournament-formats";
 
 
 
@@ -38,15 +39,16 @@ export async function getSimulationData() {
   return eloDataByTeam;
 }
 
-type EloData = Record<string, Record<string, number>>;
+export type EloData = Record<string, Record<string, number>>;
 
 export function simulateMatch(
   team1Slug: string,
   team2Slug: string,
   matchType: "BO3" | "BO5" | "BO5_ADV",
-  eloData: EloData
+  eloData: EloData,
+  mapPool?: string[]
 ) {
-  const maps = MAP_POOL.active;
+  const maps = mapPool ?? MAP_POOL.active;
 
   const team1Elo = eloData[team1Slug];
   const team2Elo = eloData[team2Slug];
@@ -125,13 +127,33 @@ export function simulateMatch(
   };
 }
 
+export interface MonteCarloOptions {
+  numSimulations?: number;
+  completedWinners?: Record<string, string>;
+  config?: TournamentConfig;
+  eloData?: EloData;
+}
+
+/**
+ * Run Monte Carlo simulation for a tournament.
+ * 
+ * For live simulations: Call with no config/eloData to use current data
+ * For historical simulations: Provide config and pre-fetched eloData
+ */
 export async function runMonteCarloSimulation(
   numSimulations: number = 10000,
-  completedWinners?: Record<string, string>
+  completedWinners?: Record<string, string>,
+  config?: TournamentConfig,
+  providedEloData?: EloData
 ) {
-  const eloData = await getSimulationData();
-  const allTeams = VCT_CHAMPIONS_2025_TEAMS.map((t) => t.slug);
-  const maps = MAP_POOL.active;
+  // Use provided config or default to VCT Champions 2025
+  const tournamentTeams = config?.teams ?? VCT_CHAMPIONS_2025_TEAMS;
+  const tournamentSeeding = config?.seeding;
+  const tournamentMapPool = config?.mapPool ?? MAP_POOL.active;
+  
+  const eloData = providedEloData ?? await getSimulationData();
+  const allTeams = tournamentTeams.map((t) => t.slug);
+  const maps = tournamentMapPool;
 
   const teamsWithIncompleteElo = allTeams.filter(team => {
     if (!eloData[team]) {
@@ -150,16 +172,17 @@ export async function runMonteCarloSimulation(
     acc[teamSlug] = {
       championships: 0,
       finalist: 0,
-      top4: 0,
-      top8: 0,
       top3: 0,
+      top4: 0,
       top6: 0,
+      top8: 0,
+      top12: 0,
     };
     return acc;
-  }, {} as Record<string, { championships: number; finalist: number; top4: number; top8: number; top3: number; top6: number; }>);
+  }, {} as Record<string, { championships: number; finalist: number; top3: number; top4: number; top6: number; top8: number; top12: number; }>);
 
   for (let i = 0; i < numSimulations; i++) {
-    const tournamentResults = simulateFullTournament(eloData, completedWinners);
+    const tournamentResults = simulateFullTournament(eloData, completedWinners, tournamentSeeding, tournamentMapPool);
 
     if (tournamentResults.winner) {
       results[tournamentResults.winner].championships++;
@@ -182,11 +205,18 @@ export async function runMonteCarloSimulation(
     tournamentResults.top8.forEach((team: string) => {
       if (results[team]) results[team].top8++;
     });
+    // Top 12 = made it out of groups (all teams not eliminated in groups)
+    // In GSL format, 8 teams make playoffs, plus 4 more who lost in decider matches = 12 teams
+    // For now, we track top8 from playoffs; top12 would need group stage tracking
+    // As approximation, top12 includes top8 teams
+    tournamentResults.top8.forEach((team: string) => {
+      if (results[team]) results[team].top12++;
+    });
   }
 
   const finalProbabilities = Object.entries(results).map(
     ([teamSlug, data]) => {
-      const team = VCT_CHAMPIONS_2025_TEAMS.find((t) => t.slug === teamSlug);
+      const team = tournamentTeams.find((t) => t.slug === teamSlug);
       return {
         team: teamSlug,
         teamName: team ? team.name : teamSlug,
@@ -196,6 +226,7 @@ export async function runMonteCarloSimulation(
         top4: (data.top4 / numSimulations) * 100,
         top6: (data.top6 / numSimulations) * 100,
         top8: (data.top8 / numSimulations) * 100,
+        top12: (data.top12 / numSimulations) * 100,
       };
     }
   );

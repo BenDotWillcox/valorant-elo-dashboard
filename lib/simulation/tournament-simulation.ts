@@ -1,14 +1,25 @@
 import { simulateGSLGroup } from "./gsl-group-stage";
 import { simulateDoubleEliminationBracket } from "./double-elimination";
 import { VCT_CHAMPIONS_2025_SEEDING } from "./tournament-formats/vct-champions-2025";
+import type { TournamentSeeding } from "./tournament-formats";
+import { MAP_POOL } from "@/lib/constants/maps";
 
 type EloData = Record<string, Record<string, number>>;
 
-export function simulateFullTournament(eloData: EloData, completedWinners?: Record<string, string>) {
-  const groupA_results = simulateGSLGroup("groupA", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
-  const groupB_results = simulateGSLGroup("groupB", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
-  const groupC_results = simulateGSLGroup("groupC", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
-  const groupD_results = simulateGSLGroup("groupD", VCT_CHAMPIONS_2025_SEEDING, eloData, completedWinners);
+export function simulateFullTournament(
+  eloData: EloData, 
+  completedWinners?: Record<string, string>,
+  seeding?: TournamentSeeding,
+  mapPool?: string[]
+) {
+  // Use provided seeding or default to VCT Champions 2025
+  const tournamentSeeding = seeding ?? VCT_CHAMPIONS_2025_SEEDING;
+  const tournamentMapPool = mapPool ?? MAP_POOL.active;
+  
+  const groupA_results = simulateGSLGroup("groupA", tournamentSeeding, eloData, completedWinners, tournamentMapPool);
+  const groupB_results = simulateGSLGroup("groupB", tournamentSeeding, eloData, completedWinners, tournamentMapPool);
+  const groupC_results = simulateGSLGroup("groupC", tournamentSeeding, eloData, completedWinners, tournamentMapPool);
+  const groupD_results = simulateGSLGroup("groupD", tournamentSeeding, eloData, completedWinners, tournamentMapPool);
 
   const qualifiedTeams = {
     groupA_winner: groupA_results.winner,
@@ -23,7 +34,8 @@ export function simulateFullTournament(eloData: EloData, completedWinners?: Reco
 
   const finalBracketResults = simulateDoubleEliminationBracket(
     qualifiedTeams,
-    eloData
+    eloData,
+    tournamentMapPool
   );
 
   return finalBracketResults;

@@ -13,6 +13,7 @@ interface SimulationResult {
     top4: number;
     top6: number;
     top8: number;
+    top12: number;
 }
 
 interface RoundReachHeatmapProps {
@@ -22,6 +23,7 @@ interface RoundReachHeatmapProps {
 type SortKey = keyof Omit<SimulationResult, 'team' | 'teamName'>;
 
 const ROUNDS: { key: SortKey; label: string }[] = [
+    { key: 'top12', label: 'Top 12' },
     { key: 'top8', label: 'Top 8' },
     { key: 'top6', label: 'Top 6' },
     { key: 'top4', label: 'Top 4' },

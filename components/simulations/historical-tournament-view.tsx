@@ -99,7 +99,7 @@ export function HistoricalTournamentView({ data }: HistoricalTournamentViewProps
               <TabsTrigger value="chart">Championship Odds</TabsTrigger>
             </TabsList>
             <TabsContent value="heatmap" className="mt-4">
-              <RoundReachHeatmap data={data.results} />
+              <RoundReachHeatmap data={data.results} teamCount={data.results.length} />
             </TabsContent>
             <TabsContent value="chart" className="mt-4">
               <TitleOddsChart data={data.results} />

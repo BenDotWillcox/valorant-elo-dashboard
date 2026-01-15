@@ -10,7 +10,7 @@ export const VCT_MASTERS_TORONTO_2025_SWISS_SEEDING = {
   "swiss-seed1": "SEN",  // Replace with actual team slugs
   "swiss-seed2": "GENG",
   "swiss-seed3": "TH",
-  "swiss-seed4": "BLG",
+  "swiss-seed4": "BILI",
   "swiss-seed5": "TL",
   "swiss-seed6": "PRX",
   "swiss-seed7": "MIBR",
@@ -34,19 +34,19 @@ export const VCT_MASTERS_TORONTO_2025_CONFIG: TournamentConfig = {
   teams: [
     // Auto-qualified to playoffs (skip Swiss)
     { name: "G2", slug: "G2", group: "auto" },
-    { name: "FNC", slug: "FNC", group: "auto" },
-    { name: "RRQ", slug: "RRQ", group: "auto" },
-    { name: "XLG", slug: "XLG", group: "auto" },
+    { name: "Fnatic", slug: "FNC", group: "auto" },
+    { name: "Rex Regum Qeon", slug: "RRQ", group: "auto" },
+    { name: "Xi Lai Gaming", slug: "XLG", group: "auto" },
 
     // Swiss stage teams
-    { name: "SEN", slug: "SEN", group: "swiss" },
-    { name: "GENG", slug: "GENG", group: "swiss" },
-    { name: "TH", slug: "TH", group: "swiss" },
-    { name: "BLG", slug: "BLG", group: "swiss" },
-    { name: "TL", slug: "TL", group: "swiss" },
-    { name: "PRX", slug: "PRX", group: "swiss" },
+    { name: "Sentinels", slug: "SEN", group: "swiss" },
+    { name: "Gen.G", slug: "GENG", group: "swiss" },
+    { name: "Team Heretics", slug: "TH", group: "swiss" },
+    { name: "Bilibili Gaming", slug: "BILI", group: "swiss" },
+    { name: "Team Liquid", slug: "TL", group: "swiss" },
+    { name: "Paper Rex", slug: "PRX", group: "swiss" },
     { name: "MIBR", slug: "MIBR", group: "swiss" },
-    { name: "WOL", slug: "WOL", group: "swiss" },
+    { name: "Wolves Esports", slug: "WOL", group: "swiss" },
   ],
   seeding: {
     ...VCT_MASTERS_TORONTO_2025_SWISS_SEEDING,

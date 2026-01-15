@@ -33,7 +33,7 @@ export const TEAM_COLORS = {
     'JD Gaming': '#d0142c', // Red
     'All Gamers': '#da251c', // Red
     'TYLOO': '#d63831', // Red
-    'Gen.G': '#ac8c04', // Yellow
+    'Gen.G': '#a58822', // Yellow
     'Global Esports': '#124091', // Blue
     'T1': '#e8042c', // Red
     'Team Secret': '#ffffff', // White
@@ -72,6 +72,8 @@ export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
   'TH': TEAM_COLORS['Team Heretics'],
   'T1': TEAM_COLORS['T1'],
   'DRG': TEAM_COLORS['Dragon Ranger Gaming'],
+  'GENG': TEAM_COLORS['Gen.G'],
+  'WOL': TEAM_COLORS['Wolves Esports'],
 };
 
 export const MAP_COLORS = {

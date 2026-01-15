@@ -57,8 +57,7 @@ const RecordBadge = ({ wins, losses, isQualified, isEliminated }: {
   return <span className={className}>{wins}-{losses}</span>;
 };
 
-export function SwissBracket({ 
-  stageName, 
+export function SwissBracket({  
   eloData,
   matches,
   standings,

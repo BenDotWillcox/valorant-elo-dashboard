@@ -18,21 +18,29 @@ interface SimulationResult {
 
 interface RoundReachHeatmapProps {
     data: SimulationResult[];
+    teamCount?: number;
 }
 
 type SortKey = keyof Omit<SimulationResult, 'team' | 'teamName'>;
 
-const ROUNDS: { key: SortKey; label: string }[] = [
-    { key: 'top12', label: 'Top 12' },
-    { key: 'top8', label: 'Top 8' },
-    { key: 'top6', label: 'Top 6' },
-    { key: 'top4', label: 'Top 4' },
-    { key: 'top3', label: 'Top 3' },
-    { key: 'finalist', label: 'Finals' },
-    { key: 'championships', label: 'Champion' },
+const ALL_ROUNDS: { key: SortKey; label: string; minTeams: number }[] = [
+    { key: 'top12', label: 'Top 12', minTeams: 13 },  // Only show if >12 teams
+    { key: 'top8', label: 'Top 8', minTeams: 9 },    // Only show if >8 teams
+    { key: 'top6', label: 'Top 6', minTeams: 7 },    // Only show if >6 teams
+    { key: 'top4', label: 'Top 4', minTeams: 5 },    // Only show if >4 teams
+    { key: 'top3', label: 'Top 3', minTeams: 4 },    // Only show if >3 teams
+    { key: 'finalist', label: 'Finals', minTeams: 2 },
+    { key: 'championships', label: 'Champion', minTeams: 1 },
 ];
 
-export function RoundReachHeatmap({ data }: RoundReachHeatmapProps) {
+export function RoundReachHeatmap({ data, teamCount }: RoundReachHeatmapProps) {
+    // Determine team count from data if not provided
+    const effectiveTeamCount = teamCount ?? data.length;
+    
+    // Filter rounds based on team count
+    const ROUNDS = useMemo(() => {
+        return ALL_ROUNDS.filter(round => effectiveTeamCount >= round.minTeams);
+    }, [effectiveTeamCount]);
     const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' }>({ key: 'championships', direction: 'desc' });
 
     const sortedData = useMemo(() => {

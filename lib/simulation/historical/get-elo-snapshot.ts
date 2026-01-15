@@ -1,6 +1,6 @@
 import { db } from "@/db/db";
-import { eloRatingsTable, teamsTable } from "@/db/schema";
-import { sql, and, lt, inArray, gte } from "drizzle-orm";
+import { teamsTable } from "@/db/schema";
+import { sql, inArray} from "drizzle-orm";
 
 /**
  * Get a snapshot of ELO ratings for specified teams before a given date.

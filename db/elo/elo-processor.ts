@@ -138,7 +138,7 @@ export async function resetEloSystem() {
 }
 
 async function insertSeasonResetRatings(resetDate: Date) {
-  const teams = await db.select().from(teamsTable);
+  const teams = await db.select().from(teamsTable).where(eq(teamsTable.is_active, true));
   const year = resetDate.getFullYear();
   const mapNames = MAP_AVAILABILITY[year] || [];
 
@@ -160,7 +160,7 @@ async function insertSeasonResetRatings(resetDate: Date) {
   if (resetRatings.length > 0) {
     await db.insert(eloRatingsTable).values(resetRatings);
   }
-  console.log(`Inserted season reset ratings for ${teams.length} teams on ${mapNames.length} maps`);
+  console.log(`Inserted season reset ratings for ${teams.length} active teams on ${mapNames.length} maps`);
 }
 
 export async function createNewSeason(year: number) {
@@ -194,13 +194,15 @@ export async function initializeSeasons() {
     // Create historical seasons
     const historicalSeasons = [
       { year: 2023, start_date: new Date('2023-01-01'), end_date: new Date('2023-12-31'), is_active: false },
-      { year: 2024, start_date: new Date('2024-01-01'), end_date: new Date('2024-12-31'), is_active: false }
+      { year: 2024, start_date: new Date('2024-01-01'), end_date: new Date('2024-12-31'), is_active: false },
+      { year: 2025, start_date: new Date('2025-01-01'), end_date: new Date('2025-12-31'), is_active: false }
     ];
     await db.insert(seasonsTable).values(historicalSeasons);
     
     // Insert baseline ratings for each historical season
     await insertSeasonResetRatings(new Date('2023-01-01'));
     await insertSeasonResetRatings(new Date('2024-01-01'));
+    await insertSeasonResetRatings(new Date('2025-01-01'));
 
     // Create and activate the current season
     await createNewSeason(new Date().getFullYear());

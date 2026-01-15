@@ -702,7 +702,7 @@ export default function MathBlogPage() {
                   While the current VPM system provides strong predictive performance, several enhancements are planned:
                 </p>
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li><strong>Map-specific models</strong>: Different weights for different maps (Cypher better on Icebox, etc.)</li>
+                  <li><strong>Map-specific models</strong>: Different weights for different maps (Jett better on Icebox, etc.)</li>
                   <li><strong>Agent adjustments</strong>: Normalize for expected agent performance (duelists vs sentinels)</li>
                   <li><strong>Additional Features</strong>: Incorporate additional features such as clutch percentage (1vX), Utility Efficiency, and in-game economy data.</li>
                 </ul>

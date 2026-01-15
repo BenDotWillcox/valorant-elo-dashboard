@@ -48,6 +48,11 @@ export const TEAM_COLORS = {
     'Xi Lai Gaming': '#1EF5BF', // Teal
     '2Game Esports': '#9d05f5', // Purple
     'BOOM Esports': '#8a1616', // Red
+    'ENVY': '#ffffff', // White
+    'FS': '#ffa500', // Orange
+    'VL': '#ffffff', // White
+    'PCF': '#1EF5BF', // Teal
+    'ULF': '#ffffff', // White
 }
 
 export const TEAM_SLUG_TO_COLOR: Record<string, string> = {

@@ -41,7 +41,7 @@ export function TournamentSelector({ tournaments }: TournamentSelectorProps) {
 
         const data = await response.json();
         setSimulationData(data);
-      } catch (err) {
+      } catch {
         setError('Failed to load simulation data');
         setSimulationData(null);
       } finally {

@@ -102,7 +102,7 @@ const eloChange = kFactor * marginFactor * (1 - expectedProbability);
 
 ### Tournaments
 
-- VCT 2023-2025 (Americas, EMEA, Pacific, China)
+- VCT 2023-2026 (Americas, EMEA, Pacific, China)
 - International tournaments (Masters, Champions)
 - Regional leagues and qualifiers
 

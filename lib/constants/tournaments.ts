@@ -48,7 +48,7 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "completed" },
     "Valorant Champions 2025": { id: 2283, region: "International", status: "completed", start_date: new Date("2025-09-12"), end_date: new Date("2025-10-06") },
-    "VCT 2026: Americas Kickoff": { id: 2682, region: "Americas", status: "upcoming" },
+    "VCT 2026: Americas Kickoff": { id: 2682, region: "Americas", status: "ongoing" },
     "VCT 2026: EMEA Kickoff": { id: 2684, region: "EMEA", status: "upcoming" },
     "VCT 2026: Pacific Kickoff": { id: 2683, region: "Pacific", status: "upcoming" },
     "VCT 2026: China Kickoff": { id: 2685, region: "China", status: "upcoming" },

@@ -1,0 +1,116 @@
+{
+  "tournamentId": "vct-masters-bangkok-2025",
+  "tournamentName": "Valorant Masters Bangkok 2025",
+  "simulatedAt": "2026-01-16T01:38:58.835Z",
+  "eloSnapshotDate": "2025-02-14T00:00:00.000Z",
+  "numSimulations": 100000,
+  "results": [
+    {
+      "team": "EDG",
+      "teamName": "EDward Gaming",
+      "championships": 19.203,
+      "finalist": 33.654,
+      "top3": 45.423,
+      "top4": 55.637,
+      "top6": 78.94200000000001,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "VIT",
+      "teamName": "Vitality",
+      "championships": 15.034,
+      "finalist": 28.847,
+      "top3": 41.842,
+      "top4": 54.355,
+      "top6": 77.866,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "G2",
+      "teamName": "G2 Esports",
+      "championships": 14.754999999999999,
+      "finalist": 29.124,
+      "top3": 42.594,
+      "top4": 55.311,
+      "top6": 78.577,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "TL",
+      "teamName": "Team Liquid",
+      "championships": 13.422999999999998,
+      "finalist": 25.695,
+      "top3": 37.799,
+      "top4": 49.99,
+      "top6": 75.10900000000001,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "DRX",
+      "teamName": "DRX",
+      "championships": 11.479000000000001,
+      "finalist": 23.641000000000002,
+      "top3": 35.85,
+      "top4": 47.801,
+      "top6": 73.682,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "SEN",
+      "teamName": "Sentinels",
+      "championships": 9.099,
+      "finalist": 20.352999999999998,
+      "top3": 32.991,
+      "top4": 46.572,
+      "top6": 72.26700000000001,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "TRC",
+      "teamName": "Trace",
+      "championships": 9.088000000000001,
+      "finalist": 20.285,
+      "top3": 32.661,
+      "top4": 45.918,
+      "top6": 72.475,
+      "top8": 0,
+      "top12": 0
+    },
+    {
+      "team": "T1",
+      "teamName": "T1",
+      "championships": 7.919,
+      "finalist": 18.401,
+      "top3": 30.84,
+      "top4": 44.416,
+      "top6": 71.082,
+      "top8": 0,
+      "top12": 0
+    }
+  ],
+  "actualResults": {
+    "winner": "T1",
+    "runnerUp": "G2",
+    "thirdPlace": "EDG",
+    "top4": [
+      "T1",
+      "G2",
+      "EDG",
+      "VIT"
+    ],
+    "top6": [
+      "T1",
+      "G2",
+      "EDG",
+      "VIT",
+      "DRX",
+      "TL"
+    ]
+  }
+}

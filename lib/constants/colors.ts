@@ -74,6 +74,8 @@ export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
   'DRG': TEAM_COLORS['Dragon Ranger Gaming'],
   'GENG': TEAM_COLORS['Gen.G'],
   'WOL': TEAM_COLORS['Wolves Esports'],
+  'VIT': TEAM_COLORS['Vitality'],
+  'TRC': TEAM_COLORS['Trace Esports'],
 };
 
 export const MAP_COLORS = {

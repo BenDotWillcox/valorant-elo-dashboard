@@ -199,19 +199,22 @@ export async function runMonteCarloSimulation(
     tournamentResults.top4.forEach((team: string) => {
       if (results[team]) results[team].top4++;
     });
-    tournamentResults.top6.forEach((team: string) => {
-      if (results[team]) results[team].top6++;
-    });
-    tournamentResults.top8.forEach((team: string) => {
-      if (results[team]) results[team].top8++;
-    });
+    if ('top6' in tournamentResults && tournamentResults.top6) {
+      tournamentResults.top6.forEach((team: string) => {
+        if (results[team]) results[team].top6++;
+      });
+    }
+    if ('top8' in tournamentResults && tournamentResults.top8) {
+      tournamentResults.top8.forEach((team: string) => {
+        if (results[team]) results[team].top8++;
+      });
+    }
     // Top 12 = made it out of groups (all teams not eliminated in groups)
-    // In GSL format, 8 teams make playoffs, plus 4 more who lost in decider matches = 12 teams
-    // For now, we track top8 from playoffs; top12 would need group stage tracking
-    // As approximation, top12 includes top8 teams
-    tournamentResults.top8.forEach((team: string) => {
-      if (results[team]) results[team].top12++;
-    });
+    if ('top8' in tournamentResults && tournamentResults.top8) {
+      tournamentResults.top8.forEach((team: string) => {
+        if (results[team]) results[team].top12++;
+      });
+    }
   }
 
   const finalProbabilities = Object.entries(results).map(

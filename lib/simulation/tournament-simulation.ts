@@ -1,6 +1,7 @@
 import { simulateGSLGroup } from "./gsl-group-stage";
 import { simulateDoubleEliminationBracket } from "./double-elimination";
 import { simulateMastersTournament } from "./masters-tournament-simulation";
+import { simulateBangkokTournament } from "./bangkok-tournament-simulation";
 import { VCT_CHAMPIONS_2025_SEEDING } from "./tournament-formats/vct-champions-2025";
 import type { TournamentSeeding, TournamentFormat } from "./tournament-formats";
 import { MAP_POOL } from "@/lib/constants/maps";
@@ -59,6 +60,10 @@ export function simulateFullTournament(
   
   if (tournamentFormat === "swiss-double-elim") {
     return simulateMastersTournament(eloData, completedWinners, seeding, mapPool);
+  }
+  
+  if (tournamentFormat === "swiss-4team-double-elim") {
+    return simulateBangkokTournament(eloData, completedWinners, seeding, mapPool);
   }
   
   // Default: GSL groups + double elim

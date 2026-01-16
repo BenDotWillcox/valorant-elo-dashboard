@@ -1,5 +1,5 @@
 import { simulateSwissStage, SwissStageResult } from "./swiss-stage";
-import { simulateFourTeamDoubleElimination, FourTeamDoubleElimResult } from "./four-team-double-elimination";
+import { simulateFourTeamDoubleElimination} from "./four-team-double-elimination";
 import type { TournamentSeeding } from "./tournament-formats";
 import { TournamentBracket } from "./tournament-bracket";
 

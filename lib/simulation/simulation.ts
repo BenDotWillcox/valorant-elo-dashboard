@@ -184,13 +184,13 @@ export async function runMonteCarloSimulation(
   for (let i = 0; i < numSimulations; i++) {
     const tournamentResults = simulateFullTournament(eloData, completedWinners, tournamentSeeding, tournamentMapPool, config?.format);
 
-    if (tournamentResults.winner) {
+    if (tournamentResults.winner && results[tournamentResults.winner]) {
       results[tournamentResults.winner].championships++;
     }
-    if (tournamentResults.runnerUp) {
+    if (tournamentResults.runnerUp && results[tournamentResults.runnerUp]) {
       results[tournamentResults.runnerUp].finalist++;
     }
-    if (tournamentResults.winner) {
+    if (tournamentResults.winner && results[tournamentResults.winner]) {
       results[tournamentResults.winner].finalist++;
     }
     tournamentResults.top3.forEach((team: string) => {

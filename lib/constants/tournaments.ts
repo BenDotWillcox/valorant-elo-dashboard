@@ -62,7 +62,6 @@ export const UPCOMING_TOURNAMENT_NAME = "Valorant Masters Santiago 2026";
 export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
   'FUR',
   'G2',
-  'KRU',
   'NRG',
   'BBL',
   'TL',

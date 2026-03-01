@@ -5,7 +5,6 @@ import { AlertCircle, BarChart3, CalendarDays, Loader2, RefreshCcw, Users } from
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getTournamentConfig } from '@/lib/simulation/tournament-formats';
 import { RoundReachHeatmap } from './round-reach-heatmap';
 import { TitleOddsChart } from './title-odds-chart';
@@ -23,11 +22,10 @@ interface SimulationResult {
 }
 
 const TOURNAMENT_ID = 'vct-masters-santiago-2026';
+const FIXED_SIMULATION_COUNT = 10000;
 const tournamentConfig = getTournamentConfig(TOURNAMENT_ID);
-const SIMULATION_OPTIONS = ['10000', '25000', '50000', '100000'];
 
 export function UpcomingTournamentView() {
-  const [numSimulations, setNumSimulations] = useState('25000');
   const [results, setResults] = useState<SimulationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +66,7 @@ export function UpcomingTournamentView() {
 
     try {
       const response = await fetch(
-        `/api/simulation?tournamentId=${TOURNAMENT_ID}&simulations=${numSimulations}`
+        `/api/simulation?tournamentId=${TOURNAMENT_ID}&simulations=${FIXED_SIMULATION_COUNT}`
       );
 
       if (!response.ok) {
@@ -86,7 +84,7 @@ export function UpcomingTournamentView() {
     } finally {
       setLoading(false);
     }
-  }, [numSimulations]);
+  }, []);
 
   useEffect(() => {
     fetchSimulation();
@@ -129,21 +127,8 @@ export function UpcomingTournamentView() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="w-40">
-              <Select value={numSimulations} onValueChange={setNumSimulations}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Simulations" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SIMULATION_OPTIONS.map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {Number(value).toLocaleString()} sims
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span>{FIXED_SIMULATION_COUNT.toLocaleString()} simulations (fixed)</span>
             <Button variant="outline" onClick={fetchSimulation} disabled={loading}>
               <RefreshCcw className="h-4 w-4" />
               Re-run

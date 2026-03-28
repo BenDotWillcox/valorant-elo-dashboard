@@ -53,9 +53,9 @@ export const tournamentRegistry: Record<string, TournamentConfig> = {
 
 // Get list of available historical tournaments (those with actual results)
 export function getHistoricalTournaments(): TournamentConfig[] {
-  return Object.values(tournamentRegistry).filter(
-    (config) => config.actualResults !== undefined
-  );
+  return Object.values(tournamentRegistry)
+    .filter((config) => config.actualResults !== undefined)
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 }
 
 // Get a tournament config by ID

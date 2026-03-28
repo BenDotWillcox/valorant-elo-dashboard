@@ -62,4 +62,13 @@ export const VCT_MASTERS_SANTIAGO_2026_CONFIG: TournamentConfig = {
     "playoff-auto3": "PRX",
     "playoff-auto4": "AG",
   },
+
+  actualResults: {
+    winner: "NS",
+    runnerUp: "PRX",
+    thirdPlace: "NRG",
+    top4: ["NS", "PRX", "NRG", "G2"],
+    top6: ["NS", "PRX", "NRG", "G2", "AG", "BBL"],
+    top8: ["NS", "PRX", "NRG", "G2", "AG", "BBL", "GM8", "FUR"],
+  },
 };

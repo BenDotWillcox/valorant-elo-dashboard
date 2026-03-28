@@ -48,31 +48,22 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "VCT 2025: EMEA Stage 2": { id: 2498, region: "EMEA", status: "completed" },
     "VCT 2025: Pacific Stage 2": { id: 2500, region: "Pacific", status: "completed" },
     "Valorant Champions 2025": { id: 2283, region: "International", status: "completed", start_date: new Date("2025-09-12"), end_date: new Date("2025-10-06") },
-    "VCT 2026: Americas Kickoff": { id: 2682, region: "Americas", status: "ongoing" },
-    "VCT 2026: EMEA Kickoff": { id: 2684, region: "EMEA", status: "ongoing" },
-    "VCT 2026: Pacific Kickoff": { id: 2683, region: "Pacific", status: "ongoing" },
-    "VCT 2026: China Kickoff": { id: 2685, region: "China", status: "ongoing" },
-    "Valorant Masters Santiago 2026": { id: 2760, region: "International", status: "upcoming", start_date: new Date("2026-02-28"), end_date: new Date("2026-03-15") },
+    "VCT 2026: Americas Kickoff": { id: 2682, region: "Americas", status: "completed" },
+    "VCT 2026: EMEA Kickoff": { id: 2684, region: "EMEA", status: "completed" },
+    "VCT 2026: Pacific Kickoff": { id: 2683, region: "Pacific", status: "completed" },
+    "VCT 2026: China Kickoff": { id: 2685, region: "China", status: "completed" },
+    "Valorant Masters Santiago 2026": { id: 2760, region: "International", status: "completed", start_date: new Date("2026-02-28"), end_date: new Date("2026-03-15") },
+    "VCT 2026: China Stage 1": { id: 2864, region: "China", status: "upcoming" },
+    "VCT 2026: Americas Stage 1": { id: 2860, region: "Americas", status: "upcoming" },
+    "VCT 2026: EMEA Stage 1": { id: 2863, region: "EMEA", status: "upcoming" },
+    "VCT 2026: Pacific Stage 1": { id: 2775, region: "Pacific", status: "upcoming" },
     "Valorant Masters London 2026": { id: 2765, region: "International", status: "upcoming", start_date: new Date("2026-06-05"), end_date: new Date("2026-06-21") },
     "Valorant Champions 2026": { id: 2766, region: "International", status: "upcoming", start_date: new Date("2026-09-23"), end_date: new Date("2026-10-18") },
   };
 
-export const UPCOMING_TOURNAMENT_NAME = "Valorant Masters Santiago 2026";
+export const UPCOMING_TOURNAMENT_NAME = "Valorant Masters London 2026";
 
-export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
-  'FUR',
-  'G2',
-  'NRG',
-  'BBL',
-  'TL',
-  'GM8',
-  'PRX',
-  'T1',
-  'NS',
-  'AG',
-  'EDG',
-  'XLG',
-];
+export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [];
 
 export const VCT_CHAMPIONS_2025_TEAMS = [
   // Group A

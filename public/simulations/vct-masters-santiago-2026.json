@@ -1,0 +1,170 @@
+{
+  "tournamentId": "vct-masters-santiago-2026",
+  "tournamentName": "Valorant Masters Santiago 2026",
+  "simulatedAt": "2026-03-28T16:44:32.148Z",
+  "eloSnapshotDate": "2026-02-28T00:00:00.000Z",
+  "numSimulations": 100000,
+  "results": [
+    {
+      "team": "FUR",
+      "teamName": "FURIA",
+      "championships": 12.016,
+      "finalist": 24.598,
+      "top3": 37.395,
+      "top4": 49.980000000000004,
+      "top6": 74.889,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "PRX",
+      "teamName": "Paper Rex",
+      "championships": 11.702,
+      "finalist": 24.348,
+      "top3": 37.126,
+      "top4": 49.842999999999996,
+      "top6": 75.03800000000001,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "BBL",
+      "teamName": "BBL Esports",
+      "championships": 11.535,
+      "finalist": 23.338,
+      "top3": 35.22,
+      "top4": 48.055,
+      "top6": 73.28099999999999,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "T1",
+      "teamName": "T1",
+      "championships": 11.24,
+      "finalist": 19.783,
+      "top3": 27.006999999999998,
+      "top4": 34.134,
+      "top6": 46.816,
+      "top8": 58.289,
+      "top12": 58.289
+    },
+    {
+      "team": "AG",
+      "teamName": "All Gamers",
+      "championships": 10.119,
+      "finalist": 21.507,
+      "top3": 33.903,
+      "top4": 46.238,
+      "top6": 72.462,
+      "top8": 100,
+      "top12": 100
+    },
+    {
+      "team": "G2",
+      "teamName": "G2 Esports",
+      "championships": 8.530999999999999,
+      "finalist": 16.148,
+      "top3": 23.223,
+      "top4": 30.18,
+      "top6": 43.448,
+      "top8": 55.884,
+      "top12": 55.884
+    },
+    {
+      "team": "TL",
+      "teamName": "Team Liquid",
+      "championships": 8.022,
+      "finalist": 15.146,
+      "top3": 21.807000000000002,
+      "top4": 28.260999999999996,
+      "top6": 40.699999999999996,
+      "top8": 52.395,
+      "top12": 52.395
+    },
+    {
+      "team": "NRG",
+      "teamName": "NRG",
+      "championships": 6.697,
+      "finalist": 13.245999999999999,
+      "top3": 19.788,
+      "top4": 26.516000000000002,
+      "top6": 40.022999999999996,
+      "top8": 53.221,
+      "top12": 53.221
+    },
+    {
+      "team": "NS",
+      "teamName": "Nongshim RedForce",
+      "championships": 5.649,
+      "finalist": 11.497,
+      "top3": 17.415,
+      "top4": 23.396,
+      "top6": 35.314,
+      "top8": 47.036,
+      "top12": 47.036
+    },
+    {
+      "team": "XLG",
+      "teamName": "Xi Lai Gaming",
+      "championships": 5.2620000000000005,
+      "finalist": 10.745000000000001,
+      "top3": 16.454,
+      "top4": 21.968,
+      "top6": 33.698,
+      "top8": 45.204,
+      "top12": 45.204
+    },
+    {
+      "team": "EDG",
+      "teamName": "EDward Gaming",
+      "championships": 4.734,
+      "finalist": 10.109,
+      "top3": 15.826,
+      "top4": 21.324,
+      "top6": 33.272,
+      "top8": 45.690999999999995,
+      "top12": 45.690999999999995
+    },
+    {
+      "team": "GM8",
+      "teamName": "Gentle Mates",
+      "championships": 4.492999999999999,
+      "finalist": 9.535,
+      "top3": 14.835999999999999,
+      "top4": 20.105,
+      "top6": 31.058999999999997,
+      "top8": 42.28,
+      "top12": 42.28
+    }
+  ],
+  "actualResults": {
+    "winner": "NS",
+    "runnerUp": "PRX",
+    "thirdPlace": "NRG",
+    "top4": [
+      "NS",
+      "PRX",
+      "NRG",
+      "G2"
+    ],
+    "top6": [
+      "NS",
+      "PRX",
+      "NRG",
+      "G2",
+      "AG",
+      "BBL"
+    ],
+    "top8": [
+      "NS",
+      "PRX",
+      "NRG",
+      "G2",
+      "AG",
+      "BBL",
+      "GM8",
+      "FUR"
+    ]
+  }
+}

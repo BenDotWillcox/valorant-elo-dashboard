@@ -13,6 +13,7 @@
     "db:reset": "npx tsx --require dotenv/config scripts/reset-db.ts",
     "backfill:maps": "tsx scripts/backfill_maps.ts",
     "scrape:new": "tsx scripts/scrape_new_maps.ts",
+    "scrape:backfill": "tsx scripts/scrape_new_maps.ts --backfill",
     "db:init-seasons": "tsx --require dotenv/config scripts/init-seasons.ts",
     "process:vpm": "tsx scripts/process-vpm.ts",
     "process:elo": "tsx scripts/process-elo.ts",

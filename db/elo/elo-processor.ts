@@ -127,14 +127,14 @@ async function updateCurrentRatings() {
 }
 
 export async function resetEloSystem() {
-  await db.delete(eloRatingsTable);
   await db.delete(eloRatingsCurrentTable);
-
+  await db.delete(eloRatingsTable);
+  await db.delete(seasonsTable);
   await db.update(mapsTable).set({ processed: false });
 
-  await insertSeasonResetRatings(new Date('2025-01-01'));
+  await initializeSeasons();
 
-  console.log('ELO system reset complete with 2025 season baseline ratings.');
+  console.log('ELO system fully reset with all season baseline ratings.');
 }
 
 async function insertSeasonResetRatings(resetDate: Date) {

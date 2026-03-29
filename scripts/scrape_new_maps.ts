@@ -16,6 +16,7 @@ import { sql, eq } from 'drizzle-orm';
 import type { NewMap } from '@/db/schema/maps-schema'; // at top
 import { MAP_POOL } from '@/lib/constants/maps';
 
+const BACKFILL = process.argv.includes('--backfill');
 const REQUEST_DELAY = 1000;  // 1 second delay between requests to avoid flooding
 
 const safeParseInt = <T extends number | null>(val: string, fallback: T): number | T => {
@@ -52,8 +53,8 @@ async function scrapeRecentMaps() {
 
       const text = $(element).text();
       if (text.includes('Completed')) {
-        if (text.match(/Completed\s+\d+mo/) || text.match(/Completed\s+\d+yr/)) {
-          return; // skip matches completed months/years ago
+        if (!BACKFILL && (text.match(/Completed\s+\d+mo/) || text.match(/Completed\s+\d+yr/))) {
+          return; // skip matches completed months/years ago (unless backfilling)
         }
         matchInfos.push({ url: `https://www.vlr.gg${href}`, isCompleted: true });
       } else {

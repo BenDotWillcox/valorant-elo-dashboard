@@ -49,10 +49,10 @@ export const TEAM_COLORS = {
     '2Game Esports': '#9d05f5', // Purple
     'BOOM Esports': '#8a1616', // Red
     'ENVY': '#ffffff', // White
-    'FS': '#ffa500', // Orange
-    'VL': '#ffffff', // White
-    'PCF': '#1EF5BF', // Teal
-    'EF': '#8f815e', // Brown
+    'FULL SENSE': '#ffa500', // Orange
+    'VARREL': '#ffffff', // White
+    'PCIFIC Esports': '#1EF5BF', // Teal
+    'Eternal Fire': '#8f815e', // Brown
 }
 
 export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
@@ -85,10 +85,10 @@ export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
   'TEC': TEAM_COLORS['Titan Esports Club'],
   'TYL': TEAM_COLORS['TYLOO'],
   'ZETA': TEAM_COLORS['ZETA DIVISION'],
-  'FS': TEAM_COLORS['FS'],
-  'VL': TEAM_COLORS['VL'],
-  'PCF': TEAM_COLORS['PCF'],
-  'EF': TEAM_COLORS['EF'],
+  'FS': TEAM_COLORS['FULL SENSE'],
+  'VL': TEAM_COLORS['VARREL'],
+  'PCF': TEAM_COLORS['PCIFIC Esports'],
+  'EF': TEAM_COLORS['Eternal Fire'],
   'ENVY': TEAM_COLORS['ENVY'],
   'BOOM': TEAM_COLORS['BOOM Esports'],
   '2G': TEAM_COLORS['2Game Esports'],

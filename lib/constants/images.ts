@@ -62,7 +62,7 @@ export const TEAM_LOGOS = {
   'TEC': '/images/teams/titan_logo.png',
   'TRC': '/images/teams/trace_logo.png',
   'TYL': '/images/teams/tyloo_logo.png',
-  'ULF': '/images/teams/ulf_logo.png',
+  'EF': '/images/teams/ef_logo.png',
   'VL': '/images/teams/vl_logo.png',
   'VIT': '/images/teams/vitality_logo.png',
   'WOL': '/images/teams/wolves_logo.png',

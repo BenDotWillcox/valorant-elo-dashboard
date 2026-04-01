@@ -52,7 +52,7 @@ export const TEAM_COLORS = {
     'FS': '#ffa500', // Orange
     'VL': '#ffffff', // White
     'PCF': '#1EF5BF', // Teal
-    'ULF': '#ffffff', // White
+    'EF': '#8f815e', // Brown
 }
 
 export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
@@ -88,7 +88,7 @@ export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
   'FS': TEAM_COLORS['FS'],
   'VL': TEAM_COLORS['VL'],
   'PCF': TEAM_COLORS['PCF'],
-  'ULF': TEAM_COLORS['ULF'],
+  'EF': TEAM_COLORS['EF'],
   'ENVY': TEAM_COLORS['ENVY'],
   'BOOM': TEAM_COLORS['BOOM Esports'],
   '2G': TEAM_COLORS['2Game Esports'],

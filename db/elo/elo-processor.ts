@@ -34,11 +34,13 @@ export async function getCurrentRating(teamId: number, mapName: string, beforeDa
 
 export async function processEloUpdates() {
   const unprocessedMaps = await getUnprocessedMaps();
+  const skippedMapIds: number[] = [];
 
   for (const map of unprocessedMaps) {
     if (!map.completed_at) {
-        console.warn(`Skipping map ID ${map.id} due to null completed_at date.`);
-        continue;
+      console.error(`Map ID ${map.id} cannot be processed because completed_at is null.`);
+      skippedMapIds.push(map.id);
+      continue;
     }
 
     const winnerRating = await getCurrentRating(map.winner_team_id, map.map_name, map.completed_at);
@@ -72,6 +74,10 @@ export async function processEloUpdates() {
     await db.update(mapsTable)
       .set({ processed: true })
       .where(eq(mapsTable.id, map.id));
+  }
+
+  if (skippedMapIds.length > 0) {
+    throw new Error(`Elo processing skipped ${skippedMapIds.length} map(s) with null completed_at: ${skippedMapIds.join(", ")}`);
   }
 
   await updateCurrentRatings();

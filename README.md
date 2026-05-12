@@ -117,3 +117,28 @@ const eloChange = kFactor * marginFactor * (1 - expectedProbability);
 - All competitive Valorant maps
 - Map-specific performance metrics
 - Pick/ban analysis and trends
+
+## Daily ETL
+
+Run the full daily update pipeline:
+
+```powershell
+npm run etl:daily
+```
+
+Verify the command order without touching VLR or the database:
+
+```powershell
+npm run etl:daily -- --dry-run
+```
+
+The ETL writes timestamped logs to `logs/etl/`. Failure emails use Resend and are sent when these environment variables are present:
+
+```text
+RESEND_API_KEY=
+ETL_ALERT_EMAIL_FROM=Valorant ETL <alerts@example.com>
+ETL_ALERT_EMAIL_TO=you@example.com
+ETL_ALERT_EMAIL_ON_SUCCESS=false
+```
+
+Use `npm run etl:daily -- --dry-run --email` to force a test notification.

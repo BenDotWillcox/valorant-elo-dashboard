@@ -227,19 +227,15 @@ export default function MathBlogPage() {
                 <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">Alternative Methods</h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   There were several alternative methods that I considered for the Elo system that are worth noting for completeness.
-                  <br />
-                  <br />
-                  <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Hybrid Global Offset</h5>
-                  <br />
+                </p>
+                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Hybrid Global Offset</h5>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   The hybrid global offset method is a modification of my custom Elo formula that creates a global Elo rating for each team and then adds a map-specific offset to the rating for each map, rather than having completely independent ratings per map.
                   In testing, this method did perform slightly better than the completely independent method, however the prediction quality was exclusively better at the beginning of seasons where the global offset was able to more quickly update to a teams relative strength on maps with little or no data yet. The two models otherwise converged to the same results by the middle and end of each season.
                   Because of this, I decided to stick with the completely independent method for the final model for simplicity for Users viewing the website.
-                  <br />
-                  <br />
                 </p>
+                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Model K-Factor Updating Confidence</h5>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Model K-Factor Updating Confidence</h5>
-                  <br />
                   I also experimented with a K-Factor updating confidence approach. This means the model would dynamically adjust the K-Factor based on the amount of time between matches. So the K-factor would start higher at the beginning of the season and gradually shrink as it got more data. The model starts updating more quickly while it has low confidence in the team&apos;s skill level and then updates more slowly as it gets more data. The K-Factor would then increase again after long breaks within the season as the teams have time to make changes.
                   <br />
                   <br />
@@ -247,12 +243,9 @@ export default function MathBlogPage() {
                   <br />
                   <br />
                   I was quite surprised by this result, however my best guess as to why is some combination of factors: the data is sparse as is, and decaying the K-Factor was ultimately causing more harm than good. As well as that teams are able to make significant changes to their playstyle and strategy even in the middle of a season and our reduced K-Factor more slowly adjusted to these mid-season changes.
-                  <br />
-                  <br />
                 </p>
+                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Regional Elo Multiplier</h5>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Regional Elo Multiplier</h5>
-                  <br />
                   I plan on testing a regional Elo multiplier for each map in the future. This is because teams play so many of their matches regionally that the model is at risk of not fully accounting for differences in skill level between regions.
                   <br />
                   <br />

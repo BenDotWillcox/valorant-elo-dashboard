@@ -12,7 +12,13 @@ async function main() {
     console.log("Elo ratings processed successfully");
   } catch (error) {
     console.error("Error processing Elo ratings:", error);
+    process.exit(1);
   }
 }
 
-main(); 
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("Unexpected error processing Elo ratings:", error);
+    process.exit(1);
+  });

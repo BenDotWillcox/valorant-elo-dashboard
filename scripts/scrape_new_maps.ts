@@ -18,6 +18,59 @@ import { MAP_POOL } from '@/lib/constants/maps';
 
 const BACKFILL = process.argv.includes('--backfill');
 const REQUEST_DELAY = 1000;  // 1 second delay between requests to avoid flooding
+const REQUEST_TIMEOUT_MS = 30000;
+const MAX_REQUEST_ATTEMPTS = 3;
+
+type ScrapeIssue = {
+  code: string;
+  message: string;
+  blocking: boolean;
+  context?: Record<string, unknown>;
+};
+
+const scrapeIssues: ScrapeIssue[] = [];
+
+function recordIssue(issue: ScrapeIssue) {
+  scrapeIssues.push(issue);
+  const prefix = issue.blocking ? "BLOCKING" : "WARN";
+  console.error(`${prefix} ${issue.code}: ${issue.message}`);
+  if (issue.context) {
+    console.error(JSON.stringify(issue.context, null, 2));
+  }
+}
+
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchHtml(url: string, label: string) {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MAX_REQUEST_ATTEMPTS; attempt++) {
+    try {
+      const response = await axios.get(url, {
+        timeout: REQUEST_TIMEOUT_MS,
+        headers: {
+          "User-Agent": "valorant-elo-dashboard-etl/1.0",
+        },
+      });
+      return response.data as string;
+    } catch (error) {
+      lastError = error;
+      const backoffMs = attempt * 1500;
+      console.warn(`Fetch failed for ${label} (attempt ${attempt}/${MAX_REQUEST_ATTEMPTS}). Retrying in ${backoffMs}ms.`);
+      if (attempt < MAX_REQUEST_ATTEMPTS) await sleep(backoffMs);
+    }
+  }
+
+  throw lastError;
+}
+
+async function cleanupCompletedMatchChildren(matchId: number) {
+  await db.delete(playerMapStatsTable).where(eq(playerMapStatsTable.match_id, matchId));
+  await db.delete(mapsTable).where(eq(mapsTable.match_id, matchId));
+  await db.delete(matchVetoesTable).where(eq(matchVetoesTable.match_id, matchId));
+}
 
 const safeParseInt = <T extends number | null>(val: string, fallback: T): number | T => {
   const parsed = parseInt(val, 10);
@@ -36,11 +89,14 @@ async function scrapeRecentMaps() {
     const eventUrl = `https://www.vlr.gg/event/matches/${eventId}`;
     let eventHtml: string;
     try {
-      // Fetch the event's matches page
-      const res = await axios.get(eventUrl);
-      eventHtml = res.data;
+      eventHtml = await fetchHtml(eventUrl, `event ${eventName}`);
     } catch (err) {
-      console.error(`Failed to fetch event page for "${eventName}":`, err);
+      recordIssue({
+        code: "EVENT_FETCH_FAILED",
+        message: `Failed to fetch event page for "${eventName}"`,
+        blocking: true,
+        context: { eventName, eventId, eventUrl, error: err instanceof Error ? err.message : String(err) },
+      });
       continue;  // skip this event on error
     }
 
@@ -91,19 +147,31 @@ async function scrapeRecentMaps() {
         }
 
         console.log(`Processing new upcoming match: ${vlrMatchId}`);
-        await new Promise(res => setTimeout(res, REQUEST_DELAY));
+        await sleep(REQUEST_DELAY);
         let matchHtml: string;
         try {
-          const res = await axios.get(matchUrl);
-          matchHtml = res.data;
+          matchHtml = await fetchHtml(matchUrl, `upcoming match ${vlrMatchId}`);
         } catch (err) {
-          console.error(`Failed to fetch upcoming match page ${matchUrl}:`, err);
+          recordIssue({
+            code: "UPCOMING_MATCH_FETCH_FAILED",
+            message: `Failed to fetch upcoming match page ${matchUrl}`,
+            blocking: false,
+            context: { vlrMatchId, matchUrl, eventName, error: err instanceof Error ? err.message : String(err) },
+          });
           continue;
         }
         const $$ = load(matchHtml);
 
         const teamLinks = $$('a[href*="/team/"]');
-        if (teamLinks.length < 2) continue;
+        if (teamLinks.length < 2) {
+          recordIssue({
+            code: "UPCOMING_TEAM_LINKS_NOT_FOUND",
+            message: `Team links not found on upcoming match ${vlrMatchId}`,
+            blocking: false,
+            context: { vlrMatchId, matchUrl, eventName },
+          });
+          continue;
+        }
         const team1Slug = ($$(teamLinks[0]).attr('href') || '').split('/').pop() || '';
         const team2Slug = ($$(teamLinks[1]).attr('href') || '').split('/').pop() || '';
 
@@ -113,7 +181,15 @@ async function scrapeRecentMaps() {
         ]);
         const team1Id = team1Data[0]?.id;
         const team2Id = team2Data[0]?.id;
-        if (!team1Id || !team2Id) continue;
+        if (!team1Id || !team2Id) {
+          recordIssue({
+            code: "UPCOMING_TEAM_SLUG_NOT_FOUND",
+            message: `Could not find team IDs for upcoming match ${vlrMatchId}`,
+            blocking: false,
+            context: { vlrMatchId, matchUrl, eventName, team1Slug, team2Slug },
+          });
+          continue;
+        }
 
         let completedAt: string | null = null;
         try {
@@ -148,13 +224,17 @@ async function scrapeRecentMaps() {
       }
 
       console.log(`Processing completed match: ${vlrMatchId}`);
-      await new Promise(res => setTimeout(res, REQUEST_DELAY));  // throttle requests
+      await sleep(REQUEST_DELAY);  // throttle requests
       let matchHtml: string;
       try {
-        const res = await axios.get(matchUrl);
-        matchHtml = res.data;
+        matchHtml = await fetchHtml(matchUrl, `completed match ${vlrMatchId}`);
       } catch (err) {
-        console.error(`Failed to fetch match page ${matchUrl}:`, err);
+        recordIssue({
+          code: "COMPLETED_MATCH_FETCH_FAILED",
+          message: `Failed to fetch completed match page ${matchUrl}`,
+          blocking: true,
+          context: { vlrMatchId, matchUrl, eventName, error: err instanceof Error ? err.message : String(err) },
+        });
         continue;
       }
       const $$ = load(matchHtml);
@@ -162,7 +242,12 @@ async function scrapeRecentMaps() {
       // Extract team IDs from team anchor hrefs
       const teamLinks = $$('a[href*="/team/"]');
       if (teamLinks.length < 2) {
-        console.warn(`Team links not found on ${matchUrl}, skipping match.`);
+        recordIssue({
+          code: "TEAM_LINKS_NOT_FOUND",
+          message: `Team links not found on completed match ${vlrMatchId}`,
+          blocking: true,
+          context: { vlrMatchId, matchUrl, eventName },
+        });
         continue;
       }
 
@@ -211,7 +296,12 @@ async function scrapeRecentMaps() {
       const team2Id = team2Data?.id;
 
       if (!team1Id || !team2Id || !team1Data || !team2Data) {
-        console.warn(`Could not find team IDs for ${team1Slug} or ${team2Slug} in database`);
+        recordIssue({
+          code: "TEAM_SLUG_NOT_FOUND",
+          message: `Could not find team IDs for ${team1Slug} or ${team2Slug} in database`,
+          blocking: true,
+          context: { vlrMatchId, matchUrl, eventName, team1Slug, team2Slug },
+        });
         continue;
       }
 
@@ -235,6 +325,10 @@ async function scrapeRecentMaps() {
       const completedAt = utcTimestamp ? new Date(utcTimestamp + 'Z') : null;
 
       // Now retrieve per-map details with reliable score extraction
+      if (existingMatch) {
+        await cleanupCompletedMatchChildren(existingMatch.id);
+        console.log(`Cleared partial child rows for match ${vlrMatchId} before rewrite.`);
+      }
 
       // Upsert match
       const [matchRow] = await db
@@ -274,17 +368,51 @@ async function scrapeRecentMaps() {
       const vetoItems: Array<{ order: number; action: 'ban' | 'pick' | 'decider'; map: string; teamId?: number }> = [];
       let order = 0;
 
+      const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      const buildTeamIdentifiers = (team: typeof team1Data, vlrSlug: string) => {
+        const rawIdentifiers = [
+          team.name,
+          team.slug,
+          vlrSlug,
+          vlrSlug.replace(/[-_]+/g, ' '),
+          ...team.aliases,
+        ].filter((value): value is string => !!value);
+
+        const identifiers = new Set<string>();
+        for (const identifier of rawIdentifiers) {
+          const lower = identifier.toLowerCase().trim();
+          if (!lower || lower === 'team' || lower === 'esports') continue;
+          identifiers.add(lower);
+
+          const normalized = lower.replace(/[^a-z0-9]/g, '');
+          if (normalized.length >= 3) identifiers.add(normalized);
+        }
+
+        return Array.from(identifiers).sort((a, b) => b.length - a.length);
+      };
+
+      const textContainsIdentifier = (lowerText: string, identifier: string) => {
+        if (identifier.length <= 3) {
+          return new RegExp(`(^|[^a-z0-9])${escapeRegExp(identifier)}([^a-z0-9]|$)`).test(lowerText);
+        }
+
+        if (lowerText.includes(identifier)) return true;
+        return lowerText.replace(/[^a-z0-9]/g, '').includes(identifier.replace(/[^a-z0-9]/g, ''));
+      };
+
+      const team1Identifiers = buildTeamIdentifiers(team1Data, team1Slug);
+      const team2Identifiers = buildTeamIdentifiers(team2Data, team2Slug);
+
       const getTeamIdFromText = (text: string) => {
         const lowerText = text.toLowerCase();
-        
-        const team1Identifiers = [team1Data.name, team1Data.slug, ...team1Data.aliases].filter((s): s is string => !!s).map(s => s.toLowerCase());
+
         for (const identifier of team1Identifiers) {
-            if (lowerText.includes(identifier)) return team1Id;
+            if (textContainsIdentifier(lowerText, identifier)) return team1Id;
         }
     
-        const team2Identifiers = [team2Data.name, team2Data.slug, ...team2Data.aliases].filter((s): s is string => !!s).map(s => s.toLowerCase());
         for (const identifier of team2Identifiers) {
-            if (lowerText.includes(identifier)) return team2Id;
+            if (textContainsIdentifier(lowerText, identifier)) return team2Id;
         }
     
         return undefined;
@@ -346,10 +474,14 @@ async function scrapeRecentMaps() {
 
       // Use Puppeteer to get map scores
       let browser: Browser | undefined;
+      let insertedMapCount = 0;
       try {
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
         const page = await browser.newPage();
-        await page.goto(matchUrl, { waitUntil: 'networkidle0' });
+        await page.goto(matchUrl, { waitUntil: 'networkidle0', timeout: 60000 });
         
         // Wait for map tabs to be visible
         await page.waitForSelector('.vm-stats-game', { timeout: 60000 });
@@ -401,11 +533,33 @@ async function scrapeRecentMaps() {
               game_number: gameNumber,
             } satisfies NewMap).onConflictDoNothing().returning();
 
+            if (!mapRow) {
+              recordIssue({
+                code: "MAP_INSERT_FAILED",
+                message: `Map insert returned no row for match ${vlrMatchId}`,
+                blocking: true,
+                context: { vlrMatchId, matchUrl, matchId, gameNumber, mapName },
+              });
+              continue;
+            }
+
+            insertedMapCount++;
+
             // Parse two tables (team 1 / team 2)
             const statTables = root.find('table').toArray().filter(table => {
               const headerTexts = $$$(table).find('thead th').map((_, th) => $$$(th).text().trim().toLowerCase()).get();
               return headerTexts.some(h => h.includes('k/d/a') || h.includes('acs'));
             });
+
+            if (statTables.length < 2) {
+              recordIssue({
+                code: "PLAYER_STAT_TABLES_MISSING",
+                message: `Expected two player stat tables for match ${vlrMatchId} map ${gameNumber}`,
+                blocking: true,
+                context: { vlrMatchId, matchUrl, matchId, gameNumber, mapName, tableCount: statTables.length },
+              });
+              continue;
+            }
 
             for (let tIndex = 0; tIndex < statTables.length; tIndex++) {
               const table = statTables[tIndex];
@@ -491,13 +645,33 @@ async function scrapeRecentMaps() {
             }
 
           } catch (err) {
-            console.error(`Error getting scores for map:`, err);
+            recordIssue({
+              code: "MAP_PARSE_FAILED",
+              message: `Error parsing a map for match ${vlrMatchId}`,
+              blocking: true,
+              context: { vlrMatchId, matchUrl, matchId, error: err instanceof Error ? err.message : String(err) },
+            });
           }
         }
       } catch (err) {
-        console.error(`Puppeteer error on ${matchUrl}:`, err);
+        recordIssue({
+          code: "PUPPETEER_MATCH_FAILED",
+          message: `Puppeteer failed on completed match ${vlrMatchId}`,
+          blocking: true,
+          context: { vlrMatchId, matchUrl, matchId, error: err instanceof Error ? err.message : String(err) },
+        });
       } finally {
         if (browser) await browser.close();
+      }
+
+      const expectedMapCount = (teamAWins ?? 0) + (teamBWins ?? 0);
+      if (expectedMapCount > 0 && insertedMapCount !== expectedMapCount) {
+        recordIssue({
+          code: "MAP_COUNT_MISMATCH",
+          message: `Inserted ${insertedMapCount}/${expectedMapCount} maps for match ${vlrMatchId}`,
+          blocking: true,
+          context: { vlrMatchId, matchUrl, matchId, expectedMapCount, insertedMapCount },
+        });
       }
 
       // Legacy post-processing removed; maps inserted inline per game
@@ -507,6 +681,18 @@ async function scrapeRecentMaps() {
 
 // Run the scraper
 scrapeRecentMaps().then(() => {
+  if (scrapeIssues.length > 0) {
+    const blockingIssues = scrapeIssues.filter((issue) => issue.blocking);
+    console.error(`Scrape completed with ${scrapeIssues.length} issue(s), ${blockingIssues.length} blocking.`);
+    for (const issue of scrapeIssues) {
+      console.error(JSON.stringify(issue));
+    }
+
+    if (blockingIssues.length > 0) {
+      process.exit(1);
+    }
+  }
+
   console.log("Recent VCT maps scraped successfully.");
   process.exit(0);
 }).catch(err => {

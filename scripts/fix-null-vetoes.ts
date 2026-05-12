@@ -6,6 +6,9 @@ import { eq, inArray, isNull, and, ne } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { prompt } from "enquirer";
 
+const AUTO_MODE = process.argv.includes("--auto");
+const YES = process.argv.includes("--yes");
+
 async function fixNullVetoes() {
   console.log("Searching for matches with null veto team_ids...");
 
@@ -39,6 +42,7 @@ async function fixNullVetoes() {
     .innerJoin(team2Alias, eq(matchesTable.team2_id, team2Alias.id));
 
   const updatesToPerform: { vetoId: number; teamId: number }[] = [];
+  const unresolvedMatches: { matchId: number; team1: string; team2: string }[] = [];
 
   for (const match of matches) {
     console.log(`\n--- Processing Match ID: ${match.id} (${match.team1.name} vs ${match.team2.name}) ---`);
@@ -58,6 +62,12 @@ async function fixNullVetoes() {
         const firstVetoIndex = firstActualVeto.order_index ?? 1;
         // If the first known action is on an even turn, the other team must have gone first
         firstMoverId = firstVetoIndex % 2 === 0 ? (firstActualVeto.team_id === match.team1.id ? match.team2.id : match.team1.id) : firstActualVeto.team_id;
+    } else if (AUTO_MODE) {
+      unresolvedMatches.push({ matchId: match.id, team1: match.team1.name, team2: match.team2.name });
+      console.log(
+        `  > Auto mode cannot infer first mover for Match ID ${match.id}; manual review still required.`
+      );
+      continue;
     } else {
       // If we have no info at all, we must ask the user
       const response: { teamName: string } = await prompt({
@@ -89,11 +99,13 @@ async function fixNullVetoes() {
   }
 
   console.log(`\nProposed ${updatesToPerform.length} total updates.`);
-  const confirm: { value: boolean } = await prompt({
-    type: "confirm",
-    name: "value",
-    message: "Apply these changes to the database?",
-  });
+  const confirm = YES
+    ? { value: true }
+    : await prompt<{ value: boolean }>({
+        type: "confirm",
+        name: "value",
+        message: "Apply these changes to the database?",
+      });
 
   if (confirm.value) {
     for (const update of updatesToPerform) {
@@ -103,9 +115,18 @@ async function fixNullVetoes() {
   } else {
     console.log("Aborted. No changes were made.");
   }
+
+  if (unresolvedMatches.length > 0) {
+    console.log(`\n${unresolvedMatches.length} matches still require manual first-mover review:`);
+    for (const match of unresolvedMatches) {
+      console.log(`  - Match ID ${match.matchId}: ${match.team1} vs ${match.team2}`);
+    }
+  }
 }
 
-fixNullVetoes().catch((err) => {
-  console.error("An error occurred:", err);
-  process.exit(1);
-});
+fixNullVetoes()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("An error occurred:", err);
+    process.exit(1);
+  });

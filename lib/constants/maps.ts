@@ -1,6 +1,6 @@
 export const MAP_POOL = {
-  active: [ 'Split', 'Breeze', 'Bind', 'Haven', 'Abyss',  'Pearl', 'Corrode'],
-  inactive: ['Sunset', 'Lotus', 'Icebox', 'Fracture', 'Ascent']
+  active: [ 'Split', 'Breeze', 'Lotus', 'Haven', 'Fracture',  'Pearl', 'Ascent'],
+  inactive: ['Sunset', 'Bind', 'Icebox', 'Abyss', 'Corrode' ]
 };
 
 export const MAP_AVAILABILITY: Record<number, string[]> = {

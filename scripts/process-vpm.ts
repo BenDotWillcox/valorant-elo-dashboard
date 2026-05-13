@@ -45,6 +45,26 @@ const OPP_ELO_BONUS_PER_100 = 0.15;
 const WIN_BONUS = 0.2;
 const LOSS_PENALTY = 0.2;
 const DRY_RUN = process.argv.includes("--dry-run");
+const VPM_REBUILD_MAX_ATTEMPTS = 3;
+const VPM_REBUILD_RETRY_BASE_MS = 5000;
+
+const TRANSIENT_DB_ERROR_CODES = new Set([
+  "CONNECTION_CLOSED",
+  "ECONNRESET",
+  "ECONNREFUSED",
+  "ETIMEDOUT",
+  "EPIPE",
+  "57P01",
+  "57P02",
+  "57P03",
+  "08000",
+  "08003",
+  "08006",
+  "08001",
+  "08004",
+  "53300",
+  "53400",
+]);
 
 type SourceRow = {
   id: number;
@@ -115,6 +135,24 @@ function chunk<T>(values: T[], size: number) {
   const chunks: T[][] = [];
   for (let i = 0; i < values.length; i += size) chunks.push(values.slice(i, i + size));
   return chunks;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getErrorCode(error: unknown) {
+  if (!error || typeof error !== "object") return null;
+  const maybeCode = (error as { code?: unknown; errno?: unknown }).code ?? (error as { errno?: unknown }).errno;
+  return typeof maybeCode === "string" ? maybeCode : null;
+}
+
+function isTransientDbError(error: unknown) {
+  const code = getErrorCode(error);
+  if (code && TRANSIENT_DB_ERROR_CODES.has(code)) return true;
+
+  const message = error instanceof Error ? error.message : String(error);
+  return /connection.*closed|timeout|terminat|socket|network|pooler/i.test(message);
 }
 
 async function loadSourceRows() {
@@ -716,6 +754,37 @@ async function rebuildVpmTables(
   });
 }
 
+async function rebuildVpmTablesWithRetry(
+  playerMapRows: NewVpmPlayerMap[],
+  kfRows: NewVpmPlayerKf[],
+  latestRows: NewVpmPlayerLatest[],
+  modelVersion: string,
+  model: ReturnType<typeof trainModel>,
+  weightsByKey: Record<PreKey, number>
+) {
+  for (let attempt = 1; attempt <= VPM_REBUILD_MAX_ATTEMPTS; attempt++) {
+    try {
+      if (attempt > 1) {
+        console.log(`Retrying VPM table rebuild (attempt ${attempt}/${VPM_REBUILD_MAX_ATTEMPTS})...`);
+      }
+
+      await rebuildVpmTables(playerMapRows, kfRows, latestRows, modelVersion, model, weightsByKey);
+      return;
+    } catch (error) {
+      const shouldRetry = attempt < VPM_REBUILD_MAX_ATTEMPTS && isTransientDbError(error);
+      if (!shouldRetry) throw error;
+
+      const code = getErrorCode(error) ?? "unknown";
+      const backoffMs = VPM_REBUILD_RETRY_BASE_MS * attempt;
+      console.warn(
+        `VPM table rebuild failed with transient DB error ${code} ` +
+          `(attempt ${attempt}/${VPM_REBUILD_MAX_ATTEMPTS}). Retrying in ${backoffMs}ms.`
+      );
+      await sleep(backoffMs);
+    }
+  }
+}
+
 export async function processVPM() {
   const sourceRows = await loadSourceRows();
   if (sourceRows.length === 0) throw new Error("No player map stats found for VPM processing.");
@@ -737,7 +806,7 @@ export async function processVPM() {
   if (DRY_RUN) {
     console.log("Dry run enabled; VPM tables were not rebuilt.");
   } else {
-    await rebuildVpmTables(playerMapRows, kfRows, latestRows, modelVersion, model, weightsByKey);
+    await rebuildVpmTablesWithRetry(playerMapRows, kfRows, latestRows, modelVersion, model, weightsByKey);
   }
 
   console.log(

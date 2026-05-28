@@ -56,16 +56,32 @@ export const tournaments: Record<string, { id: number; region: string; status: T
     "Valorant Masters Santiago 2026": { id: 2760, region: "International", status: "completed", start_date: new Date("2026-02-28"), end_date: new Date("2026-03-15") },
     "Valorant Masters London 2026": { id: 2765, region: "International", status: "upcoming", start_date: new Date("2026-06-05"), end_date: new Date("2026-06-21") },
     "Valorant Champions 2026": { id: 2766, region: "International", status: "upcoming", start_date: new Date("2026-09-23"), end_date: new Date("2026-10-18") },
-    "VCT 2026: Pacific Stage 1": { id: 2775, region: "Pacific", status: "ongoing" },
+    "VCT 2026: Pacific Stage 1": { id: 2775, region: "Pacific", status: "completed" },
     "VCT 2026: Pacific Stage 2": { id: 2776, region: "Pacific", status: "upcoming", start_date: new Date("2026-07-15"), end_date: new Date("2026-09-06") },
-    "VCT 2026: Americas Stage 1": { id: 2860, region: "Americas", status: "ongoing" },
-    "VCT 2026: EMEA Stage 1": { id: 2863, region: "EMEA", status: "ongoing" },
+    "VCT 2026: Americas Stage 1": { id: 2860, region: "Americas", status: "completed" },
+    "VCT 2026: EMEA Stage 1": { id: 2863, region: "EMEA", status: "completed" },
     "VCT 2026: China Stage 1": { id: 2864, region: "China", status: "completed" },
+    "VCT 2026: EMEA Stage 2": { id: 2976, region: "EMEA", status: "upcoming", start_date: new Date("2026-07-15"), end_date: new Date("2026-08-30") },
+    "VCT 2026: Americas Stage 2": { id: 2977, region: "Americas", status: "upcoming" },
+    "VCT 2026: China Stage 2": { id: 2978, region: "China", status: "upcoming" },
   };
 
 export const UPCOMING_TOURNAMENT_NAME = "Valorant Masters London 2026";
 
-export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [];
+export const UPCOMING_TOURNAMENT_QUALIFIED_TEAMS: string[] = [
+  "G2",
+  "TH",
+  "PRX",
+  "EDG",
+  "XLG",
+  "NRG",
+  "VIT",
+  "DRG",
+  "FS",
+  "FUT",
+  "LEV",
+  "GE",
+];
 
 export const VCT_CHAMPIONS_2025_TEAMS = [
   // Group A

@@ -6,8 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { getTournamentConfig } from '@/lib/simulation/tournament-formats';
+import { TEAM_LOGOS } from '@/lib/constants/images';
 import { RoundReachHeatmap } from './round-reach-heatmap';
 import { TitleOddsChart } from './title-odds-chart';
+import { InteractiveSwissStage } from './interactive-swiss-stage';
+import { InteractivePlayoffBracket } from './interactive-playoff-bracket';
+import Image from 'next/image';
 
 interface SimulationResult {
   team: string;
@@ -21,52 +25,39 @@ interface SimulationResult {
   top12: number;
 }
 
-const TOURNAMENT_ID = 'vct-masters-santiago-2026';
+const TOURNAMENT_ID = 'vct-masters-london-2026';
 const FIXED_SIMULATION_COUNT = 10000;
-const tournamentConfig = getTournamentConfig(TOURNAMENT_ID);
 
-export function UpcomingTournamentView() {
+interface UpcomingTournamentViewProps {
+  tournamentId?: string;
+}
+
+export function UpcomingTournamentView({ tournamentId = TOURNAMENT_ID }: UpcomingTournamentViewProps) {
   const [results, setResults] = useState<SimulationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [swissQualified, setSwissQualified] = useState<string[]>([]);
+  const [activeTournamentTab, setActiveTournamentTab] = useState('swiss');
+  const tournamentConfig = useMemo(() => getTournamentConfig(tournamentId), [tournamentId]);
 
   const autoQualified = useMemo(
     () => tournamentConfig?.teams.filter((team) => team.group === 'auto') ?? [],
-    []
+    [tournamentConfig]
   );
-
-  const swissTeams = useMemo(
-    () => tournamentConfig?.teams.filter((team) => team.group === 'swiss') ?? [],
-    []
-  );
-
-  const swissQualificationOdds = useMemo(() => {
-    if (!results) return [];
-
-    return swissTeams
-      .map((team) => {
-        const teamResult = results.find((result) => result.team === team.slug);
-        return {
-          slug: team.slug,
-          name: team.name,
-          playoffOdds: teamResult?.top8 ?? 0,
-        };
-      })
-      .sort((a, b) => b.playoffOdds - a.playoffOdds);
-  }, [results, swissTeams]);
 
   const fetchSimulation = useCallback(async () => {
     if (!tournamentConfig) {
-      setError(`Missing tournament config for ${TOURNAMENT_ID}`);
+      setError(`Missing tournament config for ${tournamentId}`);
       return;
     }
 
     setLoading(true);
     setError(null);
+    setResults(null);
 
     try {
       const response = await fetch(
-        `/api/simulation?tournamentId=${TOURNAMENT_ID}&simulations=${FIXED_SIMULATION_COUNT}`
+        `/api/simulation?tournamentId=${tournamentId}&simulations=${FIXED_SIMULATION_COUNT}`
       );
 
       if (!response.ok) {
@@ -84,11 +75,21 @@ export function UpcomingTournamentView() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tournamentConfig, tournamentId]);
 
   useEffect(() => {
     fetchSimulation();
   }, [fetchSimulation]);
+
+  useEffect(() => {
+    setSwissQualified([]);
+  }, [tournamentId]);
+
+  const handleSwissQualifiedChange = useCallback((qualified: string[]) => {
+    setSwissQualified((current) => (
+      current.join('|') === qualified.join('|') ? current : qualified
+    ));
+  }, []);
 
   if (!tournamentConfig) {
     return (
@@ -98,7 +99,7 @@ export function UpcomingTournamentView() {
           <div>
             <p className="text-red-400 font-medium">Missing tournament config</p>
             <p className="text-sm text-muted-foreground">
-              Add `{TOURNAMENT_ID}` to the tournament format registry.
+              Add `{tournamentId}` to the tournament format registry.
             </p>
           </div>
         </CardContent>
@@ -135,7 +136,7 @@ export function UpcomingTournamentView() {
             </Button>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-4">
             <Card className="border border-black dark:border-white">
               <CardHeader>
                 <CardTitle className="text-base">Auto-Qualified (Playoff Seeds)</CardTitle>
@@ -146,7 +147,16 @@ export function UpcomingTournamentView() {
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {autoQualified.map((team) => (
-                    <span key={team.slug} className="rounded-md border px-2 py-1 text-sm">
+                    <span key={team.slug} className="inline-flex items-center gap-2 rounded-md border px-2 py-1 text-sm">
+                      {TEAM_LOGOS[team.slug as keyof typeof TEAM_LOGOS] ? (
+                        <Image
+                          src={TEAM_LOGOS[team.slug as keyof typeof TEAM_LOGOS]}
+                          alt={`${team.name} logo`}
+                          width={20}
+                          height={20}
+                          className="shrink-0 object-contain"
+                        />
+                      ) : null}
                       {team.name} ({team.slug})
                     </span>
                   ))}
@@ -154,28 +164,28 @@ export function UpcomingTournamentView() {
               </CardContent>
             </Card>
 
-            <Card className="border border-black dark:border-white">
-              <CardHeader>
-                <CardTitle className="text-base">Swiss Teams: Playoff Qualification Odds</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm text-muted-foreground">
-                  `Top 8` percentage is used as Swiss-to-playoff qualification probability.
-                </p>
-                {results ? (
-                  <div className="mt-3 space-y-1 text-sm">
-                    {swissQualificationOdds.map((team) => (
-                      <div key={team.slug} className="flex items-center justify-between">
-                        <span>
-                          {team.name} ({team.slug})
-                        </span>
-                        <span className="font-medium">{team.playoffOdds.toFixed(1)}%</span>
-                      </div>
-                    ))}
+            {tournamentConfig.format === 'swiss-double-elim' && (
+              <div className="rounded-lg border border-black p-4 dark:border-white">
+                <Tabs value={activeTournamentTab} onValueChange={setActiveTournamentTab} className="w-full">
+                  <TabsList className="grid w-full max-w-md grid-cols-2">
+                    <TabsTrigger value="swiss">Swiss Stage</TabsTrigger>
+                    <TabsTrigger value="playoffs">Playoff Bracket</TabsTrigger>
+                  </TabsList>
+                  <div className={activeTournamentTab === 'swiss' ? 'mt-4' : 'hidden'}>
+                    <InteractiveSwissStage
+                      tournament={tournamentConfig}
+                      onQualifiedChange={handleSwissQualifiedChange}
+                    />
                   </div>
-                ) : null}
-              </CardContent>
-            </Card>
+                  <div className={activeTournamentTab === 'playoffs' ? 'mt-4' : 'hidden'}>
+                    <InteractivePlayoffBracket
+                      tournament={tournamentConfig}
+                      swissQualified={swissQualified.length === 4 ? swissQualified : []}
+                    />
+                  </div>
+                </Tabs>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

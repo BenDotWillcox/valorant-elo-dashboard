@@ -3,23 +3,36 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { HistoricalTournamentView, HistoricalSimulationData } from './historical-tournament-view';
+import { UpcomingTournamentView } from './upcoming-tournament-view';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { TournamentConfig } from '@/lib/simulation/tournament-formats';
 
 interface TournamentSelectorProps {
   tournaments: TournamentConfig[];
+  defaultTournamentId?: string;
 }
 
-export function TournamentSelector({ tournaments }: TournamentSelectorProps) {
-  const [selectedTournament, setSelectedTournament] = useState<string>('');
+export function TournamentSelector({ tournaments, defaultTournamentId }: TournamentSelectorProps) {
+  const [selectedTournament, setSelectedTournament] = useState<string>(
+    defaultTournamentId ?? tournaments[0]?.id ?? ''
+  );
   const [simulationData, setSimulationData] = useState<HistoricalSimulationData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const selectedTournamentConfig = tournaments.find((tournament) => tournament.id === selectedTournament);
+  const isHistoricalTournament = selectedTournamentConfig?.actualResults !== undefined;
 
   useEffect(() => {
     if (!selectedTournament) {
       setSimulationData(null);
+      return;
+    }
+
+    if (!isHistoricalTournament) {
+      setSimulationData(null);
+      setLoading(false);
+      setError(null);
       return;
     }
 
@@ -50,11 +63,11 @@ export function TournamentSelector({ tournaments }: TournamentSelectorProps) {
     }
 
     fetchSimulationData();
-  }, [selectedTournament]);
+  }, [selectedTournament, isHistoricalTournament]);
 
   return (
     <div className="space-y-6">
-      <div className="max-w-xs">
+      <div className="mx-auto w-full max-w-xs">
         <Select value={selectedTournament} onValueChange={setSelectedTournament}>
           <SelectTrigger>
             <SelectValue placeholder="Select a tournament..." />
@@ -90,7 +103,11 @@ export function TournamentSelector({ tournaments }: TournamentSelectorProps) {
         </Card>
       )}
 
-      {simulationData && !loading && !error && (
+      {!isHistoricalTournament && selectedTournamentConfig && (
+        <UpcomingTournamentView tournamentId={selectedTournament} />
+      )}
+
+      {isHistoricalTournament && simulationData && !loading && !error && (
         <HistoricalTournamentView data={simulationData} />
       )}
     </div>

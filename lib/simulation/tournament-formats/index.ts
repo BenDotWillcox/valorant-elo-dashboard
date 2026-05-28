@@ -42,6 +42,7 @@ import { VCT_CHAMPIONS_2025_CONFIG } from "./vct-champions-2025";
 import { VCT_MASTERS_TORONTO_2025_CONFIG } from "./vct-masters-toronto-2025";
 import { VCT_MASTERS_BANGKOK_2025_CONFIG } from "./vct-masters-bangkok-2025";
 import { VCT_MASTERS_SANTIAGO_2026_CONFIG } from "./vct-masters-santiago-2026";
+import { VCT_MASTERS_LONDON_2026_CONFIG } from "./vct-masters-london-2026";
 
 // Registry of all available tournament configs
 export const tournamentRegistry: Record<string, TournamentConfig> = {
@@ -49,6 +50,7 @@ export const tournamentRegistry: Record<string, TournamentConfig> = {
   "vct-masters-toronto-2025": VCT_MASTERS_TORONTO_2025_CONFIG,
   "vct-masters-bangkok-2025": VCT_MASTERS_BANGKOK_2025_CONFIG,
   "vct-masters-santiago-2026": VCT_MASTERS_SANTIAGO_2026_CONFIG,
+  "vct-masters-london-2026": VCT_MASTERS_LONDON_2026_CONFIG,
 };
 
 // Get list of available historical tournaments (those with actual results)
@@ -56,6 +58,12 @@ export function getHistoricalTournaments(): TournamentConfig[] {
   return Object.values(tournamentRegistry)
     .filter((config) => config.actualResults !== undefined)
     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+}
+
+// Get list of tournaments available on the simulations page
+export function getSimulationTournaments(): TournamentConfig[] {
+  return Object.values(tournamentRegistry)
+    .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
 }
 
 // Get a tournament config by ID

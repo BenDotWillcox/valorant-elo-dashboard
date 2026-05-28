@@ -1,9 +1,9 @@
-import { History } from 'lucide-react';
 import { TournamentSelector } from '@/components/simulations/tournament-selector';
-import { getHistoricalTournaments } from '@/lib/simulation/tournament-formats';
+import { getSimulationTournaments } from '@/lib/simulation/tournament-formats';
 
 export default function SimulationsPage() {
-  const historicalTournaments = getHistoricalTournaments();
+  const tournaments = getSimulationTournaments();
+  const defaultTournamentId = tournaments[0]?.id;
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -11,18 +11,7 @@ export default function SimulationsPage() {
         Tournament Simulations
       </h1>
 
-      {historicalTournaments.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <History className="h-5 w-5 text-blue-400" />
-            <h2 className="text-xl font-semibold">Historical Tournament Simulations</h2>
-          </div>
-          <p className="text-muted-foreground">
-            View pre-computed Monte Carlo simulations from past VCT tournaments using historical ELO data.
-          </p>
-          <TournamentSelector tournaments={historicalTournaments} />
-        </div>
-      )}
+      <TournamentSelector tournaments={tournaments} defaultTournamentId={defaultTournamentId} />
     </div>
   );
 } 

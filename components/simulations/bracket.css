@@ -233,3 +233,123 @@
   background: rgba(245, 101, 101, 0.15);
   color: #fc8181;
 }
+
+/* Interactive playoff picker bracket */
+.playoff-picker-connected-section {
+  --playoff-connector-run: 18px;
+  --playoff-line: hsl(var(--border));
+  display: flex;
+  align-items: stretch;
+  gap: 36px;
+  min-height: 460px;
+}
+
+.playoff-picker-connected-section.mod-lower {
+  min-height: 260px;
+}
+
+.playoff-picker-round {
+  position: relative;
+  width: 220px;
+  min-width: 220px;
+}
+
+.playoff-picker-round-title {
+  min-height: 18px;
+  margin-bottom: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.playoff-picker-round-lane {
+  display: flex;
+  height: calc(100% - 28px);
+  flex-direction: column;
+}
+
+.playoff-picker-round[data-rows="4"] .playoff-picker-round-lane {
+  justify-content: space-between;
+}
+
+.playoff-picker-round[data-rows="2"] .playoff-picker-round-lane {
+  justify-content: space-around;
+}
+
+.playoff-picker-round[data-rows="1"] .playoff-picker-round-lane {
+  justify-content: center;
+}
+
+.playoff-picker-pod {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.playoff-picker-match {
+  position: relative;
+  z-index: 1;
+}
+
+.playoff-picker-round.has-connector .playoff-picker-match::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(-1 * var(--playoff-connector-run));
+  width: var(--playoff-connector-run);
+  height: 1px;
+  background: var(--playoff-line);
+}
+
+.playoff-picker-pod.has-pair::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(-1 * var(--playoff-connector-run));
+  width: 1px;
+  height: calc(100% + 2px);
+  transform: translateY(-50%);
+  background: var(--playoff-line);
+}
+
+.playoff-picker-pod.has-pair::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(-2 * var(--playoff-connector-run));
+  width: var(--playoff-connector-run);
+  height: 1px;
+  background: var(--playoff-line);
+}
+
+.playoff-picker-round.has-connector[data-rows="2"]::before {
+  content: "";
+  position: absolute;
+  top: 31%;
+  right: calc(-1 * var(--playoff-connector-run));
+  width: 1px;
+  height: 38%;
+  background: var(--playoff-line);
+}
+
+.playoff-picker-round.has-connector[data-rows="2"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(-2 * var(--playoff-connector-run));
+  width: var(--playoff-connector-run);
+  height: 1px;
+  background: var(--playoff-line);
+}
+
+.playoff-picker-round.has-connector[data-rows="1"] .playoff-picker-match::after {
+  width: calc(var(--playoff-connector-run) * 2);
+  right: calc(-2 * var(--playoff-connector-run));
+}
+
+@media (max-width: 767px) {
+  .playoff-picker-connected-section,
+  .playoff-picker-connected-section.mod-lower {
+    min-height: 0;
+  }
+}

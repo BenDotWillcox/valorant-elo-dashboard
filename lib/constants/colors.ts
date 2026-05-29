@@ -18,7 +18,7 @@ export const TEAM_COLORS = {
     'Team Heretics': '#d5a938', // Light Yellow
     'Natus Vincere': '#ffec04', // Yellow
     'KOI': '#d2ae74', // Light Brown
-    'FUT Esports': '#4287f5', // Blue
+    'FUT Esports': '#ffffff', // White
     'Gentle Mates': '#ffffff', // White
     'GIANTX': '#4287f5', // Blue
     'Apeks': '#ffa500', // Orange

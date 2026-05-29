@@ -104,6 +104,7 @@ export const TEAM_SLUG_TO_COLOR: Record<string, string> = {
   'FPX': TEAM_COLORS['FunPlus Phoenix'],
   'JDG': TEAM_COLORS['JD Gaming'],
   'NOVA': TEAM_COLORS['Nova Esports'],
+  'FUT': TEAM_COLORS['FUT Esports'],
 };
 
 export const MAP_COLORS = {

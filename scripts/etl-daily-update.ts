@@ -46,13 +46,19 @@ const steps: EtlStep[] = [
   {
     name: "sync-vlr-tournaments",
     command: npmCommand,
-    args: ["run", "sync:vlr-tournaments"],
+    args: ["run", "sync:vlr-tournaments", "--", "--defer-completed-transitions"],
     required: true,
   },
   {
     name: "scrape-new-maps",
     command: npmCommand,
     args: ["run", "scrape:new"],
+    required: true,
+  },
+  {
+    name: "finalize-vlr-tournament-statuses",
+    command: npmCommand,
+    args: ["run", "sync:vlr-tournaments"],
     required: true,
   },
   {

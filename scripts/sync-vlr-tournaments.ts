@@ -19,6 +19,7 @@ type VlrEvent = TournamentRecord & {
 const EVENTS_URL = "https://www.vlr.gg/events/?tier=60";
 const TOURNAMENTS_PATH = join(process.cwd(), "lib", "constants", "tournaments.ts");
 const DRY_RUN = process.argv.includes("--dry-run");
+const DEFER_COMPLETED_TRANSITIONS = process.argv.includes("--defer-completed-transitions");
 
 const REGION_BY_NAME: Array<[RegExp, string]> = [
   [/\bamericas\b/i, "Americas"],
@@ -155,14 +156,24 @@ function mergeTournaments(vlrEvents: VlrEvent[]) {
 
   const added: VlrEvent[] = [];
   const updated: Array<{ name: string; before: TournamentRecord; after: TournamentRecord }> = [];
+  const deferredCompleted: VlrEvent[] = [];
 
   for (const event of vlrEvents) {
     const existingName = existingNameById.get(event.id) ?? event.name;
     const before = merged.get(existingName);
+    const shouldDeferCompletedTransition =
+      DEFER_COMPLETED_TRANSITIONS &&
+      before?.status === "ongoing" &&
+      event.status === "completed";
+
+    if (shouldDeferCompletedTransition) {
+      deferredCompleted.push(event);
+    }
+
     const after: TournamentRecord = {
       id: event.id,
       region: before?.region ?? event.region,
-      status: event.status,
+      status: shouldDeferCompletedTransition ? before.status : event.status,
       start_date: before ? before.start_date : event.start_date,
       end_date: before ? before.end_date : event.end_date,
     };
@@ -179,7 +190,7 @@ function mergeTournaments(vlrEvents: VlrEvent[]) {
     }
   }
 
-  return { merged, added, updated };
+  return { merged, added, updated, deferredCompleted };
 }
 
 function hasTournamentChanged(before: TournamentRecord, after: TournamentRecord) {
@@ -250,10 +261,13 @@ function renderTournamentsFile(merged: Map<string, TournamentRecord>) {
 
 async function main() {
   console.log(`Fetching VLR events from ${EVENTS_URL}`);
+  if (DEFER_COMPLETED_TRANSITIONS) {
+    console.log("Deferring ongoing -> completed status transitions for this sync run.");
+  }
   const vlrEvents = await fetchVlrEvents();
   console.log(`Found ${vlrEvents.length} VCT events on VLR events page`);
 
-  const { merged, added, updated } = mergeTournaments(vlrEvents);
+  const { merged, added, updated, deferredCompleted } = mergeTournaments(vlrEvents);
 
   for (const event of added) {
     console.log(`ADD ${event.name} (${event.id}) status=${event.status} region=${event.region}`);
@@ -264,6 +278,10 @@ async function main() {
       `UPDATE ${change.name} (${change.after.id}) ` +
         `status=${change.before.status}->${change.after.status}`
     );
+  }
+
+  for (const event of deferredCompleted) {
+    console.log(`DEFER ${event.name} (${event.id}) status=ongoing->completed`);
   }
 
   if (added.length === 0 && updated.length === 0) {

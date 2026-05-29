@@ -259,6 +259,7 @@
   margin-bottom: 10px;
   font-size: 0.875rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .playoff-picker-round-lane {
@@ -289,62 +290,6 @@
 .playoff-picker-match {
   position: relative;
   z-index: 1;
-}
-
-.playoff-picker-round.has-connector .playoff-picker-match::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(-1 * var(--playoff-connector-run));
-  width: var(--playoff-connector-run);
-  height: 1px;
-  background: var(--playoff-line);
-}
-
-.playoff-picker-pod.has-pair::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(-1 * var(--playoff-connector-run));
-  width: 1px;
-  height: calc(100% + 2px);
-  transform: translateY(-50%);
-  background: var(--playoff-line);
-}
-
-.playoff-picker-pod.has-pair::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(-2 * var(--playoff-connector-run));
-  width: var(--playoff-connector-run);
-  height: 1px;
-  background: var(--playoff-line);
-}
-
-.playoff-picker-round.has-connector[data-rows="2"]::before {
-  content: "";
-  position: absolute;
-  top: 31%;
-  right: calc(-1 * var(--playoff-connector-run));
-  width: 1px;
-  height: 38%;
-  background: var(--playoff-line);
-}
-
-.playoff-picker-round.has-connector[data-rows="2"]::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(-2 * var(--playoff-connector-run));
-  width: var(--playoff-connector-run);
-  height: 1px;
-  background: var(--playoff-line);
-}
-
-.playoff-picker-round.has-connector[data-rows="1"] .playoff-picker-match::after {
-  width: calc(var(--playoff-connector-run) * 2);
-  right: calc(-2 * var(--playoff-connector-run));
 }
 
 @media (max-width: 767px) {

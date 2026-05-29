@@ -24,6 +24,38 @@ interface PlayoffMatch {
   type: 'BO3' | 'BO5';
 }
 
+const playoffMatchDependents: Record<string, string[]> = {
+  'ub-r1-1': ['ub-r2-1', 'lb-r1-1'],
+  'ub-r1-2': ['ub-r2-1', 'lb-r1-1'],
+  'ub-r1-3': ['ub-r2-2', 'lb-r1-2'],
+  'ub-r1-4': ['ub-r2-2', 'lb-r1-2'],
+  'ub-r2-1': ['ub-final', 'lb-r2-2'],
+  'ub-r2-2': ['ub-final', 'lb-r2-1'],
+  'ub-final': ['lb-final', 'grand-final'],
+  'lb-r1-1': ['lb-r2-1'],
+  'lb-r1-2': ['lb-r2-2'],
+  'lb-r2-1': ['lb-r3-1'],
+  'lb-r2-2': ['lb-r3-1'],
+  'lb-r3-1': ['lb-final'],
+  'lb-final': ['grand-final'],
+  'grand-final': [],
+};
+
+function collectDependentMatchIds(matchId: string): Set<string> {
+  const dependentIds = new Set<string>();
+  const pending = [...(playoffMatchDependents[matchId] ?? [])];
+
+  while (pending.length) {
+    const dependentId = pending.pop()!;
+    if (dependentIds.has(dependentId)) continue;
+
+    dependentIds.add(dependentId);
+    pending.push(...(playoffMatchDependents[dependentId] ?? []));
+  }
+
+  return dependentIds;
+}
+
 function seededShuffle<T>(items: T[], seed: string): T[] {
   const shuffled = [...items];
   let hash = 2166136261;
@@ -208,26 +240,13 @@ export function InteractivePlayoffBracket({ tournament, swissQualified }: Intera
     { id: 'grand-final', label: 'Grand Final', bracket: 'final', team1: winnerOf('ub-final'), team2: winnerOf('lb-final'), type: 'BO5' },
   ];
 
-  const allMatches = [
-    ...upperRound1,
-    ...upperRound2,
-    ...upperFinal,
-    ...lowerRound1,
-    ...lowerRound2,
-    ...lowerRound3,
-    ...lowerFinal,
-    ...grandFinal,
-  ];
-
   const handlePick = (match: PlayoffMatch, winner: string) => {
-    const matchIndex = allMatches.findIndex((item) => item.id === match.id);
-
     setPicks((current) => {
+      if (current[match.id] === winner) return current;
+
+      const dependentIds = collectDependentMatchIds(match.id);
       const next = Object.fromEntries(
-        Object.entries(current).filter(([matchId]) => {
-          const knownIndex = allMatches.findIndex((item) => item.id === matchId);
-          return knownIndex !== -1 && knownIndex <= matchIndex;
-        })
+        Object.entries(current).filter(([matchId]) => !dependentIds.has(matchId))
       );
 
       next[match.id] = winner;

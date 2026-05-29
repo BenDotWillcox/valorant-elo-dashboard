@@ -75,6 +75,7 @@ export function MatchComparisonActions({
   const [matchType, setMatchType] = useState<'BO3' | 'BO5'>(defaultMatchType);
   const [autoMapSelection, setAutoMapSelection] = useState(true);
   const [selectedMaps, setSelectedMaps] = useState<string[]>([]);
+  const [activeMapsOnly, setActiveMapsOnly] = useState(true);
   const canCompare = Boolean(team1 && team2);
 
   useEffect(() => {
@@ -119,6 +120,11 @@ export function MatchComparisonActions({
       ? calculateBo3MatchProbability(mapProbabilities)
       : calculateBo5MatchProbability(mapProbabilities);
   }, [mapProbabilities, matchType]);
+
+  const chartData = useMemo(() => {
+    if (!activeMapsOnly) return data;
+    return data.filter((row) => MAP_POOL.active.includes(row.mapName));
+  }, [activeMapsOnly, data]);
 
   const handleMapSelect = (index: number, mapName: string) => {
     setSelectedMaps((current) => {
@@ -267,7 +273,7 @@ export function MatchComparisonActions({
         <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{team1} vs {team2} Map Pool</DialogTitle>
-            <DialogDescription>Compare current map Elo ratings across active and inactive maps.</DialogDescription>
+            <DialogDescription>Compare current map Elo ratings across the selected map pool.</DialogDescription>
           </DialogHeader>
 
           {loading ? (
@@ -276,7 +282,19 @@ export function MatchComparisonActions({
               Loading map Elo...
             </div>
           ) : (
-            <MapStatsChart data={data} selectedTeams={[team1!, team2!]} />
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`active-maps-only-${team1}-${team2}`}
+                  checked={activeMapsOnly}
+                  onCheckedChange={(checked) => setActiveMapsOnly(Boolean(checked))}
+                />
+                <label htmlFor={`active-maps-only-${team1}-${team2}`} className="text-sm font-medium">
+                  Active maps only
+                </label>
+              </div>
+              <MapStatsChart data={chartData} selectedTeams={[team1!, team2!]} />
+            </div>
           )}
         </DialogContent>
       </Dialog>

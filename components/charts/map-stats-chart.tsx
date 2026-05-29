@@ -1,8 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip } from 'recharts';
 import { TeamMapData } from '@/types/elo';
-import { TEAM_COLORS } from '@/lib/constants/colors';
+import { TEAM_COLORS, TEAM_SLUG_TO_COLOR } from '@/lib/constants/colors';
+import { TEAM_LOGOS } from '@/lib/constants/images';
 
 interface MapStatsChartProps {
   data: TeamMapData[];
@@ -33,6 +35,8 @@ export function MapStatsChart({ data, selectedTeams }: MapStatsChartProps) {
     return {
       teamSlug,
       teamName: teamData.teamName,
+      logoUrl: TEAM_LOGOS[teamSlug as keyof typeof TEAM_LOGOS] || teamData.logoUrl,
+      color: TEAM_SLUG_TO_COLOR[teamSlug] || TEAM_COLORS[teamData.teamName as keyof typeof TEAM_COLORS] || '#888',
       data: teamMapData
     };
   }).filter(Boolean);
@@ -51,8 +55,34 @@ export function MapStatsChart({ data, selectedTeams }: MapStatsChartProps) {
     }));
 
   return (
-    <div className="w-full max-w-[500px] mx-auto aspect-[4/3]">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full max-w-[500px] mx-auto">
+      <div className="mb-2 flex flex-wrap items-center justify-center gap-3">
+        {allTeamMapData.map(team => (
+          <div key={team!.teamSlug} className="flex items-center gap-2 text-xs font-medium">
+            <span
+              className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full border bg-background p-0.5 shadow-sm"
+              style={{ borderColor: team!.color }}
+            >
+              {team!.logoUrl ? (
+                <Image
+                  src={team!.logoUrl}
+                  alt={`${team!.teamName} logo`}
+                  width={22}
+                  height={22}
+                  className="h-full w-full rounded-full object-contain"
+                />
+              ) : null}
+              <span
+                className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-background"
+                style={{ backgroundColor: team!.color }}
+              />
+            </span>
+            <span className="max-w-[120px] truncate">{team!.teamName}</span>
+          </div>
+        ))}
+      </div>
+      <div className="aspect-[4/3]">
+        <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={chartData}>
           <PolarGrid />
           <PolarAngleAxis 
@@ -64,8 +94,8 @@ export function MapStatsChart({ data, selectedTeams }: MapStatsChartProps) {
               key={team!.teamSlug}
               name={team!.teamName}
               dataKey={team!.teamName}
-              stroke={TEAM_COLORS[team!.teamName as keyof typeof TEAM_COLORS] || '#888'}
-              fill={TEAM_COLORS[team!.teamName as keyof typeof TEAM_COLORS] || '#888'}
+              stroke={team!.color}
+              fill={team!.color}
               fillOpacity={0.3}
             />
           ))}
@@ -79,7 +109,8 @@ export function MapStatsChart({ data, selectedTeams }: MapStatsChartProps) {
             }}
           />
         </RadarChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 } 

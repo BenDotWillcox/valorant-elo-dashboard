@@ -35,6 +35,8 @@ const bracketLabels: Record<PickMatch['bracket'], string> = {
   '1-1': '1-1 Deciders',
 };
 
+const matchCardShellClass = 'w-full sm:w-56 sm:shrink-0';
+
 function seededShuffle<T>(items: T[], seed: string): T[] {
   const shuffled = [...items];
   let hash = 2166136261;
@@ -132,10 +134,10 @@ function MatchCard({
   const disabled = !match.team1 || !match.team2;
 
   return (
-    <div className="overflow-hidden rounded-md border border-black/20 bg-background shadow-sm dark:border-white/20">
-      <div className="flex items-center justify-between border-b bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+    <div className="h-full min-h-[8.5rem] overflow-hidden rounded-md border border-black/20 bg-background shadow-sm dark:border-white/20">
+      <div className="flex min-h-9 items-center justify-between gap-2 border-b bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         <span>{match.label}</span>
-        <span className="flex items-center gap-2">
+        <span className="flex shrink-0 items-center gap-2">
           <MatchComparisonActions team1={match.team1} team2={match.team2} defaultMatchType="BO3" />
           <span>{match.bracket}</span>
         </span>
@@ -272,10 +274,12 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
     onQualifiedChange?.(qualified);
   }, [onQualifiedChange, qualified, qualifiedKey]);
 
-  const renderMatches = (matches: PickMatch[]) => (
-    <div className="space-y-3">
+  const renderMatches = (matches: PickMatch[], className = 'flex flex-wrap justify-center gap-3') => (
+    <div className={className}>
       {matches.map((match) => (
-        <MatchCard key={match.id} match={match} winner={picks[match.id]} onPick={handlePick} />
+        <div key={match.id} className={matchCardShellClass}>
+          <MatchCard match={match} winner={picks[match.id]} onPick={handlePick} />
+        </div>
       ))}
     </div>
   );
@@ -300,9 +304,11 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
               <h3 className="text-sm font-semibold">Round 1</h3>
               <div className="text-xs text-muted-foreground">{bracketLabels['0-0']}</div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="flex flex-wrap justify-center gap-3 xl:justify-around">
               {round1Matches.map((match) => (
-                <MatchCard key={match.id} match={match} winner={picks[match.id]} onPick={handlePick} />
+                <div key={match.id} className={matchCardShellClass}>
+                  <MatchCard match={match} winner={picks[match.id]} onPick={handlePick} />
+                </div>
               ))}
             </div>
           </div>
@@ -312,14 +318,14 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
               <h3 className="text-sm font-semibold">Round 2</h3>
               <div className="text-xs text-muted-foreground">Winners move to qualification matches; losers move to elimination matches.</div>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 xl:items-start">
               <div className="space-y-3">
-                <div className="text-xs text-muted-foreground">{bracketLabels['1-0']}</div>
-                {renderMatches(round2WinnersMatches)}
+                <div className="text-center text-xs text-muted-foreground md:text-left xl:text-center">{bracketLabels['1-0']}</div>
+                {renderMatches(round2WinnersMatches, 'flex flex-wrap justify-center gap-3 xl:flex-nowrap')}
               </div>
               <div className="space-y-3">
-                <div className="text-xs text-muted-foreground">{bracketLabels['0-1']}</div>
-                {renderMatches(round2LosersMatches)}
+                <div className="text-center text-xs text-muted-foreground md:text-left xl:text-center">{bracketLabels['0-1']}</div>
+                {renderMatches(round2LosersMatches, 'flex flex-wrap justify-center gap-3 xl:flex-nowrap')}
               </div>
             </div>
           </div>
@@ -329,9 +335,11 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
               <h3 className="text-sm font-semibold">Round 3</h3>
               <div className="text-xs text-muted-foreground">{bracketLabels['1-1']}</div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="flex flex-wrap justify-center gap-3 md:justify-start">
               {round3Matches.map((match) => (
-                <MatchCard key={match.id} match={match} winner={picks[match.id]} onPick={handlePick} />
+                <div key={match.id} className={matchCardShellClass}>
+                  <MatchCard match={match} winner={picks[match.id]} onPick={handlePick} />
+                </div>
               ))}
             </div>
           </div>

@@ -3,6 +3,7 @@ import { createWriteStream, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import { config } from "dotenv";
+import { eq } from "drizzle-orm";
 
 config({ path: ".env.local" });
 
@@ -19,6 +20,7 @@ type StepResult = {
   name: string;
   status: "success" | "failed" | "skipped";
   durationMs: number;
+  finishedAt: string;
   exitCode?: number | null;
   error?: string;
 };
@@ -41,6 +43,7 @@ const dryRun = process.argv.includes("--dry-run");
 const forceEmail = process.argv.includes("--email");
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const logBuffer: string[] = [];
+let etlRunPersistenceAvailable = !dryRun;
 
 const steps: EtlStep[] = [
   {
@@ -129,6 +132,7 @@ function runStep(step: EtlStep): Promise<StepResult> {
       name: step.name,
       status: "skipped",
       durationMs: performance.now() - startedAt,
+      finishedAt: new Date().toISOString(),
     });
   }
 
@@ -139,6 +143,7 @@ function runStep(step: EtlStep): Promise<StepResult> {
       name: step.name,
       status: "success",
       durationMs: performance.now() - startedAt,
+      finishedAt: new Date().toISOString(),
       exitCode: 0,
     });
   }
@@ -173,6 +178,7 @@ function runStep(step: EtlStep): Promise<StepResult> {
         name: step.name,
         status: "failed",
         durationMs,
+        finishedAt: new Date().toISOString(),
         error: error.message,
       });
     });
@@ -181,12 +187,24 @@ function runStep(step: EtlStep): Promise<StepResult> {
       const durationMs = performance.now() - startedAt;
       if (exitCode === 0) {
         log(`DONE ${step.name} in ${formatDuration(durationMs)}`);
-        resolve({ name: step.name, status: "success", durationMs, exitCode });
+        resolve({
+          name: step.name,
+          status: "success",
+          durationMs,
+          finishedAt: new Date().toISOString(),
+          exitCode,
+        });
         return;
       }
 
       log(`FAIL ${step.name} after ${formatDuration(durationMs)} with exit code ${exitCode}`);
-      resolve({ name: step.name, status: "failed", durationMs, exitCode });
+      resolve({
+        name: step.name,
+        status: "failed",
+        durationMs,
+        finishedAt: new Date().toISOString(),
+        exitCode,
+      });
     });
   });
 }
@@ -205,6 +223,66 @@ function printSummary(results: StepResult[]) {
     log(`- ${result.status.toUpperCase()} ${result.name} (${duration})${detail}`);
   }
   log(`Log file: ${logPath}`);
+}
+
+async function recordEtlRunStart() {
+  if (!etlRunPersistenceAvailable) return;
+
+  try {
+    const [{ db }, { etlRunsTable }] = await Promise.all([
+      import("../db/db"),
+      import("../db/schema/etl-runs-schema"),
+    ]);
+
+    await db.insert(etlRunsTable).values({
+      id: runId,
+      status: "running",
+      started_at: runStartedAt,
+      steps: [],
+    });
+  } catch (error) {
+    etlRunPersistenceAvailable = false;
+    log(
+      `ETL run metadata unavailable: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+async function recordEtlRunFinish(
+  status: "success" | "failed",
+  results: StepResult[],
+  failedStep?: string,
+  error?: string
+) {
+  if (!etlRunPersistenceAvailable) return;
+
+  try {
+    const [{ db }, { etlRunsTable }] = await Promise.all([
+      import("../db/db"),
+      import("../db/schema/etl-runs-schema"),
+    ]);
+
+    await db
+      .update(etlRunsTable)
+      .set({
+        status,
+        finished_at: new Date(),
+        failed_step: failedStep,
+        error,
+        steps: results,
+        updated_at: new Date(),
+      })
+      .where(eq(etlRunsTable.id, runId));
+  } catch (recordError) {
+    etlRunPersistenceAvailable = false;
+    log(
+      `Unable to finalize ETL run metadata: ${
+        recordError instanceof Error ? recordError.message : String(recordError)
+      }`
+    );
+  }
 }
 
 function getEmailConfig(): EmailConfig | null {
@@ -318,6 +396,8 @@ async function main() {
   log(`Dry run: ${dryRun ? "enabled" : "disabled"}`);
   log(`Force email: ${forceEmail ? "enabled" : "disabled"}`);
 
+  await recordEtlRunStart();
+
   const results: StepResult[] = [];
 
   for (const step of steps) {
@@ -337,6 +417,21 @@ async function main() {
     return result.status === "failed" && step?.required !== false;
   });
 
+  const failedResult = results.find((result) => {
+    const step = steps.find((candidate) => candidate.name === result.name);
+    return result.status === "failed" && step?.required !== false;
+  });
+
+  await recordEtlRunFinish(
+    failedRequiredStep ? "failed" : "success",
+    results,
+    failedResult?.name,
+    failedResult?.error ??
+      (failedResult?.exitCode != null
+        ? `Exited with code ${failedResult.exitCode}`
+        : undefined)
+  );
+
   await sendEmailNotification(results, failedRequiredStep);
 
   await closeLogStream();
@@ -344,7 +439,9 @@ async function main() {
 }
 
 main().catch(async (error) => {
-  log(`Unexpected ETL orchestrator failure: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+  const message = error instanceof Error ? error.stack ?? error.message : String(error);
+  log(`Unexpected ETL orchestrator failure: ${message}`);
+  await recordEtlRunFinish("failed", [], "etl-orchestrator", message);
   await closeLogStream();
   process.exit(1);
 });

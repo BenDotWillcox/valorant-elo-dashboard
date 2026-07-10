@@ -21,7 +21,7 @@ A comprehensive analytics platform for Valorant Champions Tour (VCT) data, featu
 ### Data Visualization
 
 - Interactive charts and graphs using Chart.js and Recharts
-- Real-time data updates and filtering
+- Daily data updates with interactive filtering
 - Responsive design with dark/light mode support
 - Video previews for each feature section
 
@@ -44,6 +44,122 @@ The platform uses a custom Elo rating system with the following features:
 - **Margin of victory** - Accounts for score differential in rating changes
 - **Configurable parameters** - K-factor, rating scale, and margin scaling
 - **Initial rating**: 1000 points per map
+
+### Reproducible model evaluation
+
+The published temporal backtest is available at `/methodology` and as machine-readable JSON at
+`/data/elo-backtest.json`. It uses a SHA-256-verified source snapshot of 3,818 maps from
+February 2023 through June 2026.
+
+Replay the full analysis without database credentials:
+
+```powershell
+npm run model:backtest
+```
+
+Refresh the snapshot from PostgreSQL/Supabase using a read-only transaction, then rerun the analysis:
+
+```powershell
+npm run model:backtest:db
+```
+
+The retrospective split trains before 2025-01-01, selects one challenger from the experimental
+map-Elo grid on validation data before 2025-09-01, and then computes a chronological test period.
+Fixed references are not eligible for that selection and may score better. The runner enforces that ordering within
+each execution, but the study was not prospectively preregistered and the test period is not an
+untouched future holdout. Results include a plain-Elo baseline, 0.5
+reference, Brier score, log loss, reliability bins, confidence-band accuracy, map sample sizes,
+block-bootstrap confidence intervals, and comparisons of season carry, last-observed roster
+regression, cold-start uncertainty, and alternative margin-of-victory scaling. The runner never
+changes production model parameters. The artifact records its analysis timestamp, snapshot and
+source hashes, Git commit, dirty-worktree state, evaluated model version, and extraction scope.
+
+The final comparison also reconstructs the production behavior at repository commit
+`2f134f187c0717dbfcf18b1a07c4eccbef94dcdb` (2025-08-26), before the chronological test began.
+That version used initial rating 1000, update divisor 2000, K=74, production margin scale 1, and a
+hard annual reset, while its forecast code separately used divisor 1000. The artifact records the
+three historical source paths and Git blob IDs so this comparator is content-addressed. It is an
+externally frozen, retrospective out-of-sample comparator for later rows; it does not prove the
+original parameter selection was leakage-free or restore an untouched holdout after results have
+been viewed.
+
+On the current 835-map chronological test, the frozen historical production comparator recorded
+Brier 0.2566 versus 0.2513 for plain Elo (paired difference +0.0054, 95% block-bootstrap interval
+-0.0052 to +0.0160; positive is worse) and log loss 0.7084 versus 0.6992 (paired difference
++0.0092, interval -0.0133 to +0.0325). Neither interval excludes zero. Validation selected
+`cold-start-prior-8` only among 14 experimental map-Elo candidates; plain Elo itself had lower
+validation log loss (0.6815 versus 0.6899).
+
+### Reproducible pick/ban outcome evaluation
+
+The separate pick/ban backtest asks whether model-aligned veto choices carry outcome signal beyond
+the map strengths already selected. It never reads the legacy `match_veto_analysis` rows. Instead,
+it rebuilds each match from ordered vetoes, played maps, and map-Elo ratings frozen strictly before
+the recorded match timestamp, with explicit 1000-point cold starts and target-match rating
+exclusion. The database snapshot uses `matches.completed_at` as that cutoff proxy because match
+start time is not stored.
+
+Rating rows without a source match are accepted only when they exactly match the documented season
+hard-reset signature: rating 1000 at January 1 00:00:00 UTC. The current snapshot contains 2,112
+such resets and zero source-less rows outside that signature. Snapshot generation and replay fail
+closed if an outside row appears, because excluding ratings produced by the target series cannot
+otherwise be proven.
+
+Replay the checked-in snapshot without database credentials:
+
+```powershell
+npm run model:pick-ban
+```
+
+Refresh the source snapshot through a repeatable-read, read-only database transaction:
+
+```powershell
+npm run model:pick-ban:db
+```
+
+Results are published at `/data/pick-ban-backtest.json` and summarized on `/methodology`. The same
+calendar split is used: train before 2025-01-01, validation before 2025-09-01, then the final
+holdout. The artifact compares neutral, mean-map plug-in, selected-map, calibrated selected-map,
+and calibrated selected-map-plus-regret forecasts; it also reports model-regret association bands,
+clustered uncertainty, exclusions, and cold-start coverage. This is retrospective observational
+evidence. Banned-map outcomes and unchosen veto sequences are counterfactual, so the analysis does
+not establish that following the model causes teams to win.
+
+In the current 310-match holdout, the lower-regret team won 52.2% of 291 non-tied matches
+(event-cluster 95% interval: 47.3% to 57.3%). Adding relative regret to the calibrated selected-map
+forecast changed Brier score by +0.0025 (95% interval: -0.0059 to +0.0118; positive is worse).
+Both intervals cross their null values, so this run provides no incremental predictive evidence for
+the veto-regret score.
+
+The landing-page media optimization is documented in
+[`docs/performance/vm04-media-audit.md`](docs/performance/vm04-media-audit.md), including mobile
+Lighthouse, request, transfer-byte, reduced-motion, and measurement-limit evidence.
+
+Production rollout for the ETL freshness history is documented in
+[`docs/operations/etl-telemetry-rollout.md`](docs/operations/etl-telemetry-rollout.md). Use the
+targeted migration path in that runbook; production Drizzle history must be reconciled before any
+general `db:migrate` run.
+
+## Quality gates
+
+```powershell
+npm run lint
+npm run typecheck
+npm run test
+npm run test:coverage
+npm run model:verify
+npm run model:pick-ban:verify
+npm run build
+npm run test:a11y
+```
+
+Pull requests and pushes to `main` run these checks in `.github/workflows/ci.yml`.
+`model:verify` performs a fresh offline replay and checks the published analytical sections plus
+snapshot, source, and configuration provenance. Run timestamps intentionally differ and are not
+compared. The manifest's Git commit, tree state, and capture time describe the original run; the
+verifier instead checks the canonical source hash so the artifact remains valid after those exact
+files are committed on a new revision.
+`model:pick-ban:verify` applies the same contract to the pick/ban snapshot and outcome artifact.
 
 ## 🏗️ Project Structure
 
@@ -142,3 +258,8 @@ ETL_ALERT_EMAIL_ON_SUCCESS=false
 ```
 
 Use `npm run etl:daily -- --dry-run --email` to force a test notification.
+
+After applying the latest Drizzle migration, ETL runs persist per-step status in `etl_runs`.
+The public methodology panel reports the latest successful map ingest separately from the latest
+fully successful pipeline, so a recent source row is not presented as proof that every downstream
+step succeeded.

@@ -1,6 +1,8 @@
 import { db } from "@/db/db";
 import { eloRatingsTable, NewEloRating, EloRating } from "@/db/schema/elo-ratings-schema";
-import { eq, desc, and, lte, sql } from "drizzle-orm";
+import { mapsTable } from "@/db/schema/maps-schema";
+import { PICK_BAN_HARD_RESET_RATING } from "@/lib/elo/pick-ban-rating-provenance";
+import { eq, desc, and, gte, lt, ne, or, isNull, isNotNull } from "drizzle-orm";
 
 // CREATE
 export async function createEloRating(data: NewEloRating): Promise<EloRating[]> {
@@ -48,30 +50,60 @@ export async function deleteEloRating(id: number): Promise<EloRating[]> {
     return await db.delete(eloRatingsTable).where(eq(eloRatingsTable.id, id)).returning();
 }
 
-export async function getEloRatingsAtTime(teamId: number, time: Date): Promise<{ map_name: string, elo_rating: string }[]> {
-  const sq = db
-    .select({
-      map_name: eloRatingsTable.map_name,
-      max_rating_date: sql<Date>`max(${eloRatingsTable.rating_date})`.as("max_rating_date"),
-    })
-    .from(eloRatingsTable)
-    .where(and(eq(eloRatingsTable.team_id, teamId), lte(eloRatingsTable.rating_date, time)))
-    .groupBy(eloRatingsTable.map_name)
-    .as("sq");
+/**
+ * Returns one deterministic rating per map using rows strictly before the
+ * supplied cutoff, excluding every rating sourced from the target match.
+ * Rows without a source match are admitted only when they exactly match the
+ * synthetic season-reset signature.
+ * Current match callers use matches.completed_at as the cutoff proxy because
+ * the schema does not store match start time. Ratings from prior calendar
+ * years are intentionally excluded to match the season reset policy.
+ */
+export async function getPreMatchEloRatings(
+  teamId: number,
+  cutoffAt: Date,
+  targetMatchId: number
+): Promise<{ map_name: string; elo_rating: string }[]> {
+  if (!Number.isFinite(cutoffAt.getTime())) {
+    throw new Error("cutoffAt must be a valid date.");
+  }
+  if (!Number.isSafeInteger(targetMatchId) || targetMatchId <= 0) {
+    throw new Error("targetMatchId must be a positive integer.");
+  }
+
+  const seasonStart = new Date(Date.UTC(cutoffAt.getUTCFullYear(), 0, 1));
 
   return await db
-    .select({
+    .selectDistinctOn([eloRatingsTable.map_name], {
       map_name: eloRatingsTable.map_name,
       elo_rating: eloRatingsTable.rating,
     })
     .from(eloRatingsTable)
-    .innerJoin(
-      sq,
+    .leftJoin(mapsTable, eq(eloRatingsTable.map_played_id, mapsTable.id))
+    .where(
       and(
-        eq(eloRatingsTable.map_name, sq.map_name),
-        eq(eloRatingsTable.rating_date, sq.max_rating_date)
+        eq(eloRatingsTable.team_id, teamId),
+        gte(eloRatingsTable.rating_date, seasonStart),
+        lt(eloRatingsTable.rating_date, cutoffAt),
+        or(
+          and(
+            isNotNull(mapsTable.match_id),
+            ne(mapsTable.match_id, targetMatchId)
+          ),
+          and(
+            isNull(mapsTable.match_id),
+            eq(
+              eloRatingsTable.rating,
+              PICK_BAN_HARD_RESET_RATING.toString()
+            ),
+            eq(eloRatingsTable.rating_date, seasonStart)
+          )
+        )
       )
     )
-    .where(eq(eloRatingsTable.team_id, teamId));
-} 
-
+    .orderBy(
+      eloRatingsTable.map_name,
+      desc(eloRatingsTable.rating_date),
+      desc(eloRatingsTable.id)
+    );
+}

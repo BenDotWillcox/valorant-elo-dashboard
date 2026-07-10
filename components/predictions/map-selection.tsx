@@ -6,6 +6,7 @@ import Image from "next/image";
 import { MAP_IMAGES } from "@/lib/constants/images";
 import { MAP_POOL } from "@/lib/constants/maps";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 interface MapSelectionProps {
   matchType: 'BO3' | 'BO5' | 'BO5_ADV';
@@ -49,28 +50,37 @@ export function MapSelection({ matchType, selectedMaps, onMapSelect, availableMa
                 )}
               </div>
               {!autoSelection ? (
-                <Select
-                  value={selectedMaps[index]}
-                  onValueChange={(value) => onMapSelect(index, value)}
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder={`Select Map ${index + 1}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableMaps
-                      .filter(map => !selectedMaps.includes(map) || selectedMaps[index] === map)
-                      .map((map) => (
-                        <SelectItem key={map} value={map} className="text-sm">
-                          <div className="flex items-center justify-between w-full">
-                            <span>{map}</span>
-                            {isMapInactive(map) && (
-                              <Badge variant="secondary" className="ml-2 text-xs">Inactive</Badge>
-                            )}
-                          </div>
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+                <>
+                  <Label htmlFor={`map-${index + 1}`} className="sr-only">
+                    Map {index + 1}
+                  </Label>
+                  <Select
+                    value={selectedMaps[index]}
+                    onValueChange={(value) => onMapSelect(index, value)}
+                  >
+                    <SelectTrigger
+                      id={`map-${index + 1}`}
+                      aria-label={`Map ${index + 1}`}
+                      className="h-8 text-sm"
+                    >
+                      <SelectValue placeholder={`Select Map ${index + 1}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableMaps
+                        .filter(map => !selectedMaps.includes(map) || selectedMaps[index] === map)
+                        .map((map) => (
+                          <SelectItem key={map} value={map} className="text-sm">
+                            <div className="flex items-center justify-between w-full">
+                              <span>{map}</span>
+                              {isMapInactive(map) && (
+                                <Badge variant="secondary" className="ml-2 text-xs">Inactive</Badge>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </>
               ) : (
                 <div className="text-center text-xs text-muted-foreground">
                   {selectedMaps[index]}
@@ -82,4 +92,4 @@ export function MapSelection({ matchType, selectedMaps, onMapSelect, availableMa
       </CardContent>
     </Card>
   );
-} 
+}

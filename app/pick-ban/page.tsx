@@ -16,7 +16,7 @@ import { MAP_COLORS } from "@/lib/constants/colors";
 import { TEAM_LOGOS } from "@/lib/constants/images";
 import { getTeamPickBanHistoryAction, getMatchVetoAnalysisAction, getMatchEloDataAction } from "@/actions/pick-ban-analysis-actions";
 import { ChevronRight } from "lucide-react";
-import { calculateWinProbability, calculateBo3MatchProbability } from "@/lib/predictions/calculations";
+import { calculateWinProbability, calculateBo3MatchProbability, calculateBo5MatchProbability } from "@/lib/predictions/calculations";
 
 type PickBanAnalysisData = {
   team_id: number;
@@ -61,6 +61,7 @@ type TeamMapElo = { map_name: string; elo: number };
 type MatchEloData = {
     team1Id: number;
     team2Id: number;
+    bestOf: number | null;
     team1Elos: TeamMapElo[];
     team2Elos: TeamMapElo[];
 };
@@ -82,7 +83,7 @@ function VetoStatsChart({ title, data }: { title: string; data: VetoStat[] }) {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={chartHeight}>
-                    <BarChart data={chartData} layout="vertical" margin={{ right: 60 }}>
+                    <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ right: 60 }}>
                         <XAxis type="number" hide />
                         <YAxis type="category" dataKey="map_name" width={80} stroke="#888888" fontSize={12} tickLine={false} axisLine={false} interval={0} />
                         <Bar dataKey="percentage" radius={[4, 4, 0, 0]}>
@@ -169,7 +170,7 @@ function VetoAnalysisSection() {
             <h2 className="text-3xl font-bold text-center mb-4">Veto Tendencies</h2>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                    <SelectTrigger className="w-[250px]"><SelectValue placeholder="Select a Team" /></SelectTrigger>
+                    <SelectTrigger className="w-[250px]" aria-label="Select a team for veto tendencies"><SelectValue placeholder="Select a Team" /></SelectTrigger>
                     <SelectContent>
                         {teams.map(t => (
                             <SelectItem key={t.id} value={t.id.toString()}>
@@ -190,7 +191,7 @@ function VetoAnalysisSection() {
                     </SelectContent>
                 </Select>
                 <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-                    <SelectTrigger className="w-[250px]"><SelectValue placeholder="Select an Event" /></SelectTrigger>
+                    <SelectTrigger className="w-[250px]" aria-label="Filter veto tendencies by event"><SelectValue placeholder="Select an Event" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Events</SelectItem>
                         {eventNames.map(name => <SelectItem key={name} value={name}>{name}</SelectItem>)}
@@ -302,14 +303,19 @@ export default function PickBanPage() {
       <VetoAnalysisSection />
 
       <div className="flex flex-col items-center mb-8">
-        <h1 className="text-4xl font-bold text-center">Pick/Ban Elo Efficiency</h1>
+        <h1 className="text-4xl font-bold text-center">Pick/Ban Elo Model Alignment</h1>
         <p className="text-center text-muted-foreground mt-2 max-w-2xl">
-          This page analyzes each team&apos;s pick/ban phase by comparing their choices to the optimal choices based on map Elo ratings.
-          &quot;Average Elo Lost&quot; represents how many Elo points a team loses, on average, compared to a perfect pick/ban sequence. A lower number is better.
+          This page compares historical veto choices with the model&apos;s greedy map-Elo recommendation at each step.
+          &quot;Average Model Regret&quot; is the Elo-gap difference between the observed choice and that recommendation; lower means closer model alignment.
+          The leakage-safe rebuild uses ratings strictly before the recorded match completion cutoff, excludes ratings produced by that same match, and defaults a missing team/map rating to 1000; completion time is the proxy because match start is not stored.
+          Ban comparisons are counterfactual because banned maps are not played. These rankings show model alignment, not proven coaching quality or causal win lift.{" "}
+          <Link href="/methodology#veto-alignment" className="font-medium text-foreground underline underline-offset-4 hover:text-primary">
+            Read the evaluation scope and limitations.
+          </Link>
         </p>
         <div className="mt-4 w-full max-w-xs">
           <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-            <SelectTrigger>
+            <SelectTrigger aria-label="Filter model-alignment rankings by event">
               <SelectValue placeholder="Select an event" />
             </SelectTrigger>
             <SelectContent>
@@ -350,9 +356,9 @@ export default function PickBanPage() {
               <TableRow>
                 <TableHead className="w-[80px]">Rank</TableHead>
                 <TableHead>Team</TableHead>
-                <TableHead className="text-right">Average Elo Lost</TableHead>
+                <TableHead className="text-right">Average Model Regret (Elo)</TableHead>
                 <TableHead className="text-right">Matches Analyzed</TableHead>
-                <TableHead className="w-[40px]"></TableHead>
+                <TableHead className="w-[40px]"><span className="sr-only">Details</span></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -385,16 +391,28 @@ export default function PickBanPage() {
                     <TableCell className="text-right">{row.average_elo_lost.toFixed(0)}</TableCell>
                     <TableCell className="text-right">{row.matches_analyzed}</TableCell>
                     <TableCell>
-                      <ChevronRight
-                        className={`transition-transform ${
-                          expandedTeam === row.team_id ? "rotate-90" : ""
-                        }`}
-                      />
+                      <button
+                        type="button"
+                        aria-label={`${expandedTeam === row.team_id ? "Collapse" : "Expand"} match history for ${row.team_name}`}
+                        aria-expanded={expandedTeam === row.team_id}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleRowClick(row.team_id);
+                        }}
+                        className="rounded p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <ChevronRight
+                          aria-hidden="true"
+                          className={`transition-transform ${
+                            expandedTeam === row.team_id ? "rotate-90" : ""
+                          }`}
+                        />
+                      </button>
                     </TableCell>
                   </TableRow>
                   {expandedTeam === row.team_id && (
                     <TableRow>
-                      <TableCell colSpan={4}>
+                      <TableCell colSpan={5}>
                         {historyLoading ? (
                           <Card className="animate-pulse">
                             <CardHeader>
@@ -417,8 +435,8 @@ export default function PickBanPage() {
                                   <TableRow>
                                     <TableHead>Match</TableHead>
                                     <TableHead>Event</TableHead>
-                                    <TableHead className="text-right">Elo Lost</TableHead>
-                                    <TableHead className="w-[40px]"></TableHead>
+                                    <TableHead className="text-right">Model Regret (Elo)</TableHead>
+                                    <TableHead className="w-[40px]"><span className="sr-only">Details</span></TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -440,11 +458,23 @@ export default function PickBanPage() {
                                         <TableCell>{match.event_name}</TableCell>
                                         <TableCell className="text-right">{match.elo_lost.toFixed(0)}</TableCell>
                                         <TableCell>
-                                          <ChevronRight
-                                            className={`transition-transform ${
-                                              expandedMatch === match.match_id ? "rotate-90" : ""
-                                            }`}
-                                          />
+                                          <button
+                                            type="button"
+                                            aria-label={`${expandedMatch === match.match_id ? "Collapse" : "Expand"} veto details for the match against ${match.opponent_name ?? "unknown opponent"}`}
+                                            aria-expanded={expandedMatch === match.match_id}
+                                            onClick={(event) => {
+                                              event.stopPropagation();
+                                              void handleMatchClick(match.match_id);
+                                            }}
+                                            className="rounded p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                          >
+                                            <ChevronRight
+                                              aria-hidden="true"
+                                              className={`transition-transform ${
+                                                expandedMatch === match.match_id ? "rotate-90" : ""
+                                              }`}
+                                            />
+                                          </button>
                                         </TableCell>
                                       </TableRow>
                                       {expandedMatch === match.match_id && (
@@ -519,7 +549,7 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
         <p className="font-bold">{data.step}</p>
         {data.action !== 'start' && data.action !== 'decider' && (
             <p>
-                Elo Swing:{" "}
+                Model-Regret Swing:{" "}
                 <span className="font-bold" style={swingColorStyle}>
                     {eloSwing > 0 ? "+" : ""}
                     {eloSwing.toFixed(0)}
@@ -527,14 +557,14 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
             </p>
         )}
         <p>
-          Cumulative Advantage:{" "}
+          Cumulative Model-Regret Balance:{" "}
           <span className="font-bold" style={advantageColorStyle}>
             {eloAdvantage > 0 ? "+" : ""}
             {eloAdvantage}
           </span>
         </p>
         <p>
-            Win Probability:{" "}
+            Model Win Estimate:{" "}
             <span className="font-bold">
                 {(data.winProbability * 100).toFixed(1)}%
                 {Math.abs(winProbabilityDelta) > 0.0001 && (
@@ -545,7 +575,7 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
             </span>
         </p>
         {data.optimalChoice && data.action !== 'decider' && (
-            <p className="text-muted-foreground">Optimal: {data.optimalChoice}</p>
+            <p className="text-muted-foreground">Greedy recommendation: {data.optimalChoice}</p>
         )}
       </div>
     );
@@ -617,6 +647,9 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
   const initialAvailableMaps = vetoData[0]?.availableMaps || [];
 
   const simulateVeto = (stepsTaken: VetoAnalysisStep[]) => {
+    if (matchEloData.bestOf !== 3 && matchEloData.bestOf !== 5) return 0.5;
+
+    const bestOf = matchEloData.bestOf;
     let availableMaps = [...initialAvailableMaps];
     const pickedMaps: string[] = [];
     
@@ -629,21 +662,16 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
     
     let currentStep = stepsTaken.length;
     
-    // This assumes a standard BO3 veto process.
-    // Ban, Ban, Pick, Pick, Ban, Ban
-    const vetoOrder = [
-        { action: 'ban' }, { action: 'ban' },
-        { action: 'pick' }, { action: 'pick' },
-        { action: 'ban' }, { action: 'ban' },
-    ];
+    const actionableVetoes = vetoData.filter(step => step.action !== 'decider');
 
-    while (currentStep < vetoOrder.length && availableMaps.length > 1) {
-        const actingTeamId = vetoData[currentStep].teamId;
+    while (currentStep < actionableVetoes.length && availableMaps.length > 1) {
+        const futureStep = actionableVetoes[currentStep];
+        const actingTeamId = futureStep.teamId;
         const opponentTeamId = actingTeamId === matchEloData.team1Id ? matchEloData.team2Id : matchEloData.team1Id;
         const actingTeamElos = getTeamElos(actingTeamId);
         const opponentElos = getTeamElos(opponentTeamId);
 
-        const stepAction = vetoOrder[currentStep].action;
+        const stepAction = futureStep.action;
 
         let choice: string;
         if (stepAction === 'pick') {
@@ -656,12 +684,12 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
         currentStep++;
     }
 
-    if (pickedMaps.length < 3 && availableMaps.length === 1) {
+    if (pickedMaps.length < bestOf && availableMaps.length === 1) {
         pickedMaps.push(availableMaps[0]);
     }
 
-    if (pickedMaps.length !== 3) {
-        console.error("Simulation did not result in 3 maps:", pickedMaps);
+    if (pickedMaps.length !== bestOf) {
+        console.error(`Simulation did not result in ${bestOf} maps:`, pickedMaps);
         return 0.5; // Return a neutral probability if simulation fails
     }
 
@@ -671,7 +699,9 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
         return calculateWinProbability(team1Elo, team2Elo);
     });
 
-    const matchProb = calculateBo3MatchProbability(mapProbs);
+    const matchProb = bestOf === 3
+      ? calculateBo3MatchProbability(mapProbs)
+      : calculateBo5MatchProbability(mapProbs);
     return teamId === matchEloData.team1Id ? matchProb[0] : matchProb[1];
   };
 
@@ -716,11 +746,11 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
 
   const chartConfig = {
     eloAdvantage: {
-      label: "Elo Advantage",
+      label: "Model-Regret Balance",
       color: "hsl(var(--primary))",
     },
      winProbability: {
-       label: "Win Probability",
+       label: "Model Win Estimate",
        color: "hsl(142.1 70.2% 45.2%)",
      },
   } satisfies ChartConfig;
@@ -728,7 +758,7 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Veto Process Elo Swings</CardTitle>
+        <CardTitle>Veto Process Model-Regret View</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -779,4 +809,4 @@ function VetoProcessChart({ teamId, vetoData, matchEloData }: { teamId: number, 
       </CardContent>
     </Card>
   );
-} 
+}

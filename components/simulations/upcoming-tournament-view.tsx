@@ -216,7 +216,7 @@ export function UpcomingTournamentView({ tournamentId = TOURNAMENT_ID }: Upcomin
           <CardHeader>
             <CardTitle>Simulation Results</CardTitle>
             <CardDescription>
-              Live Monte Carlo projections based on current map ELO data.
+              On-demand Monte Carlo projections using the latest successfully processed daily map-Elo snapshot.
             </CardDescription>
           </CardHeader>
           <CardContent>

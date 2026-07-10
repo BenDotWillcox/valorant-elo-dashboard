@@ -1,0 +1,13 @@
+# Keep the reproducibility artifacts byte-stable without renormalizing the
+# repository's existing mixed-line-ending source history.
+data/*-backtest-db-snapshot.json text eol=lf
+public/data/*-backtest.json text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary

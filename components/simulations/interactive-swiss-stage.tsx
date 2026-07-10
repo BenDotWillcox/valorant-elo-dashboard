@@ -35,7 +35,7 @@ const bracketLabels: Record<PickMatch['bracket'], string> = {
   '1-1': '1-1 Deciders',
 };
 
-const matchCardShellClass = 'w-full sm:w-56 sm:shrink-0';
+const matchCardShellClass = 'w-full min-w-0 sm:max-w-56';
 
 function seededShuffle<T>(items: T[], seed: string): T[] {
   const shuffled = [...items];
@@ -304,7 +304,7 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
               <h3 className="text-sm font-semibold">Round 1</h3>
               <div className="text-xs text-muted-foreground">{bracketLabels['0-0']}</div>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 xl:justify-around">
+            <div className="grid grid-cols-1 justify-items-center gap-3 md:grid-cols-2 xl:grid-cols-4">
               {round1Matches.map((match) => (
                 <div key={match.id} className={matchCardShellClass}>
                   <MatchCard match={match} winner={picks[match.id]} onPick={handlePick} />
@@ -320,12 +320,12 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:items-start">
               <div className="space-y-3">
-                <div className="text-center text-xs text-muted-foreground md:text-left xl:text-center">{bracketLabels['1-0']}</div>
-                {renderMatches(round2WinnersMatches, 'flex flex-wrap justify-center gap-3 xl:flex-nowrap')}
+                <div className="text-center text-xs text-muted-foreground">{bracketLabels['1-0']}</div>
+                {renderMatches(round2WinnersMatches, 'grid grid-cols-1 justify-items-center gap-3 xl:grid-cols-2')}
               </div>
               <div className="space-y-3">
-                <div className="text-center text-xs text-muted-foreground md:text-left xl:text-center">{bracketLabels['0-1']}</div>
-                {renderMatches(round2LosersMatches, 'flex flex-wrap justify-center gap-3 xl:flex-nowrap')}
+                <div className="text-center text-xs text-muted-foreground">{bracketLabels['0-1']}</div>
+                {renderMatches(round2LosersMatches, 'grid grid-cols-1 justify-items-center gap-3 xl:grid-cols-2')}
               </div>
             </div>
           </div>
@@ -335,7 +335,7 @@ export function InteractiveSwissStage({ tournament, onQualifiedChange }: Interac
               <h3 className="text-sm font-semibold">Round 3</h3>
               <div className="text-xs text-muted-foreground">{bracketLabels['1-1']}</div>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+            <div className="mx-auto grid w-full grid-cols-1 justify-items-center gap-3 md:max-w-[29rem] md:grid-cols-2">
               {round3Matches.map((match) => (
                 <div key={match.id} className={matchCardShellClass}>
                   <MatchCard match={match} winner={picks[match.id]} onPick={handlePick} />

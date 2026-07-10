@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">ValoMapped Elo mathematics</title>
+  <desc id="description">A dark geometric background with an Elo win probability formula.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617" />
+      <stop offset="0.55" stop-color="#172033" />
+      <stop offset="1" stop-color="#0f172a" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#94a3b8" stroke-opacity="0.08" stroke-width="2" />
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#background)" />
+  <rect width="1600" height="900" fill="url(#grid)" />
+  <circle cx="1240" cy="220" r="420" fill="url(#glow)" />
+  <circle cx="250" cy="760" r="340" fill="url(#glow)" opacity="0.55" />
+  <path d="M180 650 C390 420 540 610 760 350 S1170 180 1420 270" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" opacity="0.8" />
+  <g fill="#f8fafc" font-family="Arial, Helvetica, sans-serif">
+    <text x="160" y="245" font-size="92" font-weight="700" letter-spacing="10">THE MATH</text>
+    <text x="165" y="320" font-size="34" fill="#94a3b8" letter-spacing="5">BEHIND VALOMAPPED</text>
+    <text x="160" y="510" font-size="48" font-family="Consolas, Courier New, monospace">P(A) = 1 / (1 + 10^((R_B - R_A) / 1000))</text>
+  </g>
+  <g fill="#22c55e">
+    <circle cx="180" cy="650" r="18" />
+    <circle cx="760" cy="350" r="18" />
+    <circle cx="1420" cy="270" r="18" />
+  </g>
+</svg>

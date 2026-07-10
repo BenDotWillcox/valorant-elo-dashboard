@@ -2,6 +2,8 @@ import { getCurrentMapRankings } from "@/db/queries/rankings-queries";
 import { NextResponse } from "next/server";
 import { MAP_POOL } from '@/lib/constants/maps';
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mapsParam = searchParams.get('maps');
@@ -26,4 +28,4 @@ export async function GET(request: Request) {
 
   const flattenedRankings = allRankings.flat();
   return NextResponse.json(flattenedRankings);
-} 
+}

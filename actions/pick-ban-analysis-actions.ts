@@ -9,7 +9,7 @@ import { ActionState } from "@/types/actions/action-types";
 import { and, eq, sql, inArray, desc } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 import { alias } from "drizzle-orm/pg-core";
-import { getEloRatingsAtTime } from "@/db/queries/elo-ratings-queries";
+import { getPreMatchEloRatings } from "@/db/queries/elo-ratings-queries";
 
 type VetoStep = {
     vetoOrder: number;
@@ -145,13 +145,14 @@ export async function getMatchEloDataAction(matchId: number): Promise<ActionStat
         }
 
         const [team1Elos, team2Elos] = await Promise.all([
-            getEloRatingsAtTime(team1Id, completedAt),
-            getEloRatingsAtTime(team2Id, completedAt)
+            getPreMatchEloRatings(team1Id, completedAt, matchId),
+            getPreMatchEloRatings(team2Id, completedAt, matchId)
         ]);
         
         const data = {
             team1Id,
             team2Id,
+            bestOf: match.best_of,
             team1Elos: team1Elos.map(e => ({ map_name: e.map_name, elo: parseFloat(e.elo_rating) })),
             team2Elos: team2Elos.map(e => ({ map_name: e.map_name, elo: parseFloat(e.elo_rating) })),
         };

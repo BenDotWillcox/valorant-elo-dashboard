@@ -211,82 +211,92 @@ export function PlayerVpmChart({
     }, {} as { [playerId: number]: ProcessedPlayerKfData[] });
   }, [players, data, xAxis, compressDate]);
 
+  const chartLabel = `Career VPM progression for ${players
+    .map((player) => player.ign)
+    .join(", ")}. The horizontal axis shows ${
+    xAxis === "games" ? "career game number" : "a compressed competitive-season timeline"
+  }, and the vertical axis shows VPM per 24 rounds. Points show individual map ratings and lines show smoothed trends.`;
+
   return (
     <>
-      <ResponsiveContainer width="100%" height={400}>
-        <ComposedChart
-          margin={{
-            top: 20,
-            right: 30,
-            left: 30,
-            bottom: 20,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            type="number"
-            dataKey={xAxis === "games" ? "gameNum" : "gameDate"}
-            domain={xDomain}
-            ticks={xAxis === "games" ? gameTicks : compressedTicks}
-            tickFormatter={(tick) => {
-              if (xAxis === "date") {
-                return tickLabelMap.get(tick as number) ?? "";
-              }
-              return tick;
-            }}
-            allowDecimals={false}
-          >
-            <Label
-              value={
-                xAxis === "games"
-                  ? "Career Game Number"
-                  : "Date (Compressed Timeline)"
-              }
-              offset={-15}
-              position="insideBottom"
-            />
-          </XAxis>
-          <YAxis domain={yDomain} allowDataOverflow={true}>
-            <Label
-              value="VPM (per 24 rounds)"
-              angle={-90}
-              position="insideLeft"
-              style={{ textAnchor: "middle" }}
-            />
-          </YAxis>
-          {internationalTournamentAreas.map((area, i) => (
-            <ReferenceArea
-              key={i}
-              x1={area.x1!}
-              x2={area.x2!}
-              stroke="none"
-              fill={area.color}
-            />
-          ))}
-          {players.map((player, index) => (
-            <Scatter
-              key={`${player.id}-scatter`}
-              data={processedData[player.id]}
-              dataKey="y"
-              fill={COLORS[index % COLORS.length]}
-              fillOpacity={0.3}
-              name={player.ign}
-            />
-          ))}
-          {players.map((player, index) => (
-            <Line
-              key={`${player.id}-line`}
-              data={processedData[player.id]}
-              type="monotone"
-              dataKey="smoothMean"
-              stroke={COLORS[index % COLORS.length]}
-              strokeWidth={2}
-              dot={false}
-              name={player.ign}
-            />
-          ))}
-        </ComposedChart>
-      </ResponsiveContainer>
+      <div role="img" aria-label={chartLabel} className="h-[400px] w-full">
+        <div aria-hidden="true" className="h-full w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              margin={{
+                top: 20,
+                right: 30,
+                left: 30,
+                bottom: 20,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                type="number"
+                dataKey={xAxis === "games" ? "gameNum" : "gameDate"}
+                domain={xDomain}
+                ticks={xAxis === "games" ? gameTicks : compressedTicks}
+                tickFormatter={(tick) => {
+                  if (xAxis === "date") {
+                    return tickLabelMap.get(tick as number) ?? "";
+                  }
+                  return tick;
+                }}
+                allowDecimals={false}
+              >
+                <Label
+                  value={
+                    xAxis === "games"
+                      ? "Career Game Number"
+                      : "Date (Compressed Timeline)"
+                  }
+                  offset={-15}
+                  position="insideBottom"
+                />
+              </XAxis>
+              <YAxis domain={yDomain} allowDataOverflow={true}>
+                <Label
+                  value="VPM (per 24 rounds)"
+                  angle={-90}
+                  position="insideLeft"
+                  style={{ textAnchor: "middle" }}
+                />
+              </YAxis>
+              {internationalTournamentAreas.map((area, i) => (
+                <ReferenceArea
+                  key={i}
+                  x1={area.x1!}
+                  x2={area.x2!}
+                  stroke="none"
+                  fill={area.color}
+                />
+              ))}
+              {players.map((player, index) => (
+                <Scatter
+                  key={`${player.id}-scatter`}
+                  data={processedData[player.id]}
+                  dataKey="y"
+                  fill={COLORS[index % COLORS.length]}
+                  fillOpacity={0.3}
+                  name={player.ign}
+                />
+              ))}
+              {players.map((player, index) => (
+                <Line
+                  key={`${player.id}-line`}
+                  data={processedData[player.id]}
+                  type="monotone"
+                  dataKey="smoothMean"
+                  stroke={COLORS[index % COLORS.length]}
+                  strokeWidth={2}
+                  dot={false}
+                  name={player.ign}
+                />
+              ))}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
       {xAxis === "date" && (
         <div
           style={{

@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export default async function TeamsPage() {
   const teamsResult = await getTeamsAction();
   

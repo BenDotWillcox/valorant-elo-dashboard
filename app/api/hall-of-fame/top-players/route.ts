@@ -8,6 +8,7 @@ import {
 import { eq, and, desc, gte, isNotNull, lte } from 'drizzle-orm';
 import { getActiveSeason } from '@/db/queries/seasons-queries';
 
+export const dynamic = "force-dynamic";
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export async function GET() {

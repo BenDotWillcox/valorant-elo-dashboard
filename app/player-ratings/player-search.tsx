@@ -74,7 +74,9 @@ export function PlayerSearch({
           <Button
             variant="outline"
             role="combobox"
+            aria-label="Choose players to compare"
             aria-expanded={open}
+            aria-haspopup="listbox"
             className="w-full md:w-[300px] justify-between"
             disabled={selectedPlayers.length >= 5}
           >
@@ -122,6 +124,8 @@ export function PlayerSearch({
           <Badge key={player.id} variant="secondary">
             {player.ign}
             <button
+              type="button"
+              aria-label={`Remove ${player.ign} from comparison`}
               onClick={() => onPlayerRemoved(player.id)}
               className="ml-2 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >

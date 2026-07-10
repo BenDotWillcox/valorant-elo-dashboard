@@ -3,6 +3,8 @@ import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "date-fns";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const startDate = searchParams.get('startDate') || subDays(new Date(), 30).toISOString();
@@ -58,4 +60,4 @@ export async function GET(request: Request) {
   `);
 
   return NextResponse.json(data);
-} 
+}

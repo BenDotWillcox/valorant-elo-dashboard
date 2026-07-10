@@ -1,6 +1,6 @@
 export function PlayerRatingsSkeleton() {
   return (
-    <main className="container mx-auto flex flex-col gap-4 p-4 animate-pulse">
+    <div className="container mx-auto flex flex-col gap-4 p-4 animate-pulse">
       {/* Header */}
       <div className="h-10 bg-muted rounded w-1/3 mx-auto mb-4" />
 
@@ -62,7 +62,7 @@ export function PlayerRatingsSkeleton() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

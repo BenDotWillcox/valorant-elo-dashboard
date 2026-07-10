@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function MathBlogPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-gray-900">
       <div className="container mx-auto px-6 py-12 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -39,7 +39,7 @@ export default function MathBlogPage() {
                 <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
                   <li>• <a href="#elo-system" className="hover:text-blue-600">Elo Rating System</a></li>
                   <li>• <a href="#match-predictions" className="hover:text-blue-600">Match Predictions</a></li>
-                  <li>• <a href="#map-selection" className="hover:text-blue-600">Optimal Map Selection</a></li>
+                  <li>• <a href="#map-selection" className="hover:text-blue-600">Greedy Map Recommendations</a></li>
                 </ul>
               </div>
               <div>
@@ -62,7 +62,7 @@ export default function MathBlogPage() {
               <CardTitle className="text-2xl">1. Elo Rating System</CardTitle>
               <br />
               <p className="text-gray-600 dark:text-gray-300">
-                The core of this website is my custom Elo rating system modified from the standard Elo formula made famous in chess. Each team is given a completely independent Elo rating for each map. This gives my rating system significantly greater predictive power. This is because Valorant teams can have dramatically different skill levels across different maps.
+                The core of this website is a custom Elo rating system modified from the standard Elo formula made famous in chess. Each team is given an independent rating for each map so the model can represent map-specific strength. That extra detail is a modeling hypothesis, not a proven performance advantage: the published chronological holdout does not establish that the deployed map model predicts better than plain overall-team Elo.
               </p>
               <br />
               <p className="text-gray-600 dark:text-gray-300"> 
@@ -127,10 +127,9 @@ export default function MathBlogPage() {
                   1000-point gap (e.g., 1600 vs 600). 
                   <br />
                   <br />
-                  I decided to increase the scale because all VCT teams are professionals. The skill gap 
-                  between the best and worst pro team is far smaller than between the best and worst 
-                  player on Chess.com. The wider scale makes rating differences more visually apparent 
-                  and meaningful for users interacting with the website.
+                  The deployed model uses the wider scale as a legacy modeling and presentation choice.
+                  The original selection record is not reproducible, so the scale should not be interpreted
+                  as independently calibrated or as evidence that displayed rating gaps are more predictive.
                 </p>
                 <br />
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
@@ -141,29 +140,30 @@ export default function MathBlogPage() {
               </div>
 
               <div className="border-2 border-blue-500/30 dark:border-blue-400/30 bg-blue-50/50 dark:bg-blue-950/20 p-6 rounded-lg">
-                <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">Parameter Optimization: Grid Search Methodology</h4>
+                <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">Current Parameters and Validation Status</h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  For the following parameters, rather than arbitrarily selecting parameter values, I used a systematic grid search approach 
-                  to optimize the Elo system&apos;s predictive accuracy. This involved training multiple models with 
-                  different combinations of parameters and evaluating their performance on unseen match data.
+                  The production model currently uses the legacy parameter set shown below. Earlier exploratory work used a grid search,
+                  but the repository did not preserve enough evidence—exact split dates, scores, candidate results, or a data snapshot—to
+                  independently reproduce the selection. These values should therefore be treated as an implementation choice, not a
+                  validated performance claim. The published retrospective backtest evaluates the fixed configuration but does not
+                  establish an improvement over plain overall-team Elo.
                 </p>
                 
-                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Grid Search Process:</h5>
+                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Production configuration:</h5>
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1 mb-3">
-                  <li>Used GridSearchCV from scikit-learn to test multiple parameter combinations</li>
-                  <li>Varied K-factor values (32, 48, 64, 74, 80, 96)</li>
-                  <li>Tested different margin of victory scaling factors (0-10)</li>
-                  <li>Compared multiple Elo model architectures (discussed in Alternative Methods section)</li>
-                  <li>Split dataset into training matches and future test matches</li>
-                  <li>Evaluated models using Brier score (lower = better predictions)</li>
+                  <li>Initial map rating: 1000</li>
+                  <li>Rating scale: 1000</li>
+                  <li>K-factor: 74</li>
+                  <li>Margin factor: ln(5.95 × √(score difference + 1))</li>
+                  <li>Hard rating reset at the start of each calendar year</li>
                 </ul>
 
-                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Optimal Results:</h5>
+                <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Evidence standard:</h5>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  The best performing model achieved the lowest Brier error with a <strong>K-factor of 74</strong> and 
-                  a <strong>margin multiplier of 5.95</strong> in the logarithmic scaling function. This combination 
-                  balanced rating responsiveness with predictive stability, outperforming both more conservative 
-                  and more aggressive parameter choices.
+                  The reproducible retrospective evaluation publishes chronological train, validation, and test dates and enforces
+                  validation-only selection within each run; it is not described as a preregistered or untouched holdout. It also publishes
+                  a plain-Elo baseline, Brier score, log loss, reliability, confidence-band accuracy, sample sizes, and uncertainty intervals.
+                  Experimental results will not silently replace the production model.
                 </p>
               </div>
               
@@ -182,22 +182,24 @@ export default function MathBlogPage() {
                 </div>
                 <br />
                 <p className="text-gray-600 dark:text-gray-300">
-                  The logarithmic scaling provides diminishing returns for larger score differences. For example, 
+                  The logarithmic scaling grows more slowly than a linear margin multiplier. For example,
                   a 13-5 victory yields a greater reward than a 13-11 victory, but the marginal increase in reward 
-                  for winning 13-10 vs 13-11 is higher than the increase for 13-5 vs 13-6. This prevents extreme 
-                  rating swings from blowout matches while still recognizing dominant performances.
+                  for winning 13-10 vs 13-11 is higher than the increase for 13-5 vs 13-6. That limits growth relative
+                  to a linear rule, but it does not make the deployed updates small.
                 </p>
                 <br />
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  This logarithmic scaling ensures that dominant victories (13-0, 13-1) provide significantly 
-                  more rating changes than close matches (13-11), while preventing extreme outliers.
+                  At equal 1000 ratings, the deployed formula moves each team by about 86.3 points after 13-11 and
+                  114.8 points after 13-0. Those aggressive magnitudes are disclosed and compared in the published
+                  backtest; the holdout does not establish that they are superior.
                 </p>
               </div>
 
               <div>
                 <h4 className="font-semibold mb-3">3. K-Factor</h4>
                 <p className="text-gray-600 dark:text-gray-300">
-                  The K-factor controls the maximum amount of rating change that can occur in a single match.
+                  The K-factor controls the base sensitivity of each update. Because the deployed formula also
+                  multiplies by margin of victory, K is not a hard maximum on the point change.
                   <br />
                   <br />
                   Tuning the K-factor involves finding a balance in how responsive the rating system is to new data.
@@ -206,10 +208,13 @@ export default function MathBlogPage() {
                   A higher K-factor will result in more volatile rating changes, while a lower K-factor will result in more stable rating changes.
                   <br />
                   <br />
-                  In my case, my grid search settled on a K-factor of 74. This is substantially higher than what is used in traditional systems like chess Elo.
+                  The deployed legacy configuration uses a K-factor of 74. The repository does not preserve enough evidence to reproduce
+                  the earlier parameter search, so this value is not presented as a validated optimum. It is substantially higher than
+                  values commonly used in traditional chess-style Elo systems.
                   <br />
                   <br />
-                  My personal intuition for this is that because Valorant is a rapidly evolving game, unlike chess which hasn&apos;t been updated since the addition of castling, it is beneficial to update more quickly to additional data.
+                  The motivating intuition was that a rapidly evolving esport may benefit from faster updates. The holdout results show
+                  why that intuition still needs calibration evidence rather than being treated as proof.
                   <br />
                   <br />
                 </p>
@@ -226,20 +231,22 @@ export default function MathBlogPage() {
               <div className="border-2 border-blue-500/30 dark:border-blue-400/30 bg-blue-50/50 dark:bg-blue-950/20 p-6 rounded-lg">
                 <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">Alternative Methods</h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  There were several alternative methods that I considered for the Elo system that are worth noting for completeness.
+                  The notes below describe earlier exploratory ideas whose datasets, splits, and scores were not preserved well enough for
+                  independent verification. The reproducible comparison on the methodology page supersedes them as the project&apos;s public evidence.
                 </p>
                 <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Hybrid Global Offset</h5>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   The hybrid global offset method is a modification of my custom Elo formula that creates a global Elo rating for each team and then adds a map-specific offset to the rating for each map, rather than having completely independent ratings per map.
-                  In testing, this method did perform slightly better than the completely independent method, however the prediction quality was exclusively better at the beginning of seasons where the global offset was able to more quickly update to a teams relative strength on maps with little or no data yet. The two models otherwise converged to the same results by the middle and end of each season.
-                  Because of this, I decided to stick with the completely independent method for the final model for simplicity for Users viewing the website.
+                  Earlier exploratory work suggested this might help at the beginning of seasons, but that result is not reproducible from
+                  the current repository and is not a published performance claim. The deployed implementation retained independent map ratings.
                 </p>
                 <h5 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">Model K-Factor Updating Confidence</h5>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   I also experimented with a K-Factor updating confidence approach. This means the model would dynamically adjust the K-Factor based on the amount of time between matches. So the K-factor would start higher at the beginning of the season and gradually shrink as it got more data. The model starts updating more quickly while it has low confidence in the team&apos;s skill level and then updates more slowly as it gets more data. The K-Factor would then increase again after long breaks within the season as the teams have time to make changes.
                   <br />
                   <br />
-                  In testing though, this model did not perform as well as without this additional parameter confidence method.
+                  Earlier exploratory notes reported that this version did not perform as well, but the underlying comparison is not
+                  reproducible and should be treated as design history rather than evidence.
                   <br />
                   <br />
                   I was quite surprised by this result, however my best guess as to why is some combination of factors: the data is sparse as is, and decaying the K-Factor was ultimately causing more harm than good. As well as that teams are able to make significant changes to their playstyle and strategy even in the middle of a season and our reduced K-Factor more slowly adjusted to these mid-season changes.
@@ -332,23 +339,23 @@ export default function MathBlogPage() {
           </Card>
         </section>
 
-        {/* Optimal Map Selection */}
+        {/* Greedy Map Selection */}
         <section id="map-selection" className="mb-12">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">3. Optimal Map Selection Algorithm</CardTitle>
+              <CardTitle className="text-2xl">3. Greedy Elo Map Recommendation Algorithm</CardTitle>
               <p className="text-gray-600 dark:text-gray-300">
-                Game-theoretic approach to simulating realistic pick/ban processes in competitive Valorant.
+                A local map-Elo heuristic used to simulate pick/ban processes in competitive Valorant.
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <h4 className="font-semibold mb-3">Strategic Assumptions</h4>
                 <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                  <li>Teams ban maps where they have the lowest win probability</li>
-                  <li>Teams pick maps where they have the highest win probability</li>
+                  <li>The heuristic bans the map with the acting team&apos;s lowest modeled win probability</li>
+                  <li>The heuristic picks the map with the acting team&apos;s highest modeled win probability</li>
                   <li>Alternating selection order follows standard competitive rules</li>
-                  <li>Teams have perfect information about opponent strengths</li>
+                  <li>The simulation treats current Elo estimates as its complete input and does not observe private strategic information</li>
                 </ul>
               </div>
 
@@ -356,12 +363,12 @@ export default function MathBlogPage() {
                 <h4 className="font-semibold mb-3">BO3 Selection Process</h4>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <code className="text-sm">
-                    1. Team A bans worst map (min probability)<br/>
-                    2. Team B bans worst map (min probability)<br/>
-                    3. Team A picks best map (max probability)<br/>
-                    4. Team B picks best map (max probability)<br/>
-                    5. Team A bans worst remaining map (min probability)<br/>
-                    6. Team B bans worst remaining map (min probability)<br/>
+                    1. Team A bans its lowest-probability map<br/>
+                    2. Team B bans its lowest-probability map<br/>
+                    3. Team A picks its highest-probability map<br/>
+                    4. Team B picks its highest-probability map<br/>
+                    5. Team A bans its lowest-probability remaining map<br/>
+                    6. Team B bans its lowest-probability remaining map<br/>
                     7. Remaining map becomes decider
                   </code>
                 </div>
@@ -371,41 +378,36 @@ export default function MathBlogPage() {
                 <h4 className="font-semibold mb-3">BO5 Selection Process</h4>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <code className="text-sm">
-                    1. Team A bans worst map (min probability)<br/>
-                    2. Team B bans worst map (min probability)<br/>
-                    3. Team A picks best map (max probability)<br/>
-                    4. Team B picks best map (max probability)<br/>
-                    5. Team A picks best remaining map (max probability)<br/>
-                    6. Team B picks best remaining map (max probability)<br/>
+                    1. Team A bans its lowest-probability map<br/>
+                    2. Team B bans its lowest-probability map<br/>
+                    3. Team A picks its highest-probability map<br/>
+                    4. Team B picks its highest-probability map<br/>
+                    5. Team A picks its highest-probability remaining map<br/>
+                    6. Team B picks its highest-probability remaining map<br/>
                     7. Remaining map becomes decider<br/>
                   </code>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3">Zero-Sum Optimality</h4>
+                <h4 className="font-semibold mb-3">Zero-Sum Model Assumption</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  This algorithm assumes a perfectly zero-sum game. For any given map, Team A&apos;s win probability is exactly (1 - Team B&apos;s win probability). This creates a critical property: your worst map is always your opponent&apos;s best map, and vice versa.
+                  This algorithm uses a strict zero-sum abstraction. For any given map, Team A&apos;s modeled win probability is exactly (1 - Team B&apos;s modeled win probability). Within that abstraction, one team&apos;s lowest-probability map is the opponent&apos;s highest-probability map, and vice versa.
                   <br />
                   <br />
-                  This perfect opposition means the greedy algorithm (always ban worst, always pick best) 
-                  is provably optimal. There is no strategic scenario where deviating from this strategy 
-                  would improve your expected win probability. When you ban your worst map (say 30% win rate), 
-                  you&apos;re simultaneously banning your opponent&apos;s best map (their 70% win rate). Any other choice 
-                  would help your opponent more than it helps you.
+                  The implementation therefore makes a greedy local recommendation: ban the lowest modeled probability and pick the highest.
+                  That recommendation is internally consistent with the current Elo estimates, but it is not proof of the best full-sequence veto strategy.
+                  Later veto choices, format constraints, side selection, opponent behavior, roster plans, and private preparation can all matter beyond this model.
                   <br />
                   <br />
-                  The only scenario where strategic deviation could be beneficial is if you expect your opponent 
-                  to select suboptimally, but modeling opponent mistakes is beyond the scope of this current system, which 
-                  assumes rational play from both teams.
+                  Modeling how an opponent may depart from the same greedy rule is beyond the current system; the simulator assumes both teams follow it.
                   <br />
                   <br />
                   A potential future addition would be to model each team&apos;s actual historical map choice patterns 
-                  and provide an option to use predicted map selection based on past behavior, rather than assuming 
-                  optimal selection.
+                  and provide an option to use predicted map selection based on past behavior, rather than assuming both teams follow the same greedy recommendation.
                   <br />
                   <br />
-                  With a model for each team&apos;s actual historical map choice patterns, we could create a predicted map pool for a given matchup for a user to view. We could also create an optimal map selection algorithm for a given team to exploit predicted suboptimal map selection by the opponent.
+                  With a model for each team&apos;s historical choice patterns, we could create a predicted map pool for a matchup and a policy-aware recommendation that responds to likely opponent choices.
                 </p>
               </div>
             </CardContent>
@@ -436,7 +438,7 @@ export default function MathBlogPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Now that we have a system that can predict the outcome of any match, we create a (simulate_match_result) function that simulates the map selection phase, assuming optimal map selection, and then gets the win probabilities for each map using our match probability calculator.
+                  The (simulate_match_result) function simulates the map selection phase with both teams following the greedy Elo recommendations, then gets the modeled win probabilities for each map using the match probability calculator.
                   <br />
                   <br />
                   Then all that is left is to design the tournament structure and simulate the tournament using a Monte Carlo simulation approach.
@@ -490,8 +492,8 @@ export default function MathBlogPage() {
               <div>
                 <h4 className="font-semibold mb-3">Dynamic Tournament Updates</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  My system can incorporate completed match results, updating probabilities in real-time 
-                  as tournaments progress. This provides increasingly accurate predictions as more information becomes available.
+                  The daily pipeline incorporates completed match results. Tournament projections can then be rerun on demand against
+                  the latest successfully processed map-Elo snapshot; they are not a streaming, real-time feed.
                 </p>
               </div>
 
@@ -520,7 +522,7 @@ export default function MathBlogPage() {
                   href="https://apanalytics.shinyapps.io/DARKO/_w_40abdb2cb7f34fb4a4710727dacf07d4/#tab-7016-2" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-blue-700 underline underline-offset-2 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                 >
                   DARKO metric
                 </a>.
@@ -710,63 +712,56 @@ export default function MathBlogPage() {
             <CardHeader>
               <CardTitle className="text-2xl">7. Pick/Ban Decision Analysis</CardTitle>
               <p className="text-gray-600 dark:text-gray-300">
-                Quantifying the quality of strategic map selection decisions using Elo-based optimality metrics.
+                Describing how closely historical choices align with a greedy map-Elo recommendation.
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <h4 className="font-semibold mb-3">Overview</h4>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Every competitive Valorant match begins with a pick/ban phase where teams alternately select and 
-                  eliminate maps. These decisions are critical—a poor veto can cost a team the match before a single 
-                  round is played. The pick/ban analysis system evaluates the quality of these decisions by comparing 
-                  actual choices to optimal ones based on historical Elo ratings.
+                  Every competitive Valorant match begins with a pick/ban phase where teams alternately select and
+                  eliminate maps. This analysis compares each observed choice with a greedy recommendation derived from map Elo ratings; it does not observe private coaching inputs or the result of an unplayed alternative.
                   <br />
                   <br />
-                  This creates a &quot;draft score&quot; for each team, measuring how well they maximize their competitive 
-                  advantage during the veto phase. Teams that consistently make suboptimal picks/bans leave Elo 
-                  rating on the table, reducing their match win probability.
+                  The leakage-safe rebuild uses ratings strictly before the recorded match completion cutoff, excludes ratings produced by that same match, and defaults missing team/map ratings to 1000. Completion time is the proxy because match start is not stored.
+                  The resulting model-regret score measures alignment with that heuristic, not proven coaching quality or causal win lift.
+                  Ban comparisons are specifically counterfactual because a banned map is never played.
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3">Optimal Pick Strategy</h4>
+                <h4 className="font-semibold mb-3">Greedy Pick Recommendation</h4>
                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  When a team picks a map, they should select the map where they have the largest Elo advantage 
-                  over their opponent from the available pool:
+                  For a pick, the heuristic recommends the available map with the acting team&apos;s largest Elo advantage:
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <code className="text-sm">
-                    Optimal Pick = argmax(Elo_Team(map) - Elo_Opponent(map))
+                    Greedy Pick = argmax(Elo_Team(map) - Elo_Opponent(map))
                     <br />
                     <br />
                     Elo Advantage = Elo_Team(picked_map) - Elo_Opponent(picked_map)
                   </code>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                  If a team picks a suboptimal map, the Elo lost is calculated as the difference between the 
-                  advantage they could have had and the advantage they actually gained.
+                  Pick model regret is the Elo-gap difference between the greedy recommendation and the observed pick. It measures departure from the heuristic, not a realized loss.
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3">Optimal Ban Strategy</h4>
+                <h4 className="font-semibold mb-3">Greedy Ban Recommendation</h4>
                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  When banning a map, teams should eliminate the map where they have the smallest Elo advantage 
-                  (or largest disadvantage):
+                  For a ban, the heuristic recommends eliminating the available map where the acting team has the smallest Elo advantage (or largest disadvantage):
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <code className="text-sm">
-                    Optimal Ban = argmin(Elo_Team(map) - Elo_Opponent(map))
+                    Greedy Ban = argmin(Elo_Team(map) - Elo_Opponent(map))
                     <br />
                     <br />
-                    Elo Lost = (Actual_Advantage - Optimal_Advantage)
+                    Model Regret = Observed_Advantage - Recommended_Advantage
                   </code>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                  Banning your worst map prevents your opponent from exploiting your weakness. Teams that ban 
-                  mediocre maps while leaving their worst map available are making strategic errors that can 
-                  be quantified in Elo points.
+                  This is a counterfactual Elo comparison: the banned map has no observed match result. A positive gap means the choice differed from the model&apos;s greedy recommendation, not that the veto was a demonstrated strategic error.
                 </p>
               </div>
 
@@ -775,28 +770,26 @@ export default function MathBlogPage() {
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">For each completed match:</p>
                   <ol className="list-decimal list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1 ml-2">
-                    <li>Retrieve both teams&apos; Elo ratings for all maps at the time the match was played</li>
+                    <li>Retrieve ratings strictly before the recorded match completion cutoff, excluding rows produced by that same match; use 1000 when a team/map rating is missing</li>
                     <li>Replay the pick/ban phase step-by-step in chronological order</li>
-                    <li>At each step, calculate what the optimal choice would have been from available maps</li>
-                    <li>Compare the actual choice to the optimal choice</li>
-                    <li>Calculate Elo lost if suboptimal (zero if optimal)</li>
-                    <li>Track cumulative Elo lost across the entire veto phase</li>
+                    <li>At each step, calculate the greedy Elo recommendation from the available maps</li>
+                    <li>Compare the observed choice with that recommendation</li>
+                    <li>Calculate local model regret, with zero for a recommendation-aligned choice</li>
+                    <li>Accumulate the local Elo-gap differences across the veto phase</li>
                     <li>Store analysis results for aggregation and visualization</li>
                   </ol>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3">Cumulative Elo Lost Metric</h4>
+                <h4 className="font-semibold mb-3">Cumulative Model Regret</h4>
                 <p className="text-gray-600 dark:text-gray-300">
-                  The cumulative Elo lost metric sums up all suboptimal decisions throughout the veto phase, 
-                  providing a single number that represents how much competitive advantage a team surrendered. 
-                  A team with 0 Elo lost made perfect strategic decisions; a team with a large Elo lost made 
-                  significant strategic errors that materially reduced their win probability.
+                  Cumulative model regret sums the local Elo-gap differences throughout the veto phase.
+                  A value of zero means every evaluated choice matched the greedy recommendation; a larger value means the sequence departed from it more often or by larger Elo gaps.
+                  It does not measure surrendered competitive advantage, realized probability loss, or coaching skill.
                   <br />
                   <br />
-                  Teams can be ranked by their average Elo lost across all matches, identifying which organizations 
-                  have the best strategic preparation.
+                  Teams can be ranked by their average model regret across analyzed matches, but that ranking describes model alignment only and should not be interpreted as causal evidence of better preparation.
                 </p>
               </div>
 
@@ -805,7 +798,7 @@ export default function MathBlogPage() {
         </section>
 
       </div>
-    </main>
+    </div>
   );
 }
 

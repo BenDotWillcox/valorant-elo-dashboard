@@ -2,6 +2,8 @@ import { runMonteCarloSimulation } from "@/lib/simulation/simulation";
 import { getTournamentConfig } from "@/lib/simulation/tournament-formats";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 function parseSimulationCount(request: Request): number | null {
   const { searchParams } = new URL(request.url);
   const numSimulationsParam = searchParams.get("simulations");

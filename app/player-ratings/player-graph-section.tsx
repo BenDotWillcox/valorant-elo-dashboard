@@ -29,6 +29,7 @@ export function PlayerGraphSection() {
     [playerId: number]: PlayerKfData[];
   }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
   const [xAxis, setXAxis] = useState<"games" | "date">("games");
   const [seasons, setSeasons] = useState<Season[]>([]);
@@ -36,23 +37,32 @@ export function PlayerGraphSection() {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
-      
-      // Parallelize initial data fetches
-      const [seasonsRes, defaultPlayer] = await Promise.all([
-        getSeasonsAction(),
-        getPlayerByIgn("Zekken"),
-      ]);
-      
-      if (seasonsRes.status === "success" && Array.isArray(seasonsRes.data)) {
-        setSeasons(seasonsRes.data);
-      }
+      setLoadError(false);
 
-      if (defaultPlayer) {
-        setSelectedPlayers([defaultPlayer as Player]);
-        const data = await getPlayerKfData(defaultPlayer.id as number);
-        setPlayersData({ [defaultPlayer.id as number]: data as PlayerKfData[] });
+      try {
+        // Parallelize initial data fetches
+        const [seasonsRes, defaultPlayer] = await Promise.all([
+          getSeasonsAction(),
+          getPlayerByIgn("Zekken"),
+        ]);
+
+        if (seasonsRes.status === "success" && Array.isArray(seasonsRes.data)) {
+          setSeasons(seasonsRes.data);
+        }
+
+        if (defaultPlayer) {
+          setSelectedPlayers([defaultPlayer as Player]);
+          const data = await getPlayerKfData(defaultPlayer.id as number);
+          setPlayersData({ [defaultPlayer.id as number]: data as PlayerKfData[] });
+        }
+      } catch (error) {
+        console.error("Unable to load player comparison data.", error);
+        setSelectedPlayers([]);
+        setPlayersData({});
+        setLoadError(true);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchInitialData();
@@ -109,7 +119,11 @@ export function PlayerGraphSection() {
             <ToggleGroupItem value="date">Game Date</ToggleGroupItem>
           </ToggleGroup>
         </div>
-        {isLoading ? (
+        {loadError ? (
+          <p role="status" className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+            Player comparison data is temporarily unavailable. Please try again later.
+          </p>
+        ) : isLoading ? (
           <div className="h-96 bg-card rounded-lg border p-4 animate-pulse">
             <div className="h-full bg-muted rounded" />
           </div>

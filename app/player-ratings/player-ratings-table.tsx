@@ -28,6 +28,7 @@ export function PlayerRatingsTable() {
   const [data, setData] = useState<PlayerRating[]>([]);
   const [vpmRange, setVpmRange] = useState({ min: 0, max: 0 });
   const [isPending, startTransition] = useTransition();
+  const [loadError, setLoadError] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: keyof PlayerRating;
     direction: "asc" | "desc";
@@ -35,22 +36,30 @@ export function PlayerRatingsTable() {
 
   useEffect(() => {
     startTransition(async () => {
-      const ratings = await getPlayerRatings({ minGames: minMaps });
+      try {
+        setLoadError(false);
+        const ratings = await getPlayerRatings({ minGames: minMaps });
 
-      const vpms = ratings
-        .map((r) => r.vpm)
-        .filter((v) => v !== null) as number[];
-      if (vpms.length > 0) {
-        setVpmRange({ min: Math.min(...vpms), max: Math.max(...vpms) });
-      } else {
+        const vpms = ratings
+          .map((r) => r.vpm)
+          .filter((v) => v !== null) as number[];
+        if (vpms.length > 0) {
+          setVpmRange({ min: Math.min(...vpms), max: Math.max(...vpms) });
+        } else {
+          setVpmRange({ min: 0, max: 0 });
+        }
+
+        const initialData = ratings.map((row) => ({
+          ...row,
+          rank: 0, // Rank will be assigned after sorting
+        }));
+        setData(initialData);
+      } catch (error) {
+        console.error("Unable to load player ratings.", error);
+        setData([]);
         setVpmRange({ min: 0, max: 0 });
+        setLoadError(true);
       }
-
-      const initialData = ratings.map((row) => ({
-        ...row,
-        rank: 0, // Rank will be assigned after sorting
-      }));
-      setData(initialData);
     });
   }, [minMaps]);
 
@@ -94,11 +103,13 @@ export function PlayerRatingsTable() {
 
   const getVpmColor = (vpm: number | null): string => {
     if (vpm === null || vpmRange.min === vpmRange.max) {
-      return "hsl(0, 0%, 50%)"; // A neutral gray
+      return "hsl(0, 0%, 25%)"; // A neutral gray with sufficient contrast for white text
     }
     const percentage = (vpm - vpmRange.min) / (vpmRange.max - vpmRange.min);
     const hue = percentage * 120; // 0=red, 60=yellow, 120=green
-    return `hsl(${hue}, 70%, 35%)`;
+    // At 25% lightness, white text remains above the WCAG AA 4.5:1
+    // contrast threshold across the entire red-to-green hue range.
+    return `hsl(${hue}, 70%, 25%)`;
   };
 
   const formatVpm = (vpm: number | null): string => {
@@ -125,8 +136,21 @@ export function PlayerRatingsTable() {
           className="w-full"
         />
       </div>
-      <div className="border rounded-lg h-[700px] overflow-y-auto">
+      {loadError ? (
+        <p role="status" className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+          Player ratings are temporarily unavailable. Please try again later.
+        </p>
+      ) : null}
+      <div
+        role="region"
+        aria-label="Player ratings table"
+        tabIndex={0}
+        className="border rounded-lg h-[700px] overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
         <table className="w-full caption-bottom text-sm relative">
+          <caption className="sr-only">
+            Player VPM ratings, current team, and career map count
+          </caption>
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow>
               <TableHead className="w-[80px]">Rank</TableHead>

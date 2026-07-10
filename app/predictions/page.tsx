@@ -191,15 +191,16 @@ export default function PredictionsPage() {
             {/* Team VS Display */}
             <div className="flex flex-col sm:flex-row items-center w-full gap-4">
               <div className="flex-1 flex flex-col sm:flex-row sm:justify-end items-center gap-3">
+                <Label htmlFor="team-1" className="sr-only">Team 1</Label>
                 <Select onValueChange={setTeam1} value={team1}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger id="team-1" aria-label="Team 1" className="w-[200px]">
                     <SelectValue placeholder="Select team 1">
                       {team1 && (
                         <div className="flex items-center gap-2">
                           <div className="relative w-6 h-6 shrink-0">
                             <Image
                               src={TEAM_LOGOS[team1 as keyof typeof TEAM_LOGOS]}
-                              alt={team1}
+                              alt=""
                               fill
                               className="object-contain"
                             />
@@ -216,7 +217,7 @@ export default function PredictionsPage() {
                           <div className="relative w-4 h-4 shrink-0">
                             <Image
                               src={TEAM_LOGOS[team as keyof typeof TEAM_LOGOS]}
-                              alt={team}
+                              alt=""
                               fill
                               className="object-contain"
                             />
@@ -231,7 +232,7 @@ export default function PredictionsPage() {
                   <div className="relative w-12 h-12">
                     <Image
                       src={TEAM_LOGOS[team1 as keyof typeof TEAM_LOGOS]}
-                      alt={team1}
+                      alt=""
                       fill
                       className="object-contain"
                     />
@@ -246,21 +247,22 @@ export default function PredictionsPage() {
                   <div className="relative w-12 h-12">
                     <Image
                       src={TEAM_LOGOS[team2 as keyof typeof TEAM_LOGOS]}
-                      alt={team2}
+                      alt=""
                       fill
                       className="object-contain"
                     />
                   </div>
                 )}
+                <Label htmlFor="team-2" className="sr-only">Team 2</Label>
                 <Select onValueChange={setTeam2} value={team2}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger id="team-2" aria-label="Team 2" className="w-[200px]">
                     <SelectValue placeholder="Select team 2">
                       {team2 && (
                         <div className="flex items-center gap-2">
                           <div className="relative w-6 h-6 shrink-0">
                             <Image
                               src={TEAM_LOGOS[team2 as keyof typeof TEAM_LOGOS]}
-                              alt={team2}
+                              alt=""
                               fill
                               className="object-contain"
                             />
@@ -277,7 +279,7 @@ export default function PredictionsPage() {
                           <div className="relative w-4 h-4 shrink-0">
                             <Image
                               src={TEAM_LOGOS[team as keyof typeof TEAM_LOGOS]}
-                              alt={team}
+                              alt=""
                               fill
                               className="object-contain"
                             />
@@ -300,7 +302,7 @@ export default function PredictionsPage() {
               <div className="flex items-center gap-3">
                 <label htmlFor="match-type" className="text-sm font-medium whitespace-nowrap">Match Type:</label>
                 <Select onValueChange={(value) => setMatchType(value as 'BO3' | 'BO5' | 'BO5_ADV')} value={matchType}>
-                  <SelectTrigger id="match-type" className="w-[180px]">
+                  <SelectTrigger id="match-type" aria-label="Match Type" className="w-[180px]">
                     <SelectValue placeholder="Select match type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,4 +362,4 @@ export default function PredictionsPage() {
       )}
     </div>
   );
-} 
+}

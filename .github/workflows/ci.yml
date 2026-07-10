@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, test, build, and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      CI: true
+      NEXT_TELEMETRY_DISABLED: 1
+      # Runtime API routes are dynamic; this fail-fast URL proves build and
+      # accessibility checks do not depend on production database credentials.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:1/ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and integration tests with coverage
+        run: npm run test:coverage
+
+      - name: Verify published backtest artifact
+        run: npm run model:verify
+
+      - name: Verify published pick-ban backtest artifact
+        run: npm run model:pick-ban:verify
+
+      - name: Production build
+        run: npm run build
+
+      - name: Accessibility smoke
+        run: npm run test:a11y

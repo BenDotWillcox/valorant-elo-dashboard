@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTeamRecentMapResultsAction } from "@/actions/teams-actions";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { teamId: string } }

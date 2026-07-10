@@ -11,7 +11,7 @@ const displayFont = Montserrat({
 
 export const metadata: Metadata = {
   title: "Valorant ELO Dashboard",
-  description: "The best culmination of predictive models for professional Valorant."
+  description: "Model-based analytics and retrospective evidence for professional Valorant."
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={displayFont.variable}>
+    <html lang="en" className={displayFont.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <Providers
           attribute="class"

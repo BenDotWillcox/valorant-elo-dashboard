@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./ui/theme-toggle"
 import { motion } from "framer-motion"
-import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 // import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -129,9 +128,6 @@ const sharedTransition = {
 }
 
 function DesktopNav({ pathname }: { pathname: string }) {
-  const { theme } = useTheme()
-  const isDarkTheme = theme === "dark"
-
   return (
     <motion.nav
       className="relative hidden w-full lg:block"
@@ -139,12 +135,9 @@ function DesktopNav({ pathname }: { pathname: string }) {
       whileHover="hover"
     >
       <motion.div
-        className="absolute -inset-3 rounded-2xl pointer-events-none"
+        className="absolute -inset-3 rounded-2xl bg-green-500/10 pointer-events-none dark:bg-green-500/[0.14]"
         variants={navGlowVariants}
         style={{
-          background: isDarkTheme
-            ? "linear-gradient(90deg, rgba(34,197,94,0.14) 0%, rgba(34,197,94,0.14) 100%)"
-            : "linear-gradient(90deg, rgba(34,197,94,0.10) 0%, rgba(34,197,94,0.10) 100%)",
           filter: "blur(10px)",
         }}
       />
@@ -279,4 +272,4 @@ export function NavHeader() {
       </div>
     </header>
   )
-} 
+}

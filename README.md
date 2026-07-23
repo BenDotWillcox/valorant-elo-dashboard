@@ -21,7 +21,7 @@ A comprehensive analytics platform for Valorant Champions Tour (VCT) data, featu
 ### Data Visualization
 
 - Interactive charts and graphs using Chart.js and Recharts
-- Daily data updates with interactive filtering
+- Historical data exploration with interactive filtering
 - Responsive design with dark/light mode support
 - Video previews for each feature section
 
@@ -32,7 +32,7 @@ A comprehensive analytics platform for Valorant Champions Tour (VCT) data, featu
 - **Database**: PostgreSQL with Drizzle ORM
 - **Data Processing**: Custom Elo algorithms, statistical analysis
 - **Visualization**: Chart.js, Recharts, Framer Motion
-- **Web Scraping**: Puppeteer for data collection
+- **Historical Data Processing**: Stored VCT match records with a paused import pipeline
 
 ## 📊 Data Processing
 
@@ -234,32 +234,12 @@ const eloChange = kFactor * marginFactor * (1 - expectedProbability);
 - Map-specific performance metrics
 - Pick/ban analysis and trends
 
-## Daily ETL
+## Data maintenance
 
-Run the full daily update pipeline:
-
-```powershell
-npm run etl:daily
-```
-
-Verify the command order without touching VLR or the database:
-
-```powershell
-npm run etl:daily -- --dry-run
-```
-
-The ETL writes timestamped logs to `logs/etl/`. Failure emails use Resend and are sent when these environment variables are present:
-
-```text
-RESEND_API_KEY=
-ETL_ALERT_EMAIL_FROM=Valorant ETL <alerts@example.com>
-ETL_ALERT_EMAIL_TO=you@example.com
-ETL_ALERT_EMAIL_ON_SUCCESS=false
-```
-
-Use `npm run etl:daily -- --dry-run --email` to force a test notification.
+Automated external data collection is currently paused. Historical import and ETL tooling remains
+in the repository for reproducibility and possible future use, but it should not be run against a
+third-party service without explicit authorization.
 
 After applying the latest Drizzle migration, ETL runs persist per-step status in `etl_runs`.
-The public methodology panel reports the latest successful map ingest separately from the latest
-fully successful pipeline, so a recent source row is not presented as proof that every downstream
-step succeeded.
+The public methodology panel reports the historical dataset coverage and most recent successful
+ingestion separately from full-pipeline health.

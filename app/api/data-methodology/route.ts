@@ -51,7 +51,7 @@ export async function GET() {
           .where(sql`exists (
             select 1
             from jsonb_array_elements(${etlRunsTable.steps}) as run_step
-            where run_step ->> 'name' = 'scrape-new-maps'
+            where run_step ->> 'name' in ('ingest-new-maps', 'scrape-new-maps')
               and run_step ->> 'status' = 'success'
           )`)
           .orderBy(desc(etlRunsTable.started_at))
@@ -72,13 +72,15 @@ export async function GET() {
     }
 
     const successfulIngestStep = latestSuccessfulIngest?.steps.find(
-      (step) => step.name === "scrape-new-maps" && step.status === "success"
+      (step) =>
+        (step.name === "ingest-new-maps" || step.name === "scrape-new-maps") &&
+        step.status === "success"
     );
 
     return NextResponse.json(
       {
-        source: "VLR.gg",
-        cadence: "Daily at approximately 8:00 AM America/Chicago",
+        source: "VLR.gg (historical dataset)",
+        cadence: "Automated updates are currently paused",
         coverage: {
           firstMapAt: iso(coverage?.firstMapAt),
           latestMapAt: iso(coverage?.latestMapAt),
@@ -101,7 +103,10 @@ export async function GET() {
                 status: latestRun.status,
                 startedAt: iso(latestRun.started_at),
                 finishedAt: iso(latestRun.finished_at),
-                failedStep: latestRun.failed_step,
+                failedStep:
+                  latestRun.failed_step === "scrape-new-maps"
+                    ? "map-ingestion"
+                    : latestRun.failed_step,
               }
             : null,
         },
@@ -112,8 +117,8 @@ export async function GET() {
     console.error("Unable to load public data-methodology status.", error);
     return NextResponse.json(
       {
-        source: "VLR.gg",
-        cadence: "Daily at approximately 8:00 AM America/Chicago",
+        source: "VLR.gg (historical dataset)",
+        cadence: "Automated updates are currently paused",
         coverage: null,
         ingest: {
           historyAvailable: false,

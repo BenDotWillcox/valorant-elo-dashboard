@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "status": "partial_verified_seed",
+  "notes": "The 2026 pools encode announced competitive rotations. Historical 2023-2025 pools remain unknown pending source curation; played maps are never used retrospectively as pool announcements.",
+  "map_pools": [
+    {"pool_id": "2026-opening", "maps": ["Abyss", "Bind", "Breeze", "Corrode", "Haven", "Pearl", "Split"], "announced_at": "2026-01-06T00:00:00Z", "effective_from": "2026-01-07T00:00:00Z", "effective_to": "2026-03-17T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-00/", "confidence": 0.95},
+    {"pool_id": "2026-12.05", "maps": ["Bind", "Breeze", "Fracture", "Haven", "Lotus", "Pearl", "Split"], "announced_at": "2026-03-17T00:00:00Z", "effective_from": "2026-03-17T00:00:00Z", "effective_to": "2026-04-28T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-05/", "confidence": 1.0},
+    {"pool_id": "2026-12.08", "maps": ["Ascent", "Breeze", "Fracture", "Haven", "Lotus", "Pearl", "Split"], "announced_at": "2026-04-28T00:00:00Z", "effective_from": "2026-04-28T00:00:00Z", "effective_to": null, "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-08/", "confidence": 1.0}
+  ]
+}

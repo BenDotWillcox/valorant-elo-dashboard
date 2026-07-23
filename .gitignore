@@ -35,3 +35,22 @@ logs/etl/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database
+/db
+
+# Constants
+/lib/constants
+
+# Predictive ratings research (local environments and generated artifacts)
+/research/ratings/.venv/
+/research/ratings/.uv-cache/
+/research/ratings/.pytest_cache/
+/research/ratings/.ipynb_checkpoints/
+/research/ratings/src/*.egg-info/
+/research/ratings/**/__pycache__/
+/research/ratings/**/*.pyc
+/research/ratings/data/snapshots/*
+!/research/ratings/data/snapshots/.gitkeep
+/research/ratings/artifacts/*
+!/research/ratings/artifacts/.gitkeep

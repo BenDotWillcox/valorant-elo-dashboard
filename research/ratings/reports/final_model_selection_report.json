@@ -1,0 +1,720 @@
+{
+  "calibration": [
+    {
+      "ece": 0.01180117908137066,
+      "intercept": -0.009904414488551007,
+      "model": "carryover",
+      "slope": 1.0717432194540066
+    },
+    {
+      "ece": 0.014814665284789863,
+      "intercept": 0.02232603895973019,
+      "model": "blend",
+      "slope": 0.8454035996986589
+    },
+    {
+      "ece": 0.06832918718237768,
+      "intercept": -0.014939828779448886,
+      "model": "glicko",
+      "slope": 0.520124195390477
+    },
+    {
+      "ece": 0.02997678409968329,
+      "intercept": 0.04162738452476165,
+      "model": "current_elo",
+      "slope": 0.5066295235045186
+    },
+    {
+      "ece": 0.003948839798443293,
+      "intercept": 0.4120925284262927,
+      "model": "constant",
+      "slope": -8.183871783629515
+    },
+    {
+      "ece": 0.07787402506481333,
+      "intercept": -0.04184053212548873,
+      "model": "elastic_net",
+      "slope": 0.4807651241595848
+    },
+    {
+      "ece": 0.0781415767231115,
+      "intercept": -0.04223613117295601,
+      "model": "backbone",
+      "slope": 0.4671333539091991
+    },
+    {
+      "ece": 0.06375067195924851,
+      "intercept": 0.008464183441457194,
+      "model": "boosted",
+      "slope": 0.40519827277992554
+    }
+  ],
+  "conditional_ablations": [
+    {
+      "ablation": "triple",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 0.5625607437143461,
+      "interval80_coverage": 0.3232622015634904,
+      "mae": 0.21219303280785135,
+      "mean_log_likelihood": -2.4273318476683086,
+      "observations": 23665
+    },
+    {
+      "ablation": "two-way",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 1.0,
+      "interval80_coverage": 0.3202619902810057,
+      "mae": 0.21219591260538445,
+      "mean_log_likelihood": -2.470376112676816,
+      "observations": 23665
+    },
+    {
+      "ablation": "additive",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 1.0,
+      "interval80_coverage": 0.3137122332558631,
+      "mae": 0.21220027342043205,
+      "mean_log_likelihood": -2.620650046485894,
+      "observations": 23665
+    },
+    {
+      "ablation": "composition",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 0.24491865624339743,
+      "interval80_coverage": 0.3159518275934925,
+      "mae": 0.2122029694626394,
+      "mean_log_likelihood": -2.581903564737975,
+      "observations": 23665
+    },
+    {
+      "ablation": "player-only",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 1.0,
+      "interval80_coverage": 0.3191633213606592,
+      "mae": 0.21225976041456832,
+      "mean_log_likelihood": -2.549465595947966,
+      "observations": 23665
+    }
+  ],
+  "conditional_tasks": [
+    {
+      "interval80_coverage": 0.336783988957902,
+      "mae": 0.20988257416001946,
+      "mean_log_likelihood": -2.4467869513150964,
+      "observations": 5796,
+      "support": "extrapolated",
+      "task": "unseen/cold-start context"
+    },
+    {
+      "interval80_coverage": 0.3138521149499516,
+      "mae": 0.20219908206732704,
+      "mean_log_likelihood": -2.308563383710314,
+      "observations": 3097,
+      "support": "observed",
+      "task": "familiar player-map-agent/composition"
+    },
+    {
+      "interval80_coverage": 0.30821825074465203,
+      "mae": 0.21521075787566865,
+      "mean_log_likelihood": -2.692225148277217,
+      "observations": 14772,
+      "support": "partially-pooled",
+      "task": "sparse player-map-agent"
+    }
+  ],
+  "decision": {
+    "best_map_log_loss": 0.6768844839934101,
+    "development_gates_passed": {
+      "backbone_vs_current_elo": false,
+      "blend_vs_backbone": false,
+      "carryover_vs_current_elo": true
+    },
+    "forecast_champion": "carryover",
+    "lockbox_status": "confirmed-once",
+    "promotion_passed": true,
+    "rating_backbone": "carryover",
+    "selected_player_ablation": "triple"
+  },
+  "generated_at": "2026-07-16T02:06:20.569909+00:00",
+  "holdout_gates": [
+    {
+      "baseline": "current_elo",
+      "brier_degradation": -0.007502538583652935,
+      "calibration_slope_degradation": -0.42162725704147475,
+      "candidate": "carryover",
+      "development_pass": true,
+      "final_holdout_pass": true,
+      "paired_difference": {
+        "confidence": 0.95,
+        "lower": -0.026776758628685646,
+        "mean_difference": -0.015491503060753179,
+        "resamples": 2000,
+        "unit": "match_id",
+        "upper": -0.011571944076563383
+      },
+      "promoted": true
+    },
+    {
+      "baseline": "current_elo",
+      "brier_degradation": 0.0015669315306627019,
+      "calibration_slope_degradation": 0.03949616959531954,
+      "candidate": "backbone",
+      "development_pass": false,
+      "final_holdout_pass": true,
+      "paired_difference": {
+        "confidence": 0.95,
+        "lower": -0.012460468352949524,
+        "mean_difference": 0.004879940289633601,
+        "resamples": 2000,
+        "unit": "match_id",
+        "upper": 0.015700303426753257
+      },
+      "promoted": false
+    },
+    {
+      "baseline": "backbone",
+      "brier_degradation": -0.004194583236627025,
+      "calibration_slope_degradation": -0.3782702457894598,
+      "candidate": "blend",
+      "development_pass": false,
+      "final_holdout_pass": false,
+      "paired_difference": {
+        "confidence": 0.95,
+        "lower": -0.018745980895317812,
+        "mean_difference": -0.010285359936349058,
+        "resamples": 2000,
+        "unit": "match_id",
+        "upper": 0.002365008998214331
+      },
+      "promoted": false
+    }
+  ],
+  "holdout_map_metrics": [
+    {
+      "brier": 0.24464925217422262,
+      "calibration_intercept": -0.1598195636892431,
+      "calibration_slope": 1.0502159193010958,
+      "expected_calibration_error": 0.04703028395982649,
+      "map_log_loss": 0.6823791092214944,
+      "maps": 747,
+      "model": "carryover"
+    },
+    {
+      "brier": 0.24508565888881564,
+      "calibration_intercept": -0.13488485400140757,
+      "calibration_slope": 0.737783580211744,
+      "expected_calibration_error": 0.049873062952161804,
+      "map_log_loss": 0.6835280253928163,
+      "maps": 747,
+      "model": "backbone"
+    },
+    {
+      "brier": 0.24562988449164477,
+      "calibration_intercept": -0.14902236470954877,
+      "calibration_slope": 1.8211385994241287,
+      "expected_calibration_error": 0.03813782612906428,
+      "map_log_loss": 0.6843684391972814,
+      "maps": 747,
+      "model": "elastic_net"
+    },
+    {
+      "brier": 0.24585768153875892,
+      "calibration_intercept": -0.09549770805840173,
+      "calibration_slope": 1.4600702244938126,
+      "expected_calibration_error": 0.05153780825430843,
+      "map_log_loss": 0.6848317598571603,
+      "maps": 747,
+      "model": "blend"
+    },
+    {
+      "brier": 0.24953202515385975,
+      "calibration_intercept": -0.1714217915593067,
+      "calibration_slope": 0.9228700373329752,
+      "expected_calibration_error": 0.04495971201381819,
+      "map_log_loss": 0.692201018103545,
+      "maps": 747,
+      "model": "boosted"
+    },
+    {
+      "brier": 0.25083182873107324,
+      "calibration_intercept": -0.1579333594525154,
+      "calibration_slope": 0.4278567610245299,
+      "expected_calibration_error": 0.04608191746472249,
+      "map_log_loss": 0.6949962970344367,
+      "maps": 747,
+      "model": "current_elo"
+    }
+  ],
+  "limitations": [
+    "Roster announcements are absent; observed lineups become eligible only after their completed match.",
+    "Historical 2023\u20132025 map-pool announcements remain unknown and are not reconstructed from eventual vetoes for standardized ratings.",
+    "Map-level data cannot isolate side, credits/loadouts, pistol/bonus state, ults, utility, trades, or IGL communication.",
+    "Contribution updates are rejected in this phase unless a transfer/roster-change OOF test demonstrates lift.",
+    "Agent and teammate-agent swaps are associational predictions, not causal interventions.",
+    "The selected player model did not retain teammate-agent synergy; teammate-agent scenario means are zero until that layer demonstrates out-of-fold lift."
+  ],
+  "map_metrics": [
+    {
+      "brier": 0.24202959654363204,
+      "calibration_intercept": -0.009904414488551007,
+      "calibration_slope": 1.0717432194540066,
+      "expected_calibration_error": 0.01180117908137066,
+      "map_log_loss": 0.6768844839934101,
+      "maps": 2376,
+      "model": "carryover",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.24690448342132065,
+      "calibration_intercept": 0.02232603895973019,
+      "calibration_slope": 0.8454035996986589,
+      "expected_calibration_error": 0.014814665284789863,
+      "map_log_loss": 0.6869705674074479,
+      "maps": 2376,
+      "model": "blend",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.24718245234438374,
+      "calibration_intercept": -0.014939828779448886,
+      "calibration_slope": 0.520124195390477,
+      "expected_calibration_error": 0.06832918718237768,
+      "map_log_loss": 0.689658499743599,
+      "maps": 2376,
+      "model": "glicko",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.24953213512728498,
+      "calibration_intercept": 0.04162738452476165,
+      "calibration_slope": 0.5066295235045186,
+      "expected_calibration_error": 0.02997678409968329,
+      "map_log_loss": 0.6923759870541633,
+      "maps": 2376,
+      "model": "current_elo",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.2499655293791358,
+      "calibration_intercept": 0.4120925284262927,
+      "calibration_slope": -8.183871783629515,
+      "expected_calibration_error": 0.003948839798443293,
+      "map_log_loss": 0.6930783528557416,
+      "maps": 2376,
+      "model": "constant",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.25081698816000764,
+      "calibration_intercept": -0.04184053212548873,
+      "calibration_slope": 0.4807651241595848,
+      "expected_calibration_error": 0.07787402506481333,
+      "map_log_loss": 0.6960549386923569,
+      "maps": 2376,
+      "model": "elastic_net",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.2510990666579477,
+      "calibration_intercept": -0.04223613117295601,
+      "calibration_slope": 0.4671333539091991,
+      "expected_calibration_error": 0.0781415767231115,
+      "map_log_loss": 0.6972559273437968,
+      "maps": 2376,
+      "model": "backbone",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.25246395122688897,
+      "calibration_intercept": 0.008464183441457194,
+      "calibration_slope": 0.40519827277992554,
+      "expected_calibration_error": 0.06375067195924851,
+      "map_log_loss": 0.7007413858565941,
+      "maps": 2376,
+      "model": "boosted",
+      "period": "development-2024-25"
+    },
+    {
+      "brier": 0.24464925217422262,
+      "calibration_intercept": -0.1598195636892431,
+      "calibration_slope": 1.0502159193010958,
+      "expected_calibration_error": 0.04703028395982649,
+      "map_log_loss": 0.6823791092214944,
+      "maps": 747,
+      "model": "carryover",
+      "period": "confirmation-2026"
+    },
+    {
+      "brier": 0.24508565888881564,
+      "calibration_intercept": -0.13488485400140757,
+      "calibration_slope": 0.737783580211744,
+      "expected_calibration_error": 0.049873062952161804,
+      "map_log_loss": 0.6835280253928163,
+      "maps": 747,
+      "model": "backbone",
+      "period": "confirmation-2026"
+    },
+    {
+      "brier": 0.24562988449164477,
+      "calibration_intercept": -0.14902236470954877,
+      "calibration_slope": 1.8211385994241287,
+      "expected_calibration_error": 0.03813782612906428,
+      "map_log_loss": 0.6843684391972814,
+      "maps": 747,
+      "model": "elastic_net",
+      "period": "confirmation-2026"
+    },
+    {
+      "brier": 0.24585768153875892,
+      "calibration_intercept": -0.09549770805840173,
+      "calibration_slope": 1.4600702244938126,
+      "expected_calibration_error": 0.05153780825430843,
+      "map_log_loss": 0.6848317598571603,
+      "maps": 747,
+      "model": "blend",
+      "period": "confirmation-2026"
+    },
+    {
+      "brier": 0.24953202515385975,
+      "calibration_intercept": -0.1714217915593067,
+      "calibration_slope": 0.9228700373329752,
+      "expected_calibration_error": 0.04495971201381819,
+      "map_log_loss": 0.692201018103545,
+      "maps": 747,
+      "model": "boosted",
+      "period": "confirmation-2026"
+    },
+    {
+      "brier": 0.25083182873107324,
+      "calibration_intercept": -0.1579333594525154,
+      "calibration_slope": 0.4278567610245299,
+      "expected_calibration_error": 0.04608191746472249,
+      "map_log_loss": 0.6949962970344367,
+      "maps": 747,
+      "model": "current_elo",
+      "period": "confirmation-2026"
+    }
+  ],
+  "player_metrics": [
+    {
+      "ablation": "triple",
+      "component": "__box_vpm__",
+      "extrapolated_rate": 0.5625607437143461,
+      "interval80_coverage": 0.3232622015634904,
+      "mae": 0.21219303280785135,
+      "mean_log_likelihood": -2.4273318476683086,
+      "observations": 23665
+    },
+    {
+      "ablation": "triple",
+      "component": "adr",
+      "extrapolated_rate": 0.5473561066916238,
+      "interval80_coverage": 0.9160037435657463,
+      "mae": 27.590515514077318,
+      "mean_log_likelihood": -5.041686925217947,
+      "observations": 21370
+    },
+    {
+      "ablation": "triple",
+      "component": "apr",
+      "extrapolated_rate": 0.5628787878787879,
+      "interval80_coverage": 0.9376262626262626,
+      "mae": 0.10703502089287992,
+      "mean_log_likelihood": 0.4655769360115488,
+      "observations": 23760
+    },
+    {
+      "ablation": "triple",
+      "component": "dpr",
+      "extrapolated_rate": 0.5628787878787879,
+      "interval80_coverage": 0.9236952861952862,
+      "mae": 0.10181735564244868,
+      "mean_log_likelihood": 0.5357257545736896,
+      "observations": 23760
+    },
+    {
+      "ablation": "triple",
+      "component": "first_duel_attempt_rate",
+      "extrapolated_rate": 0.5628787878787879,
+      "interval80_coverage": 0.9005892255892256,
+      "mae": 0.08186250300368775,
+      "mean_log_likelihood": 0.792831248192391,
+      "observations": 23760
+    },
+    {
+      "ablation": "triple",
+      "component": "first_duel_win_rate",
+      "extrapolated_rate": 0.5486400154873681,
+      "interval80_coverage": 0.8960410415255058,
+      "mae": 0.24057208102654157,
+      "mean_log_likelihood": -0.2902602375272737,
+      "observations": 20662
+    },
+    {
+      "ablation": "triple",
+      "component": "kast",
+      "extrapolated_rate": 0.5499749373433584,
+      "interval80_coverage": 0.8979949874686717,
+      "mae": 0.0905363862982497,
+      "mean_log_likelihood": 0.6901338271737694,
+      "observations": 19950
+    },
+    {
+      "ablation": "triple",
+      "component": "kpr",
+      "extrapolated_rate": 0.5628787878787879,
+      "interval80_coverage": 0.9341329966329966,
+      "mae": 0.17386026788627493,
+      "mean_log_likelihood": -0.003709810248488204,
+      "observations": 23760
+    }
+  ],
+  "player_uncertainty_calibration": [
+    {
+      "ablation": "triple",
+      "calibration_rows": 12640,
+      "calibration_year": 2025,
+      "component": "__box_vpm__",
+      "raw_calibration_year_coverage": 0.28417721518987343,
+      "scale": 2.9761733862034556,
+      "scaled_all_development_coverage": 0.8210014789773927,
+      "scaled_calibration_year_coverage": 0.8,
+      "target_coverage": 0.8
+    }
+  ],
+  "ranking_artifacts": {
+    "demonstrated player-agent rankings": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\player_agent_ratings_demonstrated.parquet",
+    "field rankings": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\field_rankings.parquet",
+    "forced player-agent counterfactuals": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\player_agent_ratings_forced_counterfactual.parquet",
+    "matchup matrix": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\matchup_matrix.parquet",
+    "player ratings": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\player_ratings.parquet",
+    "scenario comparisons": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\scenario_comparisons.parquet",
+    "team ratings": "..\\artifacts\\ratings-development-v1-full__rating-snapshots-v4\\team_ratings.parquet"
+  },
+  "rating_snapshot_support": [
+    {
+      "mean_standard_deviation": 0.2637226287033144,
+      "median_standard_deviation": 0.26373261203351017,
+      "players": 231,
+      "rows": 2748,
+      "support": "observed"
+    },
+    {
+      "mean_standard_deviation": 0.2640647887389239,
+      "median_standard_deviation": 0.26418908780372335,
+      "players": 240,
+      "rows": 5651,
+      "support": "partially-pooled"
+    },
+    {
+      "mean_standard_deviation": 0.26570681271670266,
+      "median_standard_deviation": 0.2657085992653912,
+      "players": 240,
+      "rows": 43689,
+      "support": "extrapolated"
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "model": "backbone",
+      "reason": "development paired-confidence/calibration gate failed"
+    },
+    {
+      "model": "blend",
+      "reason": "development paired-confidence/calibration gate failed"
+    },
+    {
+      "model": "separately identified player contribution",
+      "reason": "not promoted without transfer/roster-change prediction lift"
+    },
+    {
+      "model": "full-data PyMC finalist",
+      "reason": "empirical-Bayes screen runs first; MCMC is gated to finalists that add OOF lift"
+    },
+    {
+      "model": "sequential pooled veto",
+      "reason": "held-out veto action log loss was worse than uniform legal choice"
+    },
+    {
+      "model": "teammate-agent composition interaction",
+      "reason": "the composition ablation did not improve future player forecasts; published teammate-agent mean deltas remain zero"
+    }
+  ],
+  "reproducibility": {
+    "code_sha256": "8238bd6c67ae4b49efd8cdefc473f8633ae133d4eda8e89d18f4b6b6f31e6baf",
+    "configuration_sha256": "0eee85964ebbf845f130a29dfdc8d2e5a1e68741020018e1b1e228219d267734",
+    "confirmation_artifact_sha256": "b3605011da8ad09e52caa087e8cd6a43d3127f5d13afa2371c685bd21a3e16ae",
+    "development_artifact_sha256": "fc9130b897ccee67731151d182ded6acc28f522ea1d64ee6b42811f506ce595e",
+    "scoring_artifact_sha256": "f205ad71bc506076ea5c00563444e0fd04498daa70292455ced063e699a829f0",
+    "seed": 20260714,
+    "snapshot_manifest_sha256": "239e7dc60f0fe5211889eca4f3f8cb60b5c81a13c731e6db127b504210b99613"
+  },
+  "scenario_summary": [
+    {
+      "change_type": "focal_agent",
+      "mean_absolute_performance_delta": 0.006499549739796247,
+      "mean_absolute_win_probability_delta": 0.00012753278449595488,
+      "median_uncertainty_of_delta": 0.220964956295075,
+      "scenarios": 1680
+    },
+    {
+      "change_type": "teammate_agent",
+      "mean_absolute_performance_delta": 0.0,
+      "mean_absolute_win_probability_delta": 0.0,
+      "median_uncertainty_of_delta": 0.2218142115882918,
+      "scenarios": 1680
+    }
+  ],
+  "series_metrics": [
+    {
+      "model": "carryover_pre_veto",
+      "series": 930,
+      "series_brier": 0.23144933601085627,
+      "series_log_loss": 0.6541797911176667
+    },
+    {
+      "model": "carryover_post_veto",
+      "series": 930,
+      "series_brier": 0.23145902912749058,
+      "series_log_loss": 0.6542051095536678
+    }
+  ],
+  "snapshot": {
+    "audit_ok": true,
+    "cutoff": "2026-06-21T23:59:59.999999+00:00",
+    "data_sha256": "97e36e8f5eb4c2cfa448adf466a47983094f08593f1b9f9b3a2f4efbc98caef9",
+    "maps": 3818,
+    "player_maps": 38180,
+    "veto_actions": 10466
+  },
+  "top_field_rankings": [
+    {
+      "field_win_probability": 0.6896892523011474,
+      "rank": 1,
+      "team_id": 32,
+      "team_name": "Paper Rex"
+    },
+    {
+      "field_win_probability": 0.6815500028921975,
+      "rank": 2,
+      "team_id": 24,
+      "team_name": "Leviatan"
+    },
+    {
+      "field_win_probability": 0.6233444842240465,
+      "rank": 3,
+      "team_id": 15,
+      "team_name": "G2 Esports"
+    },
+    {
+      "field_win_probability": 0.6137925350195383,
+      "rank": 4,
+      "team_id": 31,
+      "team_name": "NRG Esports"
+    },
+    {
+      "field_win_probability": 0.5987129926013569,
+      "rank": 5,
+      "team_id": 47,
+      "team_name": "Nongshim RedForce"
+    },
+    {
+      "field_win_probability": 0.5820945130856355,
+      "rank": 6,
+      "team_id": 36,
+      "team_name": "T1"
+    },
+    {
+      "field_win_probability": 0.5812245235111835,
+      "rank": 7,
+      "team_id": 41,
+      "team_name": "Vitality"
+    },
+    {
+      "field_win_probability": 0.5598832515581728,
+      "rank": 8,
+      "team_id": 9,
+      "team_name": "EDward Gaming"
+    },
+    {
+      "field_win_probability": 0.545134256070646,
+      "rank": 9,
+      "team_id": 19,
+      "team_name": "Team Heretics"
+    },
+    {
+      "field_win_probability": 0.5444210969938567,
+      "rank": 10,
+      "team_id": 11,
+      "team_name": "Fnatic"
+    },
+    {
+      "field_win_probability": 0.5409164745611346,
+      "rank": 11,
+      "team_id": 45,
+      "team_name": "Xi Lai Gaming"
+    },
+    {
+      "field_win_probability": 0.5370164283003483,
+      "rank": 12,
+      "team_id": 1,
+      "team_name": "100 Thieves"
+    },
+    {
+      "field_win_probability": 0.5327772041968656,
+      "rank": 13,
+      "team_id": 25,
+      "team_name": "Team Liquid"
+    },
+    {
+      "field_win_probability": 0.527781688954739,
+      "rank": 14,
+      "team_id": 8,
+      "team_name": "DRX"
+    },
+    {
+      "field_win_probability": 0.5244670565495784,
+      "rank": 15,
+      "team_id": 51,
+      "team_name": "Eternal Fire"
+    },
+    {
+      "field_win_probability": 0.5125870711631672,
+      "rank": 16,
+      "team_id": 4,
+      "team_name": "Bilibili"
+    },
+    {
+      "field_win_probability": 0.5040815982497687,
+      "rank": 17,
+      "team_id": 35,
+      "team_name": "Sentinels"
+    },
+    {
+      "field_win_probability": 0.5040504289682913,
+      "rank": 18,
+      "team_id": 2,
+      "team_name": "All Gamers"
+    },
+    {
+      "field_win_probability": 0.5026317637945527,
+      "rank": 19,
+      "team_id": 29,
+      "team_name": "Natus Vincere"
+    },
+    {
+      "field_win_probability": 0.49906125439276566,
+      "rank": 20,
+      "team_id": 14,
+      "team_name": "FUT Esports"
+    }
+  ],
+  "veto_metrics": [
+    {
+      "choice_log_loss": 1.5560831342493686,
+      "matches": 930,
+      "model": "sequential_pooled_veto",
+      "uniform_choice_log_loss": 1.4205114974268422
+    }
+  ]
+}

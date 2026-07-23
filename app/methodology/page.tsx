@@ -600,7 +600,7 @@ export default function MethodologyPage() {
           </div>
 
           <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-6 text-sm leading-6 text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100">
-            <p><strong>Interpretation boundary.</strong> Stored rating-history model version: <span className="font-mono">{vetoReport.manifest.ratingHistoryModelVersion}</span>. The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, while explicitly excluding ratings produced by the target match. Source-less history is accepted only for exact 1000-point January 1 UTC hard resets: this snapshot contains {vetoRatingSourceQuality.sourceLessRatingsMatchingHardResetSignature.toLocaleString()} such resets out of {vetoRatingSourceQuality.ratingsWithoutSourceMatchId.toLocaleString()} source-less rows and {vetoRatingSourceQuality.sourceLessRatingsOutsideHardResetSignature.toLocaleString()} outside the signature. Generation and replay fail closed for every outside row because target-series exclusion cannot otherwise be proven. Greedy regret is observational and omits side choice, preparation, roster plans, and private strategy. Ban values and unchosen sequences remain counterfactual; their outcomes are not observed. Event-cluster intervals cover sampled events, not model-selection, counterfactual, timestamp, or scrape uncertainty.</p>
+            <p><strong>Interpretation boundary.</strong> Stored rating-history model version: <span className="font-mono">{vetoReport.manifest.ratingHistoryModelVersion}</span>. The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, while explicitly excluding ratings produced by the target match. Source-less history is accepted only for exact 1000-point January 1 UTC hard resets: this snapshot contains {vetoRatingSourceQuality.sourceLessRatingsMatchingHardResetSignature.toLocaleString()} such resets out of {vetoRatingSourceQuality.ratingsWithoutSourceMatchId.toLocaleString()} source-less rows and {vetoRatingSourceQuality.sourceLessRatingsOutsideHardResetSignature.toLocaleString()} outside the signature. Generation and replay fail closed for every outside row because target-series exclusion cannot otherwise be proven. Greedy regret is observational and omits side choice, preparation, roster plans, and private strategy. Ban values and unchosen sequences remain counterfactual; their outcomes are not observed. Event-cluster intervals cover sampled events, not model-selection, counterfactual, timestamp, or source-coverage uncertainty.</p>
             <Button asChild variant="outline" className="mt-4 border-amber-700 text-amber-950 hover:bg-amber-100 dark:border-amber-300 dark:text-amber-100 dark:hover:bg-amber-950">
               <Link href="/pick-ban">Open pick/ban model alignment</Link>
             </Button>
@@ -628,14 +628,14 @@ export default function MethodologyPage() {
                   <div><dt className="text-slate-600 dark:text-slate-300">Processed, missing time</dt><dd className="font-mono font-semibold">{report.manifest.sourceExtraction.processedMapsWithoutCompletedAt.toLocaleString()}</dd></div>
                   <div><dt className="text-slate-600 dark:text-slate-300">Required-team join loss</dt><dd className="font-mono font-semibold">{report.manifest.sourceExtraction.processedRowsExcludedByRequiredTeamJoins.toLocaleString()}</dd></div>
                 </dl>
-                <p className="mt-4 text-xs leading-5 text-slate-600 dark:text-slate-300">These counts describe the database snapshot, not events that VLR.gg never exposed or that the scraper never discovered.</p>
+                <p className="mt-4 text-xs leading-5 text-slate-600 dark:text-slate-300">These counts describe the database snapshot, not events absent from the historical source records or ingestion results.</p>
               </div>
             ) : null}
           </div>
           <div>
             <h3 className="text-xl font-semibold text-slate-950 dark:text-white">Limitations that remain</h3>
             <ul className="mt-4 list-disc space-y-3 pl-5 leading-7">{report.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul>
-            <p className="mt-4 text-sm">VLR.gg is a third-party source; tracked-event scope, delayed corrections, and scrape failures can affect coverage. The public freshness panel reports successful ingestion separately from full-pipeline health.</p>
+            <p className="mt-4 text-sm">VLR.gg is the historical third-party source. Automated updates are currently paused, and tracked-event scope plus delayed corrections can affect coverage. The public dataset panel reports the last successful ingestion separately from full-pipeline health.</p>
           </div>
         </section>
 

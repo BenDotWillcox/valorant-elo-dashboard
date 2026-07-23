@@ -597,7 +597,7 @@ function extractionSummary(
     sourceQuality: derivedSourceQuality(input),
     caveats: [
       "The schema has no match-start column, so matches.completed_at is the supplied timestamp proxy; ratings from the target match are additionally excluded by source_match_id.",
-      "Database extraction counts describe stored rows and cannot measure matches or vetoes the upstream source never exposed or the scraper never discovered.",
+      "Database extraction counts describe stored rows and cannot measure matches or vetoes absent from the upstream source records or ingestion results.",
       "Source-less rating rows are accepted only when they exactly match the hard-reset signature: rating 1000 at January 1 00:00:00 UTC. Generation and replay fail closed for every other source-less row because target-series exclusion cannot be proven.",
       "Historical Elo rows have no stored model-version field; their model version is explicitly reported as unknown-unversioned.",
       "Match and rating timestamps are serialized in UTC with six fractional digits. Extraction fails if any analytical timestamp has non-zero precision beyond milliseconds because the current analysis contract uses JavaScript Date.",

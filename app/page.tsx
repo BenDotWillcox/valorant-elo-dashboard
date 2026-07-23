@@ -22,7 +22,7 @@ const features = [
   {
     title: "Rankings",
     description:
-      "View the latest map-specific team Elo ratings produced by the daily data pipeline.",
+      "View the latest available map-specific team Elo ratings in the historical dataset.",
     video: "/videos/Rankings.mp4",
     poster: "/images/web/Rankings.PNG",
     link: "/rankings",

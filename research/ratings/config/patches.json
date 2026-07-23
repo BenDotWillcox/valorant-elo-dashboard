@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.1.0",
+  "status": "verified_major_interval_seed",
+  "notes": "Coarse patch eras anchored to official major/act patch publication dates. The label is a modeling era, not a claim that minor-patch matches used the anchor build.",
+  "patches": [
+    {"patch": "6.00-era", "announced_at": "2023-01-10T00:00:00Z", "effective_from": "2023-01-10T00:00:00Z", "effective_to": "2023-03-07T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-6-0/", "confidence": 1.0},
+    {"patch": "6.04-era", "announced_at": "2023-03-07T00:00:00Z", "effective_from": "2023-03-07T00:00:00Z", "effective_to": "2023-06-27T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-6-04/", "confidence": 1.0},
+    {"patch": "7.00-era", "announced_at": "2023-06-27T00:00:00Z", "effective_from": "2023-06-27T00:00:00Z", "effective_to": "2023-08-29T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-7-0/", "confidence": 1.0},
+    {"patch": "7.04-era", "announced_at": "2023-08-29T00:00:00Z", "effective_from": "2023-08-29T00:00:00Z", "effective_to": "2024-01-09T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-7-04/", "confidence": 1.0},
+    {"patch": "8.00-era", "announced_at": "2024-01-09T00:00:00Z", "effective_from": "2024-01-09T00:00:00Z", "effective_to": "2024-03-19T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-8-0/", "confidence": 1.0},
+    {"patch": "8.05-era", "announced_at": "2024-03-19T00:00:00Z", "effective_from": "2024-03-19T00:00:00Z", "effective_to": "2024-06-11T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-8-05/", "confidence": 1.0},
+    {"patch": "8.11-era", "announced_at": "2024-06-11T00:00:00Z", "effective_from": "2024-06-11T00:00:00Z", "effective_to": "2024-06-25T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-811/", "confidence": 1.0},
+    {"patch": "9.00-era", "announced_at": "2024-06-25T00:00:00Z", "effective_from": "2024-06-25T00:00:00Z", "effective_to": "2024-08-27T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-9-0/", "confidence": 1.0},
+    {"patch": "9.04-era", "announced_at": "2024-08-27T00:00:00Z", "effective_from": "2024-08-27T00:00:00Z", "effective_to": "2025-01-07T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-9-04/", "confidence": 1.0},
+    {"patch": "10.00-era", "announced_at": "2025-01-07T00:00:00Z", "effective_from": "2025-01-07T00:00:00Z", "effective_to": "2025-03-04T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-10-0/", "confidence": 1.0},
+    {"patch": "10.04-era", "announced_at": "2025-03-04T00:00:00Z", "effective_from": "2025-03-04T00:00:00Z", "effective_to": "2025-06-24T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-10-04/", "confidence": 1.0},
+    {"patch": "11.00-era", "announced_at": "2025-06-24T00:00:00Z", "effective_from": "2025-06-24T00:00:00Z", "effective_to": "2025-10-14T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-11-00/", "confidence": 1.0},
+    {"patch": "11.08-era", "announced_at": "2025-10-14T00:00:00Z", "effective_from": "2025-10-14T00:00:00Z", "effective_to": "2026-01-06T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-11-08/", "confidence": 1.0},
+    {"patch": "12.00-era", "announced_at": "2026-01-06T00:00:00Z", "effective_from": "2026-01-06T00:00:00Z", "effective_to": "2026-03-17T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-00/", "confidence": 0.95},
+    {"patch": "12.05-era", "announced_at": "2026-03-17T00:00:00Z", "effective_from": "2026-03-17T00:00:00Z", "effective_to": "2026-04-28T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-05/", "confidence": 1.0},
+    {"patch": "12.08-era", "announced_at": "2026-04-28T00:00:00Z", "effective_from": "2026-04-28T00:00:00Z", "effective_to": "2026-06-09T00:00:00Z", "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-08/", "confidence": 1.0},
+    {"patch": "12.11-era", "announced_at": "2026-06-09T00:00:00Z", "effective_from": "2026-06-09T00:00:00Z", "effective_to": null, "source": "https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-12-11/", "confidence": 1.0}
+  ]
+}

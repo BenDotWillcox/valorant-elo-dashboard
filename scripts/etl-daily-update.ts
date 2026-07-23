@@ -53,7 +53,7 @@ const steps: EtlStep[] = [
     required: true,
   },
   {
-    name: "scrape-new-maps",
+    name: "ingest-new-maps",
     command: npmCommand,
     args: ["run", "scrape:new"],
     required: true,

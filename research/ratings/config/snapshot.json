@@ -1,0 +1,12 @@
+{
+  "schema_version": "ratings-snapshot-v1",
+  "cutoff": "2026-06-21T23:59:59.999999Z",
+  "temporal_protocol": {
+    "warmup": [2023],
+    "development": [2024, 2025],
+    "lockbox": [2026]
+  },
+  "raw_source_policy": "matches/maps/player_map_stats/match_vetoes plus identity labels only; production elo/vpm tables prohibited",
+  "series_state_policy": "all maps in a match share the earliest series anchor; source features must be strictly earlier",
+  "round_exposure_policy": "winner_rounds + loser_rounds"
+}

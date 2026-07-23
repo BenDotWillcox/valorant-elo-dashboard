@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0.0",
+  "status": "awaiting_maintainer_cases",
+  "notes": "Episodes must be declared by the maintainer before their outcomes are inspected. Each entry requires episode_id, team (the canonical team_id), map, start, end, and direction (positive or negative). No cases were supplied with Workstream C, so the diagnostic is intentionally empty rather than retrospectively selected.",
+  "episodes": []
+}

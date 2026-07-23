@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python3 -c \":*)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(UV_CACHE_DIR=__TRACKED_VAR__/.uv-cache uv run python -)"
     ]
   }
 }

@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX "team_map_unique_idx" ON "elo_ratings_current" USING btree ("team_id","map_name");

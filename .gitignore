@@ -43,7 +43,7 @@ next-env.d.ts
 /scripts/
 
 # Constants
-/lib/constants/
+
 
 # Predictive ratings research (local environments and generated artifacts)
 /research/ratings/.venv/

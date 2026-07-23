@@ -2,9 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { FeatureVideo } from "@/components/feature-video";
-import { DataMethodologyPanel } from "@/components/data-methodology-panel";
-import backtest from "@/public/data/elo-backtest.json";
-import type { TemporalBacktestResult } from "@/lib/elo/backtest";
 import { ArrowRight, TrendingUp, Target, BarChart3, BookOpen, Zap, Users, User } from "lucide-react";
 
 const features = [
@@ -120,8 +117,6 @@ const features = [
   }
 ];
 
-const backtestReport = backtest as unknown as TemporalBacktestResult;
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-gray-900">
@@ -219,15 +214,6 @@ export default function Home() {
           </section>
         );
       })}
-
-      <DataMethodologyPanel
-        backtestGeneratedAt={backtestReport.manifest.generatedAt}
-        evaluatedModelVersion={backtestReport.manifest.evaluatedModelVersion}
-        evaluationCoverage={{
-          start: backtestReport.split.observedRanges.test.firstCompletedAt!,
-          end: backtestReport.split.observedRanges.test.lastCompletedAt!,
-        }}
-      />
 
       {/* CTA Section */}
       <section className="relative px-6 py-20 sm:px-8 lg:px-12 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black overflow-hidden">

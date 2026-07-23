@@ -37,7 +37,7 @@ logs/etl/
 next-env.d.ts
 
 # Database
-/db/
+
 
 # Scripts
 /scripts/

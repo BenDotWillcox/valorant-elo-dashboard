@@ -1673,7 +1673,7 @@ export function runPickBanTemporalBacktest(
     },
     limitations: [
       "This retrospective analysis is associational. It cannot observe match outcomes under maps that were banned or under an unchosen veto sequence.",
-      "The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, and excludes target-match rating rows; uncertainty does not cover remaining timestamp error, scrape omissions, patch drift, or source bias.",
+      "The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, and excludes target-match rating rows; uncertainty does not cover remaining timestamp error, source-record omissions, patch drift, or source bias.",
       "Greedy regret uses map Elo alone and does not represent side choice, preparation, agent composition, roster announcements, or strategic concealment.",
       "A 1000 cold start is explicit but still a modeling assumption; cold-start coverage must accompany every reported result.",
       "Bootstrap intervals resample observed event blocks and do not include model-selection or counterfactual uncertainty.",

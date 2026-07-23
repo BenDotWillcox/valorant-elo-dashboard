@@ -16448,7 +16448,7 @@
   },
   "limitations": [
     "This retrospective analysis is associational. It cannot observe match outcomes under maps that were banned or under an unchosen veto sequence.",
-    "The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, and excludes target-match rating rows; uncertainty does not cover remaining timestamp error, scrape omissions, patch drift, or source bias.",
+    "The database replay uses recorded match completion time as its cutoff proxy because start time is not stored, and excludes target-match rating rows; uncertainty does not cover remaining timestamp error, source-record omissions, patch drift, or source bias.",
     "Greedy regret uses map Elo alone and does not represent side choice, preparation, agent composition, roster announcements, or strategic concealment.",
     "A 1000 cold start is explicit but still a modeling assumption; cold-start coverage must accompany every reported result.",
     "Bootstrap intervals resample observed event blocks and do not include model-selection or counterfactual uncertainty.",
@@ -16459,17 +16459,17 @@
     "statement": "Holdout forecast and association results describe predictive evidence only; they do not establish that lower-regret veto choices cause match or map wins."
   },
   "manifest": {
-    "generatedAt": "2026-07-10T13:16:41.321Z",
+    "generatedAt": "2026-07-23T15:34:37.470Z",
     "source": "snapshot",
-    "dataSha256": "8879d0b5fa128e37c1d19aab6eff6af05025754aad0e2daf4ac79b388c9e5293",
+    "dataSha256": "141d82446b1ce92c5fad49f0e191358c864819d0e8234f9e13ea61bb1b9f094c",
     "configSha256": "cbabbd43d15f8a9af70949190426cc8d91fd7bde8b2f706173b535fd4e9ddab5",
     "sourceDescriptor": "data/pick-ban-backtest-db-snapshot.json (pick-ban-veto-maps-ratings-v2)",
-    "sourceSnapshotSha256": "8879d0b5fa128e37c1d19aab6eff6af05025754aad0e2daf4ac79b388c9e5293",
-    "sourceSnapshotFileSha256": "225cfd1e7f0174b0f0f05149bed8f06a790e27e6ed6810bf85bcae792d2c06e4",
+    "sourceSnapshotSha256": "141d82446b1ce92c5fad49f0e191358c864819d0e8234f9e13ea61bb1b9f094c",
+    "sourceSnapshotFileSha256": "61cff761952523c0d0b7677297a4a490d4b657f253a17a30d2ff06c65faecefe",
     "sourceSnapshotExportedAt": "2026-07-10T13:12:36.129526Z",
     "databaseQueryVersion": "pick-ban-veto-maps-ratings-v2",
     "ratingHistoryModelVersion": "unknown-unversioned",
-    "sourceCodeSha256": "224a8b25f46c7920e40c698a47813d4dc4ecd8450603c857c71bb1be21890275",
+    "sourceCodeSha256": "637dc4fb80d680abcf0476fc79b5db3d8925a59b849be3fd043345b51dc6a069",
     "sourceFiles": [
       "lib/elo/backtest.ts",
       "lib/elo/pick-ban-backtest.ts",
@@ -16478,9 +16478,9 @@
       "lib/elo/pick-ban-rating-provenance.ts",
       "scripts/run-pick-ban-backtest.ts"
     ],
-    "gitCommit": "dfd4a7a0261a4505846d581a97adbc4d19a931e2",
+    "gitCommit": "97738b378e5dcff4ab4e1838cc5aef6b4fedd9b8",
     "gitWorkingTree": "dirty",
-    "provenanceCapturedAt": "2026-07-10T13:16:41.322Z",
+    "provenanceCapturedAt": "2026-07-23T15:34:37.471Z",
     "provenanceCapturePoint": "before input reads and artifact writes",
     "sourceExtraction": {
       "scope": "Every matches row referenced by match_vetoes, all ordered vetoes and played maps for those matches, and the complete Elo rating history",
@@ -16516,7 +16516,7 @@
       },
       "caveats": [
         "The schema has no match-start column, so matches.completed_at is the supplied timestamp proxy; ratings from the target match are additionally excluded by source_match_id.",
-        "Database extraction counts describe stored rows and cannot measure matches or vetoes the upstream source never exposed or the scraper never discovered.",
+        "Database extraction counts describe stored rows and cannot measure matches or vetoes absent from the upstream source records or ingestion results.",
         "Source-less rating rows are accepted only when they exactly match the hard-reset signature: rating 1000 at January 1 00:00:00 UTC. Generation and replay fail closed for every other source-less row because target-series exclusion cannot be proven.",
         "Historical Elo rows have no stored model-version field; their model version is explicitly reported as unknown-unversioned.",
         "Match and rating timestamps are serialized in UTC with six fractional digits. Extraction fails if any analytical timestamp has non-zero precision beyond milliseconds because the current analysis contract uses JavaScript Date.",

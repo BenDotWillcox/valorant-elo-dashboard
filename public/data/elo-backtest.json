@@ -2,7 +2,7 @@
   "schemaVersion": "1.3.0",
   "implementationVersion": "vm-01-vm-07.5",
   "manifest": {
-    "generatedAt": "2026-07-10T13:15:59.487Z",
+    "generatedAt": "2026-07-23T15:34:00.508Z",
     "dataSha256": "1aa1306720b94850ca696befd7532b1408ff2e90734dd9def30b635c012acc14",
     "configSha256": "c98bf32b10dc106be2cc141ba032a727f5c131dc2575dcba9e44676dc0d9de80",
     "sourceDescriptor": "data/elo-backtest-db-snapshot.json (maps-with-last-observed-roster-v4)",
@@ -10,15 +10,15 @@
     "sourceSnapshotFileSha256": "1003de9038d4fd024d442b14c508c307b445278e8b3bb8f1941595af74316bd3",
     "sourceSnapshotExportedAt": "2026-07-09T21:25:41.060Z",
     "evaluatedModelVersion": "map-elo-v1.0.0",
-    "sourceCodeSha256": "57f19dc87cfcb41adfb7626c4cfe7d80bbb3742546b1642e65f16784db59b5c8",
+    "sourceCodeSha256": "8779002aaf8546cc70b55c4cbcafc93d82fd3944cb47614a1f6f91a9a662ce6c",
     "sourceFiles": [
       "lib/elo/backtest.ts",
       "lib/elo/elo-calculator.ts",
       "scripts/run-elo-backtest.ts"
     ],
-    "gitCommit": "dfd4a7a0261a4505846d581a97adbc4d19a931e2",
+    "gitCommit": "97738b378e5dcff4ab4e1838cc5aef6b4fedd9b8",
     "gitWorkingTree": "dirty",
-    "provenanceCapturedAt": "2026-07-10T13:15:59.487Z",
+    "provenanceCapturedAt": "2026-07-23T15:34:00.509Z",
     "provenanceCapturePoint": "before input reads and artifact writes",
     "sourceExtraction": {
       "scope": "maps where processed = true; required winner and loser team joins; completed_at and score validity are checked during normalization",
@@ -7715,7 +7715,7 @@
     "The reported chronological test period is retrospective and can be rerun; it is not a prospectively untouched holdout, and future event mixes and patches may differ.",
     "The pre-holdout production comparator is externally frozen by repository history before the chronological test start, making its later rows retrospectively out of sample; this does not prove its original parameter selection was leakage-free or restore an untouched holdout after these results have been viewed.",
     "Roster change is a last-observed appearance proxy, not a confirmed pre-match roster announcement.",
-    "Data-quality rejection counts start from maps marked processed that survive required team joins; they do not measure events never scraped, source-universe completeness, or all upstream ETL failures.",
+    "Data-quality rejection counts start from maps marked processed that survive required team joins; they do not measure events absent from stored source records, source-universe completeness, or all upstream ETL failures.",
     "Confidence intervals quantify resampling uncertainty for the observed series blocks and do not cover source bias or model-selection uncertainty.",
     "Validation-only selection and one test evaluation are enforced within each run; there is no persistent access ledger that can detect reruns after holdout results have been viewed.",
     "No experimental result automatically changes the production model; adoption requires an explicit review and calibration decision."

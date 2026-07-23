@@ -143,18 +143,18 @@ export function DataMethodologyPanel({
             What the model knows—and what it does not
           </h2>
           <p className="mt-4 text-slate-600 dark:text-slate-300">
-            Results are estimates from a daily VLR.gg ingestion pipeline and a map-specific Elo model. Data freshness, model evaluation, and limitations are disclosed separately below.
+            Results are estimates from a historical VCT match dataset and a map-specific Elo model. Automated data updates are currently paused; dataset coverage, model evaluation, and limitations are disclosed separately below.
           </p>
         </div>
 
         <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-            <dt className="text-sm text-slate-500 dark:text-slate-400">Source &amp; cadence</dt>
+            <dt className="text-sm text-slate-500 dark:text-slate-400">Source &amp; dataset status</dt>
             <dd className="mt-2 font-semibold text-slate-950 dark:text-white">
-              {status?.source ?? "VLR.gg"}
+              {status?.source ?? "VLR.gg (historical dataset)"}
             </dd>
             <dd className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {status?.cadence ?? "Daily at approximately 8:00 AM America/Chicago"}
+              {status?.cadence ?? "Automated updates are currently paused"}
             </dd>
           </div>
 
@@ -163,7 +163,7 @@ export function DataMethodologyPanel({
             <dd className="mt-2 font-semibold text-slate-950 dark:text-white">{coverageLabel}</dd>
             <dd className="mt-1 text-sm text-slate-600 dark:text-slate-300">
               {coverage
-                ? `${coverage.mapCount.toLocaleString()} scraped maps; ${coverage.processedMapCount.toLocaleString()} Elo-processed`
+                ? `${coverage.mapCount.toLocaleString()} recorded maps; ${coverage.processedMapCount.toLocaleString()} Elo-processed`
                 : coverageIsLoading
                   ? "Loading live database status"
                   : "Live database status unavailable"}
@@ -226,7 +226,7 @@ export function DataMethodologyPanel({
           <div>
             <h3 className="font-semibold text-slate-950 dark:text-white">Known limitations</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Daily—not streaming—updates; third-party scrape delays and corrections; hard annual rating resets; 1000-point priors for sparse team/map histories; no deployed roster adjustment or explicit uncertainty model; and predictions are probabilistic estimates, not guarantees.
+              Automated updates are currently paused; third-party publication delays and corrections can affect historical coverage; ratings use hard annual resets and 1000-point priors for sparse team/map histories; and predictions are probabilistic estimates, not guarantees.
             </p>
           </div>
           <Button asChild variant="outline">

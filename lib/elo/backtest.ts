@@ -1939,8 +1939,8 @@ export function runTemporalBacktest(
       ? "The legacy CSV has map-row ids rather than reliable series ids and no roster appearances; timestamp blocks prevent within-timestamp leakage, but series-specific uncertainty and roster experiments are unavailable."
       : "Roster change is a last-observed appearance proxy, not a confirmed pre-match roster announcement.",
     options.manifest.sourceExtraction
-      ? "Data-quality rejection counts start from maps marked processed that survive required team joins; they do not measure events never scraped, source-universe completeness, or all upstream ETL failures."
-      : "The input artifact does not include upstream source-universe counts, so rejection totals do not measure scrape omissions or source completeness.",
+      ? "Data-quality rejection counts start from maps marked processed that survive required team joins; they do not measure events absent from stored source records, source-universe completeness, or all upstream ETL failures."
+      : "The input artifact does not include upstream source-universe counts, so rejection totals do not measure source-record omissions or source completeness.",
     "Confidence intervals quantify resampling uncertainty for the observed series blocks and do not cover source bias or model-selection uncertainty.",
     "Validation-only selection and one test evaluation are enforced within each run; there is no persistent access ledger that can detect reruns after holdout results have been viewed.",
     "No experimental result automatically changes the production model; adoption requires an explicit review and calibration decision.",

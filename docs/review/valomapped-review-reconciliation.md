@@ -91,14 +91,14 @@ lower-regret team won 52.2% of 291 non-tied matches (event-cluster 95% CI 47.3%â
 regret worsened Brier by +0.0025 in the point estimate (95% CI -0.0059 to +0.0118). Neither result
 provides incremental predictive evidence, and the report makes no causal coaching claim.
 
-## Freshness and scrape-failure boundary
+## Freshness and source-coverage boundary
 
-The landing panel distinguishes stored map coverage, the last successful scrape step, the last
+The landing panel distinguishes stored map coverage, the last successful ingestion step, the last
 fully successful pipeline, the latest failed/running step, deployed and evaluated model versions,
 retrospective evaluation date, and the explicit status `Calibration: Not calibrated`. ETL run
 history records per-step status, duration, failure, and error. The public limitations state that
-database counts cannot measure matches the upstream source never exposed or the scraper never
-discovered.
+database counts cannot measure matches absent from the upstream source records or ingestion
+results.
 
 ## Verification contract
 

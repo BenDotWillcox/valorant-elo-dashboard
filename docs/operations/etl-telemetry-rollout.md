@@ -69,6 +69,6 @@ Expected results:
 - No client/Data API role grants are returned.
 - The primary-key index and `etl_runs_status_started_at_idx` exist.
 
-Then request `/api/data-methodology`. It should report `historyAvailable: true` and no migration-required reason. The table will initially have no successful run; the next scheduled daily ETL execution writes the first complete history record, including the exact completion time of `scrape-new-maps`.
+Then request `/api/data-methodology`. It should report `historyAvailable: true` and no migration-required reason. The table will initially have no successful run. If external ingestion is authorized and re-enabled, the next ETL execution writes the first complete history record, including the exact completion time of the map-ingestion step.
 
 Finally, rerun Supabase security and performance advisors. An informational `rls_enabled_no_policy` notice for `etl_runs` is expected and intentional because all Data API grants are revoked and the table is direct-connection-only.

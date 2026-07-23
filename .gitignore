@@ -37,10 +37,13 @@ logs/etl/
 next-env.d.ts
 
 # Database
-/db
+/db/
+
+# Scripts
+/scripts/
 
 # Constants
-/lib/constants
+/lib/constants/
 
 # Predictive ratings research (local environments and generated artifacts)
 /research/ratings/.venv/
